@@ -5,6 +5,7 @@ project(OpenGL-Engine)
 # Find packages
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
+find_package(glm REQUIRED)
 
 # Compiler options
 set(CMAKE_CXX_STANDARD 23)
@@ -20,6 +21,7 @@ set(SOURCES
 
         # Classes
         src/Application.cpp
+        src/Shader.cpp
 
         # Other Sources
         src/callbacks.cpp
@@ -43,6 +45,7 @@ set(LIBRARIES
         Xxf86vm
         Xrandr
         Xi
+        glm::glm
 )
 
 # Add executable
