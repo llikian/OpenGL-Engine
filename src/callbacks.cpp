@@ -16,3 +16,15 @@ void frameBufferSizeCallback(GLFWwindow* /* window */, int width, int height) {
 void keyCallback(GLFWwindow* /* window */, int key, int /* scancode */, int action, int mods) {
     app.handleKeyEvent(key, action, mods);
 }
+
+void mouseButtonCallback(GLFWwindow* /* window */, int button, int action, int mods) {
+
+}
+
+void cursorPositionCallback(GLFWwindow* /* window */, double xPos, double yPos) {
+
+}
+
+void scrollCallback(GLFWwindow* /* window */, double xOffset, double yOffset) {
+
+}
