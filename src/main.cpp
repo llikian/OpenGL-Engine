@@ -5,12 +5,12 @@
 
 #include "Application.hpp"
 
+Application app;
+
 #include <iostream>
 #include <stdexcept>
 
 int main() {
-    Application app;
-
     try {
         app.run();
     } catch(const std::exception& exception) {

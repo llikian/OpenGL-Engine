@@ -33,18 +33,23 @@ public:
      */
     void run();
 
+    /**
+     * @brief Sets the width and height of the GLFW window.
+     * @param width The new width of the window.
+     * @param height The new height of the window.
+     */
+    void setWindowSize(int width, int height);
+
 private:
     /**** Methods ****/
 
     /**
-     * @brief Initializes GLFW and the GLFW window.
+     * @brief Polls and handles events with glfw.
      */
-    void initGLFW();
-
     void handleEvents();
 
     /**** Variables & Constants ****/
-    GLFWwindow* window;    ///< GLFW window.
-    const uint32_t width;  ///< The width of the window in pixels.
-    const uint32_t height; ///< The height of the window in pixels.
+    GLFWwindow* window;  ///< GLFW window.
+    unsigned int width;  ///< The width of the window in pixels.
+    unsigned int height; ///< The height of the window in pixels.
 };
