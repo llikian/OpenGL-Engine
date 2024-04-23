@@ -5,16 +5,16 @@
 
 #include "Application.hpp"
 
-Application app;
-
 #include <iostream>
 #include <stdexcept>
+
+Application app;
 
 int main() {
     try {
         app.run();
     } catch(const std::exception& exception) {
-        std::cout << exception.what() << '\n';
+        std::cout << "ERROR : " << exception.what() << '\n';
         return -1;
     }
 
