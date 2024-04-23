@@ -33,6 +33,7 @@ bin/OpenGL-Engine
 ```
 
 ## Credits
-Vulkan
+OpenGL
+GLAD
 GLFW
 GLM
