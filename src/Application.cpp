@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "callbacks.hpp"
+#include "Image.hpp"
 
 Application::Application()
     : window(nullptr), width(800), height(600),
@@ -56,14 +57,16 @@ Application::~Application() {
 
 void Application::run() {
     float vertices[] = {
-        // positions         // colors
-        0.5f,  -0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   // bottom left
-        0.0f,  0.5f,  0.0f,   0.0f, 0.0f, 1.0f    // top
+        // Positions         // Colors            // Texture Coordinates
+        0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f,   // Bottom Right
+        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,    0.0f, 0.0f,   // Bottom Left
+        -0.5f, 0.5f, 0.0f,   0.0f, 0.0f, 1.0f,    0.0f, 1.0f,   // Top Left
+        0.5f, 0.5f, 0.0f,    1.0f, 1.0f, 0.0f,    1.0f, 1.0f    // Top Right
     };
 
     unsigned int indices[]{
-        0, 1, 2   // first triangle
+        0, 1, 2,
+        2, 3, 0
     };
 
     unsigned int VBO;
@@ -85,29 +88,56 @@ void Application::run() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    int stride = 6 * sizeof(float);
+    int size = sizeof(float);
     // Position
-    glVertexAttribPointer(0, 3, GL_FLOAT, false, stride, reinterpret_cast<void*>(0));
+    glVertexAttribPointer(0, 3, GL_FLOAT, false, 8 * size, reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(0);
     // Color
-    glVertexAttribPointer(1, 3, GL_FLOAT, false, stride, reinterpret_cast<void*>(stride / 2));
+    glVertexAttribPointer(1, 3, GL_FLOAT, false, 8 * size, reinterpret_cast<void*>(size * 3));
     glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 2, GL_FLOAT, false, 8 * size, reinterpret_cast<void*>(size * 6));
+    glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
+    /**** Texture ****/
+    Image im("data/textures/container.jpg");
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, im.getWidth(), im.getHeight(),
+                 0, GL_RGB, GL_UNSIGNED_BYTE, im.getData());
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    Image im2("data/textures/wall.jpg");
+    unsigned int textureID2;
+    glGenTextures(1, &textureID2);
+    glBindTexture(GL_TEXTURE_2D, textureID2);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, im2.getWidth(), im2.getHeight(),
+                 0, GL_RGB, GL_UNSIGNED_BYTE, im2.getData());
+    glGenerateMipmap(GL_TEXTURE_2D);
+
     /**** Main Loop ****/
     while(!glfwWindowShouldClose(window)) {
         handleEvents();
-        glClearColor(0.306f, 0.282f, 0.329f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         seconds = glfwGetTime();
 
         shader.use();
+        shader.setUniform("u_texture0", 0);
+        shader.setUniform("u_texture0", 1);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, textureID);
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, textureID2);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, nullptr);
 
         glfwSwapBuffers(window);
     }
