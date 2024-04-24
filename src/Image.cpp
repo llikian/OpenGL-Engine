@@ -6,6 +6,8 @@
 #include "Image.hpp"
 
 Image::Image(const std::string& path) {
+    stbi_set_flip_vertically_on_load(true);
+
     int W, H, nbC;
     data = stbi_load(path.c_str(), &W, &H, &nbC, 3); // TODO : Maybe change 3 to 4 for transparency
 
