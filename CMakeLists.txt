@@ -26,6 +26,7 @@ set(SOURCES
 
         # Other Sources
         src/callbacks.cpp
+        src/maths/transformations.cpp
 
         # Libraries
         lib/glad/src/glad.c
