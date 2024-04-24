@@ -7,6 +7,11 @@
 
 #include <string>
 
+#include "maths/vec2.hpp"
+#include "maths/vec3.hpp"
+#include "maths/vec4.hpp"
+#include "maths/Matrix4.hpp"
+
 /**
  * @class Shader
  * @brief
@@ -78,6 +83,34 @@ public:
      * @param w The new w value of the uniform.
      */
     void setUniform(const std::string& uniform, float x, float y, float z, float w) const;
+
+    /**
+     * @brief Sets the value of an uniform of type vec2.
+     * @param uniform The uniform's name.
+     * @param vec The new value of the uniform.
+     */
+    void setUniform(const std::string& uniform, const vec2& vec) const;
+
+    /**
+     * @brief Sets the value of an uniform of type vec3.
+     * @param uniform The uniform's name.
+     * @param vec The new value of the uniform.
+     */
+    void setUniform(const std::string& uniform, const vec3& vec) const;
+
+    /**
+     * @brief Sets the value of an uniform of type vec4.
+     * @param uniform The uniform's name.
+     * @param vec The new value of the uniform.
+     */
+    void setUniform(const std::string& uniform, const vec4& vec) const;
+
+    /**
+     * @brief Sets the value of an uniform of type mat4.
+     * @param uniform The uniform's name.
+     * @param matrix The new value of the uniform.
+     */
+    void setUniform(const std::string& uniform, const Matrix4& matrix) const;
 
 private:
     unsigned int id; ///< The shader program's id.
