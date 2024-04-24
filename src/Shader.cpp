@@ -9,7 +9,7 @@
 #include <fstream>
 #include <sstream>
 
-Shader::Shader(std::string vertexShaderPath, std::string fragmentShaderPath) {
+Shader::Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath) {
     int messageLength;
 
     /**** Vertex Shader ****/

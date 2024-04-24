@@ -19,7 +19,7 @@ public:
      * @param vertexShaderPath The path to the vertex shader.
      * @param fragmentShaderPath The path to the fragment shader.
      */
-    Shader(std::string vertexShaderPath, std::string fragmentShaderPath);
+    Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
 
     /**
      * @brief Deletes the shader program.
