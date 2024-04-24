@@ -37,3 +37,4 @@ OpenGL
 GLAD
 GLFW
 GLM
+stb_image

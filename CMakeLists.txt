@@ -21,6 +21,7 @@ set(SOURCES
 
         # Classes
         src/Application.cpp
+        src/Image.cpp
         src/Shader.cpp
 
         # Other Sources
@@ -28,6 +29,7 @@ set(SOURCES
 
         # Libraries
         lib/glad/src/glad.c
+        lib/stb/stb_image.cpp
 )
 
 set(INCLUDES
@@ -35,6 +37,7 @@ set(INCLUDES
 
         # Libraries
         lib/glad/include
+        lib/stb
 )
 
 set(LIBRARIES
