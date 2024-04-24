@@ -5,6 +5,8 @@
 
 #include "Application.hpp"
 
+#include <cmath>
+
 #include "callbacks.hpp"
 
 Application::Application()
@@ -53,16 +55,15 @@ Application::~Application() {
 }
 
 void Application::run() {
-    float vertices[]{
-        0.5f, 0.5f, 0.0f,  // top right
-        0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  // bottom left
-        -0.5f, 0.5f, 0.0f   // top left
+    float vertices[] = {
+        // positions         // colors
+        0.5f,  -0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   // bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   // bottom left
+        0.0f,  0.5f,  0.0f,   0.0f, 0.0f, 1.0f    // top
     };
 
     unsigned int indices[]{
-        0, 1, 3,   // first triangle
-        1, 2, 3    // second triangle
+        0, 1, 2   // first triangle
     };
 
     unsigned int VBO;
@@ -83,12 +84,17 @@ void Application::run() {
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * sizeof(float), nullptr);
+
+    int stride = 6 * sizeof(float);
+    // Position
+    glVertexAttribPointer(0, 3, GL_FLOAT, false, stride, reinterpret_cast<void*>(0));
+    glEnableVertexAttribArray(0);
+    // Color
+    glVertexAttribPointer(1, 3, GL_FLOAT, false, stride, reinterpret_cast<void*>(stride / 2));
+    glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
 
     /**** Main Loop ****/
     while(!glfwWindowShouldClose(window)) {
@@ -96,9 +102,12 @@ void Application::run() {
         glClearColor(0.306f, 0.282f, 0.329f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        seconds = glfwGetTime();
+
         shader.use();
+
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 
         glfwSwapBuffers(window);
     }

@@ -19,6 +19,8 @@
  */
 class Application {
 public:
+    /**** Constructor & Destructor ****/
+
     /**
      * @brief Sets the default value of all member variables and constants.
      */
@@ -28,6 +30,8 @@ public:
      * @brief Frees all allocated memory.
      */
      ~Application();
+
+     /**** Public Methods ****/
 
     /**
      * @brief Contains the main loop.
@@ -58,7 +62,7 @@ public:
     void handleKeyEvent(int key, int action, int mods);
 
 private:
-    /**** Methods ****/
+    /**** Private Methods ****/
 
     /**
      * @brief Polls and handles events with glfw.
@@ -71,4 +75,6 @@ private:
     unsigned int height; ///< The height of the window in pixels.
 
     bool wireframe; ///< Whether the display mode is in wireframe.
+
+    double seconds; ///< Time ellapsed since glfw was initialized.
 };
