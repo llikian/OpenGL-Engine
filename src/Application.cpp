@@ -9,6 +9,7 @@
 
 #include "callbacks.hpp"
 #include "Image.hpp"
+#include "maths/transformations.hpp"
 
 Application::Application()
     : window(nullptr), width(800), height(600),
@@ -58,10 +59,10 @@ Application::~Application() {
 void Application::run() {
     float vertices[] = {
         // Positions         // Colors            // Texture Coordinates
-        0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f,    1.0f, 0.0f,   // Bottom Right
-        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,    0.0f, 0.0f,   // Bottom Left
-        -0.5f, 0.5f, 0.0f,   0.0f, 0.0f, 1.0f,    0.0f, 1.0f,   // Top Left
-        0.5f, 0.5f, 0.0f,    1.0f, 1.0f, 0.0f,    1.0f, 1.0f    // Top Right
+        0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,   // Bottom Right
+        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,   // Bottom Left
+        -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,   // Top Left
+        0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f    // Top Right
     };
 
     unsigned int indices[]{
@@ -110,13 +111,6 @@ void Application::run() {
                  0, GL_RGB, GL_UNSIGNED_BYTE, im.getData());
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    Image im2("data/textures/wall.jpg");
-    unsigned int textureID2;
-    glGenTextures(1, &textureID2);
-    glBindTexture(GL_TEXTURE_2D, textureID2);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, im2.getWidth(), im2.getHeight(),
-                 0, GL_RGB, GL_UNSIGNED_BYTE, im2.getData());
-    glGenerateMipmap(GL_TEXTURE_2D);
 
     /**** Main Loop ****/
     while(!glfwWindowShouldClose(window)) {
@@ -127,14 +121,12 @@ void Application::run() {
         seconds = glfwGetTime();
 
         shader.use();
+        shader.setUniform("u_transform",
+                          rotate(identity(), static_cast<float>(seconds), vec3(0.0f, 1.0f, 0.0f)));
         shader.setUniform("u_texture0", 0);
-        shader.setUniform("u_texture0", 1);
-
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textureID);
 
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, textureID2);
+        glBindTexture(GL_TEXTURE_2D, textureID);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, nullptr);
