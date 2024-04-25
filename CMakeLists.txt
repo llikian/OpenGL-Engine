@@ -24,6 +24,9 @@ set(SOURCES
         src/Image.cpp
         src/Shader.cpp
 
+        src/mesh/Mesh.cpp
+        src/mesh/Vertex.cpp
+
         # Other Sources
         src/callbacks.cpp
         src/maths/transformations.cpp
