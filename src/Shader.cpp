@@ -130,5 +130,5 @@ void Shader::setUniform(const std::string& uniform, const vec4& vec) const {
 }
 
 void Shader::setUniform(const std::string& uniform, const Matrix4& matrix) const {
-    glUniformMatrix4fv(glGetUniformLocation(id, uniform.c_str()), 1, true, &matrix[0].x);
+    glUniformMatrix4fv(glGetUniformLocation(id, uniform.c_str()), 1, true, &(matrix[0][0]));
 }
