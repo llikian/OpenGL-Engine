@@ -165,3 +165,21 @@ Matrix4 rotateZ(float angle) {
         0.0f, 0.0f, 0.0f, 1.0f
     );
 }
+
+Matrix4 lookAt(const Point& eye, const Point& center, const Vector& up) {
+    vec3 front = normalize(center - eye);
+    vec3 side = normalize(cross(front, up));
+    vec3 Up = normalize(cross(side, front));
+
+    return Matrix4{side.x, side.y, side.z, -dot(side, eye),
+                   Up.x, Up.y, Up.z, -dot(Up, eye),
+                   -front.x, -front.y, -front.z, dot(front, eye),
+                   0.0f, 0.0f, 0.0f, 1.0f};
+}
+
+Matrix4 perspective(float fov, float aspect, float near, float far) {
+    return Matrix4{1.0f / (aspect * glm::tan(0.5f * fov)), 0.0f, 0.0f, 0.0f,
+                   0.0f, 1.0f / glm::tan(0.5f * fov), 0.0f, 0.0f,
+                   0.0f, 0.0f, -(far + near) / (far - near), -(2.0f * far * near) / (far - near),
+                   0.0f, 0.0f, -1.0f, 0.0f};
+}

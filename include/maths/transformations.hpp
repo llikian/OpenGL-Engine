@@ -110,3 +110,23 @@ Matrix4 rotateY(float angle);
  * @return The rotation matrix.
  */
 Matrix4 rotateZ(float angle);
+
+/**
+ * @brief Calculates the 'look at' matrix. That allows to simulate a camera.
+ * @param eye The position of the camera.
+ * @param center The target of the camera.
+ * @param up The up vector of the camera.
+ * @return The 'look at' matrix.
+ */
+Matrix4 lookAt(const Point& eye, const Point& center, const Vector& up);
+
+/**
+ * @brief Calculates the perspective matrix.
+ * @param fov The field of vue value. Sets how large the viewspace is. For a realistic view it is
+ * usually set to 45 degrees.
+ * @param aspect The aspect ration. Is calculated by dividing the window's width by its height.
+ * @param near, far The near and far plane. Usually set to respectively 0.1 and 100, all vertices
+ * between the two planes are renderered, those outside won't.
+ * @return The perspective matrix.
+ */
+Matrix4 perspective(float fov, float aspect, float near, float far);
