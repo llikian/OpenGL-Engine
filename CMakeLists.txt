@@ -25,6 +25,7 @@ set(SOURCES
         src/Shader.cpp
 
         src/mesh/Mesh.cpp
+        src/mesh/meshes.cpp
         src/mesh/Vertex.cpp
 
         # Other Sources
