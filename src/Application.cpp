@@ -9,10 +9,14 @@
 #include "Image.hpp"
 #include "maths/transformations.hpp"
 #include "mesh/Mesh.hpp"
+#include "mesh/meshes.hpp"
 
 Application::Application()
     : window(nullptr), width(800), height(600),
-      wireframe(false) {
+      wireframe(false),
+      shader(nullptr),
+      view(translate(0.0f, 0.0f, -3.0f)),
+      projection(perspective(M_PI_4f, 800.0f / 600.0f, 0.1f, 100.0f)) {
 
     /**** GLFW ****/
     if(!glfwInit()) {
@@ -45,37 +49,42 @@ Application::Application()
 
     /**** OpenGL ****/
     glViewport(0, 0, width, height);
+    glEnable(GL_DEPTH_TEST);
+    glActiveTexture(GL_TEXTURE0);
 
-    /**** Other ****/
-//    keys.fill(false);
+    /**** Shaders & Uniforms ****/
+    shader = new Shader("data/shaders/default.vert", "data/shaders/default.frag");
+    shader->use();
+
+    shader->setUniform("u_texture0", 0);
+
+    setModel(Matrix4(1.0f));
+    shader->setUniform("u_view", view);
+    shader->setUniform("u_projection", projection);
 }
 
 Application::~Application() {
+    delete shader;
+
     glfwDestroyWindow(window);
     glfwTerminate();
 }
 
 void Application::run() {
-    Shader shader("data/shaders/default.vert", "data/shaders/default.frag");
+    Mesh mesh = Meshes::cube();
 
-    Mesh mesh(GL_TRIANGLES);
-    mesh.addVertex(Point(-0.5f, 0.5f, 0.0f),
-                   Vector(1.0f, 0.0f, 0.0f),
-                   TexCoord(0.0f, 1.0f));
-
-    mesh.addVertex(Point(0.5f, 0.5f, 0.0f),
-                   Vector(0.0f, 1.0f, 0.0f),
-                   TexCoord(1.0f, 1.0f));
-
-    mesh.addVertex(Point(0.5f, -0.5f, 0.0f),
-                   Vector(0.0f, 0.0f, 1.0f),
-                   TexCoord(1.0f, 0.0f));
-
-    mesh.addVertex(Point(-0.5f, -0.5f, 0.0f),
-                   Vector(1.0f, 0.0f, 1.0f),
-                   TexCoord(0.0f, 0.0f));
-
-    mesh.addFace(0, 1, 2, 3);
+    Point cubePositions[] {
+        { 0.0f,  0.0f,  0.0f},
+        { 2.0f,  5.0f, -15.0f},
+        {-1.5f, -2.2f, -2.5f},
+        {-3.8f, -2.0f, -12.3f},
+        { 2.4f, -0.4f, -3.5f},
+        {-1.7f,  3.0f, -7.5f},
+        { 1.3f, -2.0f, -2.5f},
+        { 1.5f,  2.0f, -2.5f},
+        { 1.5f,  0.2f, -1.5f},
+        {-1.3f,  1.0f, -1.5f}
+    };
 
     /**** Texture ****/
     Image im("data/textures/container.jpg");
@@ -90,18 +99,18 @@ void Application::run() {
     while(!glfwWindowShouldClose(window)) {
         handleEvents();
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        seconds = glfwGetTime();
-
-        shader.use();
-        shader.setUniform("u_transform", Matrix4(1.0f));
-        shader.setUniform("u_texture0", 0);
-        glActiveTexture(GL_TEXTURE0);
+        shader->use();
+        Point eye = 10.0f * Point(glm::cos(glfwGetTime()), 0.5f, glm::sin(glfwGetTime()));
+        shader->setUniform("u_view", lookAt(eye, Point(), Vector(0.0f, 1.0f, 0.0f)));
 
         glBindTexture(GL_TEXTURE_2D, textureID);
 
-        mesh.draw();
+        for(const vec3& v : cubePositions) {
+            setModel(translate(v));
+            mesh.draw();
+        }
 
         glfwSwapBuffers(window);
     }
@@ -132,8 +141,14 @@ void Application::handleKeyEvent(int key, int action, int /* mods */) {
 void Application::setWindowSize(int width, int height) {
     this->width = width;
     this->height = height;
+
+    projection = perspective(M_PI_4f, static_cast<float>(width) / height, 0.1f, 100.0f);
 }
 
 void Application::handleEvents() {
     glfwPollEvents();
+}
+
+void Application::setModel(const Matrix4& model) {
+    shader->setUniform("u_model", model);
 }

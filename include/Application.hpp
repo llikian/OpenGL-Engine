@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "Shader.hpp"
+#include "maths/Matrix4.hpp"
 
 /**
  * @class Application
@@ -69,6 +70,13 @@ private:
      */
     void handleEvents();
 
+    /**
+     * @brief Passes a new value of the model matrix to the shader.
+     * @param model The new value of the model matrix. It is a product of translation, scale
+     * and rotation matrices used to apply transformations on the scene's objects.
+     */
+    void setModel(const Matrix4& model);
+
     /**** Variables & Constants ****/
     GLFWwindow* window;  ///< GLFW window.
     unsigned int width;  ///< The width of the window in pixels.
@@ -76,5 +84,9 @@ private:
 
     bool wireframe; ///< Whether the display mode is in wireframe.
 
-    double seconds; ///< Time ellapsed since glfw was initialized.
+    Shader* shader; ///< The default shader program.
+
+    Matrix4 view;       ///< Allows to simulate the camera's position and orientation.
+    Matrix4 projection; ///< Allows to simulate the perspective distortion that occurs when viewing
+                        ///< a 3D scene from a specific viewpoint.
 };
