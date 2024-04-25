@@ -1,6 +1,9 @@
 # OpenGL Engine
 ## Project Description
-This project is a 
+This project is an implementation of a graphics engine using OpenGL with the GLAD implementation.
+It uses GLFW for window and event handling and GLM for maths utilities.
+
+This project is a way to learn OpenGL, I am following [Joey de Vries's tutorial](https://learnopengl.com/).
 
 ## Setup
 ### Dependencies
@@ -33,8 +36,10 @@ bin/OpenGL-Engine
 ```
 
 ## Credits
-OpenGL
-GLAD
-GLFW
-GLM
-stb_image
+Graphics are handled with [OpenGL](https://www.opengl.org/), using the [GLAD](https://github.com/Dav1dde/glad) implementation.
+
+Window management and event handling are done with [GLFW](https://www.glfw.org/).
+
+Maths functionalities like matrices and vectors are handled with [GLM](https://github.com/g-truc/glm).
+
+Image loading is done with [stb_image](https://github.com/nothings/stb).
