@@ -71,31 +71,34 @@ void Mesh::addFace(unsigned int topL, unsigned int topR,
 }
 
 void Mesh::bindBuffers() {
+    constexpr unsigned int stride = sizeof(Vertex);
+    void* offset;
+
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size(), vertices.data(), GL_STATIC_DRAW);
-
-    void* offset;
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * stride, vertices.data(), GL_STATIC_DRAW);
 
     // Positions
     offset = reinterpret_cast<int*>(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, false, 8 * sizeof(float), offset);
+    glVertexAttribPointer(0, 3, GL_FLOAT, false, stride, offset);
     glEnableVertexAttribArray(0);
 
     // Normals
-    offset = reinterpret_cast<int*>(3);
-    glVertexAttribPointer(1, 3, GL_FLOAT, false, 8 * sizeof(float), offset);
+    offset = reinterpret_cast<int*>(sizeof(float) * 3);
+    glVertexAttribPointer(1, 3, GL_FLOAT, false, stride, offset);
     glEnableVertexAttribArray(1);
 
     // Texture Coordinates
-    offset = reinterpret_cast<int*>(6);
-    glVertexAttribPointer(2, 2, GL_FLOAT, false, 8 * sizeof(float), offset);
+    offset = reinterpret_cast<int*>(sizeof(float) * 6);
+    glVertexAttribPointer(2, 2, GL_FLOAT, false, stride, offset);
     glEnableVertexAttribArray(2);
 
     if(!indices.empty()) {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size(), indices.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                     indices.size() * sizeof(unsigned int),
+                     indices.data(), GL_STATIC_DRAW);
     }
 
     glBindVertexArray(0);
