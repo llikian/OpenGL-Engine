@@ -5,11 +5,10 @@
 
 #include "Application.hpp"
 
-#include <cmath>
-
 #include "callbacks.hpp"
 #include "Image.hpp"
 #include "maths/transformations.hpp"
+#include "mesh/Mesh.hpp"
 
 Application::Application()
     : window(nullptr), width(800), height(600),
@@ -57,50 +56,26 @@ Application::~Application() {
 }
 
 void Application::run() {
-    float vertices[] = {
-        // Positions         // Colors            // Texture Coordinates
-        0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,   // Bottom Right
-        -0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,   // Bottom Left
-        -0.5f, 0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,   // Top Left
-        0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f    // Top Right
-    };
-
-    unsigned int indices[]{
-        0, 1, 2,
-        2, 3, 0
-    };
-
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
     Shader shader("data/shaders/default.vert", "data/shaders/default.frag");
 
-    /**** EBO (Element Buffer Objects) ****/
-    unsigned int EBO;
-    glGenBuffers(1, &EBO);
+    Mesh mesh(GL_TRIANGLES);
+    mesh.addVertex(Point(-0.5f, 0.5f, 0.0f),
+                   Vector(1.0f, 0.0f, 0.0f),
+                   TexCoord(0.0f, 1.0f));
 
-    /**** VAO (Vertex Array Object) ****/
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    mesh.addVertex(Point(0.5f, 0.5f, 0.0f),
+                   Vector(0.0f, 1.0f, 0.0f),
+                   TexCoord(1.0f, 1.0f));
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    mesh.addVertex(Point(0.5f, -0.5f, 0.0f),
+                   Vector(0.0f, 0.0f, 1.0f),
+                   TexCoord(1.0f, 0.0f));
 
-    int size = sizeof(float);
-    // Position
-    glVertexAttribPointer(0, 3, GL_FLOAT, false, 8 * size, reinterpret_cast<void*>(0));
-    glEnableVertexAttribArray(0);
-    // Color
-    glVertexAttribPointer(1, 3, GL_FLOAT, false, 8 * size, reinterpret_cast<void*>(size * 3));
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(2, 2, GL_FLOAT, false, 8 * size, reinterpret_cast<void*>(size * 6));
-    glEnableVertexAttribArray(2);
+    mesh.addVertex(Point(-0.5f, -0.5f, 0.0f),
+                   Vector(1.0f, 0.0f, 1.0f),
+                   TexCoord(0.0f, 0.0f));
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    mesh.addFace(0, 1, 2, 3);
 
     /**** Texture ****/
     Image im("data/textures/container.jpg");
@@ -111,7 +86,6 @@ void Application::run() {
                  0, GL_RGB, GL_UNSIGNED_BYTE, im.getData());
     glGenerateMipmap(GL_TEXTURE_2D);
 
-
     /**** Main Loop ****/
     while(!glfwWindowShouldClose(window)) {
         handleEvents();
@@ -121,15 +95,13 @@ void Application::run() {
         seconds = glfwGetTime();
 
         shader.use();
-        shader.setUniform("u_transform",
-                          rotate(identity(), static_cast<float>(seconds), vec3(0.0f, 1.0f, 0.0f)));
+        shader.setUniform("u_transform", Matrix4(1.0f));
         shader.setUniform("u_texture0", 0);
         glActiveTexture(GL_TEXTURE0);
 
         glBindTexture(GL_TEXTURE_2D, textureID);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, nullptr);
+        mesh.draw();
 
         glfwSwapBuffers(window);
     }
