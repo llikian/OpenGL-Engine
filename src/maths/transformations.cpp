@@ -23,6 +23,33 @@ Matrix4 scale(float x, float y, float z) {
     );
 }
 
+Matrix4 scaleX(float scalar) {
+    return Matrix4(
+        scalar, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    );
+}
+
+Matrix4 scaleY(float scalar) {
+    return Matrix4(
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, scalar, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    );
+}
+
+Matrix4 scaleZ(float scalar) {
+    return Matrix4(
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, scalar, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    );
+}
+
 Matrix4 translate(const Vector& vector) {
     return Matrix4(
         1.0f, 0.0f, 0.0f, vector.x,
@@ -37,6 +64,33 @@ Matrix4 translate(float x, float y, float z) {
         1.0f, 0.0f, 0.0f, x,
         0.0f, 1.0f, 0.0f, y,
         0.0f, 0.0f, 1.0f, z,
+        0.0f, 0.0f, 0.0f, 1.0f
+    );
+}
+
+Matrix4 translateX(float scalar) {
+    return Matrix4(
+        1.0f, 0.0f, 0.0f, scalar,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    );
+}
+
+Matrix4 translateY(float scalar) {
+    return Matrix4(
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, scalar,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    );
+}
+
+Matrix4 translateZ(float scalar) {
+    return Matrix4(
+        1.0f, 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, scalar,
         0.0f, 0.0f, 0.0f, 1.0f
     );
 }
