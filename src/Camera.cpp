@@ -5,8 +5,6 @@
 
 #include "Camera.hpp"
 
-#include <limits>
-
 Camera::Camera(const Point& position)
     : position(position),
       front(0.0f, 0.0f, -1.0f),
@@ -29,10 +27,10 @@ void Camera::move(CameraControls direction, float deltaTime) {
             position -= front * speed;
             break;
         case CameraControls::left:
-            position -= normalize(glm::cross(front, up)) * speed;
+            position -= normalize(cross(front, up)) * speed;
             break;
         case CameraControls::right:
-            position += normalize(glm::cross(front, up)) * speed;
+            position += normalize(cross(front, up)) * speed;
             break;
         case CameraControls::upward:
             position += up * speed;
