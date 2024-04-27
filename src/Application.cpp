@@ -133,16 +133,10 @@ void Application::setWindowSize(int width, int height) {
 }
 
 void Application::handleKeyCallback(int key, int action, int /* mods */) {
-    switch(key) {
-        case GLFW_KEY_W:
-            if(action == GLFW_REPEAT) {
-                keys[key] = false;
-            }
-
-            break;
-        default:
-            keys[key] = action != GLFW_RELEASE;
-            break;
+    if(action == GLFW_PRESS) {
+        keys[key] = true;
+    } else if(action == GLFW_RELEASE) {
+        keys[key] = false;
     }
 }
 
@@ -159,38 +153,38 @@ void Application::handleEvents() {
 }
 
 void Application::handleKeyboardEvents() {
-    if(keys[GLFW_KEY_ESCAPE]) {
-        glfwSetWindowShouldClose(window, true);
-    }
+    for(const std::pair<int, bool> key: keys) {
+        if(key.second) {
+            switch(key.first) {
+                case GLFW_KEY_ESCAPE:
+                    glfwSetWindowShouldClose(window, true);
+                    break;
+                case GLFW_KEY_Z:
+                    glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
+                    wireframe = !wireframe;
+                    keys[GLFW_KEY_Z] = false;
 
-    if(keys[GLFW_KEY_Z]) {
-        glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
-        wireframe = !wireframe;
-        keys[GLFW_KEY_Z] = false;
-    }
-
-    if(keys[GLFW_KEY_W]) {
-        camera.move(CameraControls::forward, delta);
-    }
-
-    if(keys[GLFW_KEY_S]) {
-        camera.move(CameraControls::backward, delta);
-    }
-
-    if(keys[GLFW_KEY_A]) {
-        camera.move(CameraControls::left, delta);
-    }
-
-    if(keys[GLFW_KEY_D]) {
-        camera.move(CameraControls::right, delta);
-    }
-
-    if(keys[GLFW_KEY_SPACE]) {
-        camera.move(CameraControls::upward, delta);
-    }
-
-    if(keys[GLFW_KEY_LEFT_SHIFT]) {
-        camera.move(CameraControls::downward, delta);
+                    break;
+                case GLFW_KEY_W:
+                    camera.move(CameraControls::forward, delta);
+                    break;
+                case GLFW_KEY_S:
+                    camera.move(CameraControls::backward, delta);
+                    break;
+                case GLFW_KEY_A:
+                    camera.move(CameraControls::left, delta);
+                    break;
+                case GLFW_KEY_D:
+                    camera.move(CameraControls::right, delta);
+                    break;
+                case GLFW_KEY_SPACE:
+                    camera.move(CameraControls::upward, delta);
+                    break;
+                case GLFW_KEY_LEFT_SHIFT:
+                    camera.move(CameraControls::downward, delta);
+                    break;
+            }
+        }
     }
 }
 
