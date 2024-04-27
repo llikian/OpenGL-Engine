@@ -167,13 +167,13 @@ Matrix4 rotateZ(float angle) {
 }
 
 Matrix4 lookAt(const Point& eye, const Point& center, const Vector& up) {
-    vec3 front = normalize(center - eye);
-    vec3 side = normalize(cross(front, up));
-    vec3 Up = normalize(cross(side, front));
+    const Vector FRONT = normalize(center - eye);
+    const Vector SIDE = normalize(cross(FRONT, up));
+    const Vector UP = normalize(cross(SIDE, FRONT));
 
-    return Matrix4{side.x, side.y, side.z, -dot(side, eye),
-                   Up.x, Up.y, Up.z, -dot(Up, eye),
-                   -front.x, -front.y, -front.z, dot(front, eye),
+    return Matrix4{SIDE.x, SIDE.y, SIDE.z, -dot(SIDE, eye),
+                   UP.x, UP.y, UP.z, -dot(UP, eye),
+                   -FRONT.x, -FRONT.y, -FRONT.z, dot(FRONT, eye),
                    0.0f, 0.0f, 0.0f, 1.0f};
 }
 
