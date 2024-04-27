@@ -11,6 +11,7 @@
 #include <stdexcept>
 #include <vector>
 
+#include "Camera.hpp"
 #include "Shader.hpp"
 #include "maths/Matrix4.hpp"
 
@@ -47,20 +48,11 @@ public:
     void setWindowSize(int width, int height);
 
     /**
-     * @brief Handles the event in which a key is pressed, released or held down.
-     * @param key The affected key. This is a platform-independent key code using GLFW_KEY_*.
-     * @param action The action performed. Can be one of three things:\n
-     * - GLFW_PRESS: The key was pressed.\n
-     * - GLFW_RELEASE: The key was released.\n
-     * - GLFW_REPEAT: The key was held down and is being repeatedly sent.
-     * @param mods Bit field representing the modifier keys that were held down when the event occured.
-     * It is a bitwise combination of the following flags:\n
-     * - GLFW_MOD_SHIFT\n
-     * - GLFW_MOD_CONTROL\n
-     * - GLFW_MOD_ALT\n
-     * - GLFW_MOD_SUPER\n
+     * @brief Handles the event where the cursor is moved.
+     * @param xPos The new x position of the cursor.
+     * @param yPos The new y position of the cursor.
      */
-    void handleKeyEvent(int key, int action, int mods);
+    void handleCursorPositionEvent(float xPos, float yPos);
 
 private:
     /**** Private Methods ****/
@@ -69,6 +61,11 @@ private:
      * @brief Polls and handles events with glfw.
      */
     void handleEvents();
+
+    /**
+     * @brief Handles keyboard events.
+     */
+    void handleKeyboardEvents();
 
     /**
      * @brief Passes a new value of the model matrix to the shader.
@@ -82,6 +79,11 @@ private:
     unsigned int width;  ///< The width of the window in pixels.
     unsigned int height; ///< The height of the window in pixels.
 
+    vec2 mousePos; ///< The position of the mouse on the screen.
+
+    float time;  ///< The current time in seconds;
+    float delta; ///< The time difference between this frame and the previous in seconds.
+
     bool wireframe; ///< Whether the display mode is in wireframe.
 
     Shader* shader; ///< The default shader program.
@@ -89,4 +91,6 @@ private:
     Matrix4 view;       ///< Allows to simulate the camera's position and orientation.
     Matrix4 projection; ///< Allows to simulate the perspective distortion that occurs when viewing
                         ///< a 3D scene from a specific viewpoint.
+
+    Camera camera; ///< A first camera to move around the scene.
 };

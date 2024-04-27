@@ -13,10 +13,12 @@
 
 Application::Application()
     : window(nullptr), width(800), height(600),
+      time(0), delta(0),
       wireframe(false),
       shader(nullptr),
       view(translate(0.0f, 0.0f, -3.0f)),
-      projection(perspective(M_PI_4f, 800.0f / 600.0f, 0.1f, 100.0f)) {
+      projection(perspective(M_PI_4f, 800.0f / 600.0f, 0.1f, 100.0f)),
+      camera(Point(0.0f, 0.0f, -3.0f)) {
 
     /**** GLFW ****/
     if(!glfwInit()) {
@@ -33,11 +35,11 @@ Application::Application()
     }
 
     glfwMakeContextCurrent(window);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     /**** GLFW Callbacks ****/
     glfwSetWindowSizeCallback(window, windowSizeCallback);
     glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
-    glfwSetKeyCallback(window, keyCallback);
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
     glfwSetCursorPosCallback(window, cursorPositionCallback);
     glfwSetScrollCallback(window, scrollCallback);
@@ -73,17 +75,17 @@ Application::~Application() {
 void Application::run() {
     Mesh mesh = Meshes::cube();
 
-    Point cubePositions[] {
-        { 0.0f,  0.0f,  0.0f},
-        { 2.0f,  5.0f, -15.0f},
+    Point cubePositions[]{
+        {0.0f,  0.0f,  0.0f},
+        {2.0f,  5.0f,  -15.0f},
         {-1.5f, -2.2f, -2.5f},
         {-3.8f, -2.0f, -12.3f},
-        { 2.4f, -0.4f, -3.5f},
-        {-1.7f,  3.0f, -7.5f},
-        { 1.3f, -2.0f, -2.5f},
-        { 1.5f,  2.0f, -2.5f},
-        { 1.5f,  0.2f, -1.5f},
-        {-1.3f,  1.0f, -1.5f}
+        {2.4f,  -0.4f, -3.5f},
+        {-1.7f, 3.0f,  -7.5f},
+        {1.3f,  -2.0f, -2.5f},
+        {1.5f,  2.0f,  -2.5f},
+        {1.5f,  0.2f,  -1.5f},
+        {-1.3f, 1.0f,  -1.5f}
     };
 
     /**** Texture ****/
@@ -98,43 +100,24 @@ void Application::run() {
     /**** Main Loop ****/
     while(!glfwWindowShouldClose(window)) {
         handleEvents();
+
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        delta = glfwGetTime() - time;
+        time = glfwGetTime();
+
         shader->use();
-        Point eye = 10.0f * Point(glm::cos(glfwGetTime()), 0.5f, glm::sin(glfwGetTime()));
-        shader->setUniform("u_view", lookAt(eye, Point(), Vector(0.0f, 1.0f, 0.0f)));
+        shader->setUniform("u_view", camera.getLookAt());
 
         glBindTexture(GL_TEXTURE_2D, textureID);
 
-        for(const vec3& v : cubePositions) {
+        for(const vec3& v: cubePositions) {
             setModel(translate(v));
             mesh.draw();
         }
 
         glfwSwapBuffers(window);
-    }
-}
-
-void Application::handleKeyEvent(int key, int action, int /* mods */) {
-    switch(action) {
-        case GLFW_PRESS:
-            switch(key) {
-                case GLFW_KEY_ESCAPE:
-                    glfwSetWindowShouldClose(window, true);
-                    break;
-                case GLFW_KEY_W:
-                    glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
-                    wireframe = !wireframe;
-                    break;
-                default:
-                    break;
-            }
-            break;
-        case GLFW_RELEASE:
-            break;
-        case GLFW_REPEAT:
-            break;
     }
 }
 
@@ -145,8 +128,51 @@ void Application::setWindowSize(int width, int height) {
     projection = perspective(M_PI_4f, static_cast<float>(width) / height, 0.1f, 100.0f);
 }
 
+void Application::handleCursorPositionEvent(float xPos, float yPos) {
+    camera.look(vec2(xPos - mousePos.x, yPos - mousePos.y));
+
+    mousePos.x = xPos;
+    mousePos.y = yPos;
+}
+
 void Application::handleEvents() {
     glfwPollEvents();
+    handleKeyboardEvents();
+}
+
+void Application::handleKeyboardEvents() {
+    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, true);
+    }
+    
+    if(glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
+        glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
+        wireframe = !wireframe;
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        camera.move(CameraControls::forward, delta);
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        camera.move(CameraControls::backward, delta);
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        camera.move(CameraControls::left, delta);
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        camera.move(CameraControls::right, delta);
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        camera.move(CameraControls::upward, delta);
+    }
+
+    if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+        camera.move(CameraControls::downward, delta);
+    }
 }
 
 void Application::setModel(const Matrix4& model) {
