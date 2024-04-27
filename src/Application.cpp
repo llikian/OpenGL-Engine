@@ -37,9 +37,13 @@ Application::Application()
     glfwMakeContextCurrent(window);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+    mousePos.x = width / 2.0f;
+    mousePos.y = height / 2.0f;
+
     /**** GLFW Callbacks ****/
     glfwSetWindowSizeCallback(window, windowSizeCallback);
     glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
+    glfwSetKeyCallback(window, keyCallback);
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
     glfwSetCursorPosCallback(window, cursorPositionCallback);
     glfwSetScrollCallback(window, scrollCallback);
@@ -128,6 +132,20 @@ void Application::setWindowSize(int width, int height) {
     projection = perspective(M_PI_4f, static_cast<float>(width) / height, 0.1f, 100.0f);
 }
 
+void Application::handleKeyCallback(int key, int action, int /* mods */) {
+    switch(key) {
+        case GLFW_KEY_W:
+            if(action == GLFW_REPEAT) {
+                keys[key] = false;
+            }
+
+            break;
+        default:
+            keys[key] = action != GLFW_RELEASE;
+            break;
+    }
+}
+
 void Application::handleCursorPositionEvent(float xPos, float yPos) {
     camera.look(vec2(xPos - mousePos.x, yPos - mousePos.y));
 
@@ -141,36 +159,37 @@ void Application::handleEvents() {
 }
 
 void Application::handleKeyboardEvents() {
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    if(keys[GLFW_KEY_ESCAPE]) {
         glfwSetWindowShouldClose(window, true);
     }
-    
-    if(glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
+
+    if(keys[GLFW_KEY_Z]) {
         glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
         wireframe = !wireframe;
+        keys[GLFW_KEY_Z] = false;
     }
 
-    if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+    if(keys[GLFW_KEY_W]) {
         camera.move(CameraControls::forward, delta);
     }
 
-    if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+    if(keys[GLFW_KEY_S]) {
         camera.move(CameraControls::backward, delta);
     }
 
-    if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+    if(keys[GLFW_KEY_A]) {
         camera.move(CameraControls::left, delta);
     }
 
-    if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+    if(keys[GLFW_KEY_D]) {
         camera.move(CameraControls::right, delta);
     }
 
-    if(glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+    if(keys[GLFW_KEY_SPACE]) {
         camera.move(CameraControls::upward, delta);
     }
 
-    if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+    if(keys[GLFW_KEY_LEFT_SHIFT]) {
         camera.move(CameraControls::downward, delta);
     }
 }

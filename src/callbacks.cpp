@@ -13,6 +13,10 @@ void frameBufferSizeCallback(GLFWwindow* /* window */, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
+void keyCallback(GLFWwindow* /* window */, int key, int /* scancode */, int action, int mods) {
+    app.handleKeyCallback(key, action, mods);
+}
+
 void mouseButtonCallback(GLFWwindow* /* window */, int button, int action, int mods) {
 
 }

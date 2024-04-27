@@ -9,6 +9,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <stdexcept>
+#include <unordered_map>
 #include <vector>
 
 #include "Camera.hpp"
@@ -48,6 +49,14 @@ public:
     void setWindowSize(int width, int height);
 
     /**
+     * @brief Handles what happens when a key is pressed.
+     * @param key
+     * @param action
+     * @param mods
+     */
+    void handleKeyCallback(int key, int action, int mods);
+
+    /**
      * @brief Handles the event where the cursor is moved.
      * @param xPos The new x position of the cursor.
      * @param yPos The new y position of the cursor.
@@ -78,6 +87,8 @@ private:
     GLFWwindow* window;  ///< GLFW window.
     unsigned int width;  ///< The width of the window in pixels.
     unsigned int height; ///< The height of the window in pixels.
+
+    std::unordered_map<int, bool> keys; ///< Map of the current state of keys.
 
     vec2 mousePos; ///< The position of the mouse on the screen.
 
