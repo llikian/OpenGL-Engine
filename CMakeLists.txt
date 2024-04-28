@@ -34,7 +34,9 @@ set(SOURCES
 
         # Other Sources
         src/callbacks.cpp
+        src/maths/geometry.cpp
         src/maths/transformations.cpp
+        src/maths/trigonometry.cpp
         src/mesh/meshes.cpp
 
         # Libraries
