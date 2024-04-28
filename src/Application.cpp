@@ -5,6 +5,7 @@
 
 #include "Application.hpp"
 
+#include <cmath>
 #include "callbacks.hpp"
 #include "Image.hpp"
 #include "maths/transformations.hpp"
@@ -118,7 +119,7 @@ void Application::setWindowSize(int width, int height) {
     this->width = width;
     this->height = height;
 
-    projection[0][0] = 1.0f / (static_cast<float>(width) / height * glm::tan(M_PI_4f / 2.0f));
+    projection[0][0] = 1.0f / (static_cast<float>(width) / height * tanf(M_PI_4f / 2.0f));
 }
 
 void Application::handleKeyCallback(int key, int action, int /* mods */) {
