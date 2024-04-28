@@ -95,8 +95,8 @@ private:
     float time;  ///< The current time in seconds;
     float delta; ///< The time difference between this frame and the previous in seconds.
 
-    bool wireframe;    ///< Whether the display mode is in wireframe.
-    bool mouseVisible; ///< Whether the mouse is currently visible.
+    bool wireframe;     ///< Whether the display mode is in wireframe.
+    bool cursorVisible; ///< Whether the cursor is currently visible.
 
     Shader* shader; ///< The default shader program.
 

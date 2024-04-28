@@ -14,7 +14,7 @@
 Application::Application()
     : window(nullptr), width(1600), height(900),
       time(0), delta(0),
-      wireframe(false), mouseVisible(false),
+      wireframe(false), cursorVisible(false),
       shader(nullptr),
       projection(perspective(M_PI_4f, static_cast<float>(width) / height, 0.1f, 100.0f)),
       camera(Point(0.0f, 3.0f, -3.0f)) {
@@ -58,6 +58,11 @@ Application::Application()
     glEnable(GL_CULL_FACE);
     glActiveTexture(GL_TEXTURE0);
 
+    // Sets the default texture to a plain white color
+    const unsigned char white[3] {255, 255, 255};
+    glBindTexture(1, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, white);
+
     /**** Shaders & Uniforms ****/
     shader = new Shader("data/shaders/default.vert", "data/shaders/default.frag");
     shader->use();
@@ -78,10 +83,6 @@ void Application::run() {
     Mesh cube = Meshes::cube();
 
     /**** Texture ****/
-    const unsigned char white[3] {255, 255, 255};
-    glBindTexture(1, 0);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, white);
-
     Image im("data/textures/container.jpg");
     unsigned int textureID;
     glGenTextures(1, &textureID);
@@ -129,7 +130,7 @@ void Application::handleKeyCallback(int key, int action, int /* mods */) {
 }
 
 void Application::handleCursorPositionEvent(float xPos, float yPos) {
-    if(!mouseVisible) {
+    if(!cursorVisible) {
         camera.look(vec2(xPos - mousePos.x, yPos - mousePos.y));
     }
 
@@ -157,8 +158,8 @@ void Application::handleKeyboardEvents() {
                     break;
                 case GLFW_KEY_F5:
                     glfwSetInputMode(window, GLFW_CURSOR,
-                                     mouseVisible ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
-                    mouseVisible = !mouseVisible;
+                                     cursorVisible ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+                    cursorVisible = !cursorVisible;
                     keys[key.first] = false;
 
                     break;
