@@ -29,10 +29,10 @@ Matrix4::Matrix4(float v00, float v01, float v02,
              {0.0f, 0.0f, 0.0f, 1.0f}} { }
 
 Matrix4::Matrix4(float scalar)
-    : values{{scalar, 0.0f, 0.0f, 0.0f},
-             {0.0f, scalar, 0.0f, 0.0f},
-             {0.0f, 0.0f, scalar, 0.0f},
-             {0.0f, 0.0f, 0.0f, scalar}} { }
+    : values{{scalar, 0.0f,   0.0f,   0.0f},
+             {0.0f,   scalar, 0.0f,   0.0f},
+             {0.0f,   0.0f,   scalar, 0.0f},
+             {0.0f,   0.0f,   0.0f,   scalar}} { }
 
 float* Matrix4::operator [](int row) {
     return values[row];
@@ -48,7 +48,7 @@ Matrix4& Matrix4::operator +=(const Matrix4& mat) {
             values[i][j] += mat[i][j];
         }
     }
-    
+
     return *this;
 }
 
@@ -131,7 +131,7 @@ std::ostream& operator <<(std::ostream& stream, const Matrix4& mat) {
         }
 
         stream << mat[i][3] << " )\n";
-    } 
+    }
     return stream;
 }
 
@@ -164,19 +164,10 @@ Matrix4 operator *(const Matrix4& left, const Matrix4& right) {
 
     for(int i = 0 ; i < 4 ; ++i) {
         for(int j = 0 ; j < 4 ; ++j) {
-            result[i][j] = left[i][j] * right[i][j];
-        }
-    }
-
-    return result;
-}
-
-Matrix4 operator /(const Matrix4& left, const Matrix4& right) {
-    Matrix4 result;
-
-    for(int i = 0 ; i < 4 ; ++i) {
-        for(int j = 0 ; j < 4 ; ++j) {
-            result[i][j] = left[i][j] / right[i][j];
+            result[i][j] += left[i][0] * right[0][j];
+            result[i][j] += left[i][1] * right[1][j];
+            result[i][j] += left[i][2] * right[2][j];
+            result[i][j] += left[i][3] * right[3][j];
         }
     }
 
