@@ -96,6 +96,7 @@ Matrix4 translateZ(float scalar) {
 }
 
 Matrix4 rotate(float angle, const Vector& axis) {
+    angle = glm::radians(angle);
 
     float cosine = cosf(angle);
     float sine = sinf(angle);
@@ -131,6 +132,8 @@ Matrix4 rotate(float angle, const Vector& axis) {
 }
 
 Matrix4 rotateX(float angle) {
+    angle = glm::radians(angle);
+
     const float cosine = glm::cos(angle);
     const float sine = glm::sin(angle);
 
@@ -143,6 +146,8 @@ Matrix4 rotateX(float angle) {
 }
 
 Matrix4 rotateY(float angle) {
+    angle = glm::radians(angle);
+
     const float cosine = glm::cos(angle);
     const float sine = glm::sin(angle);
 
@@ -155,6 +160,8 @@ Matrix4 rotateY(float angle) {
 }
 
 Matrix4 rotateZ(float angle) {
+    angle = glm::radians(angle);
+
     const float cosine = glm::cos(angle);
     const float sine = glm::sin(angle);
 
@@ -171,15 +178,19 @@ Matrix4 lookAt(const Point& eye, const Point& center, const Vector& up) {
     const Vector SIDE = normalize(cross(FRONT, up));
     const Vector UP = normalize(cross(SIDE, FRONT));
 
-    return Matrix4{SIDE.x, SIDE.y, SIDE.z, -dot(SIDE, eye),
-                   UP.x, UP.y, UP.z, -dot(UP, eye),
-                   -FRONT.x, -FRONT.y, -FRONT.z, dot(FRONT, eye),
-                   0.0f, 0.0f, 0.0f, 1.0f};
+    return Matrix4(
+        SIDE.x, SIDE.y, SIDE.z, -dot(SIDE, eye),
+        UP.x, UP.y, UP.z, -dot(UP, eye),
+        -FRONT.x, -FRONT.y, -FRONT.z, dot(FRONT, eye),
+        0.0f, 0.0f, 0.0f, 1.0f
+    );
 }
 
 Matrix4 perspective(float fov, float aspect, float near, float far) {
-    return Matrix4{1.0f / (aspect * glm::tan(0.5f * fov)), 0.0f, 0.0f, 0.0f,
-                   0.0f, 1.0f / glm::tan(0.5f * fov), 0.0f, 0.0f,
-                   0.0f, 0.0f, -(far + near) / (far - near), -(2.0f * far * near) / (far - near),
-                   0.0f, 0.0f, -1.0f, 0.0f};
+    return Matrix4(
+        1.0f / (aspect * glm::tan(0.5f * fov)), 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f / glm::tan(0.5f * fov), 0.0f, 0.0f,
+        0.0f, 0.0f, -(far + near) / (far - near), -(2.0f * far * near) / (far - near),
+        0.0f, 0.0f, -1.0f, 0.0f
+    );
 }

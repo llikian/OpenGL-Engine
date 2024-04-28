@@ -84,7 +84,7 @@ Matrix4 translateZ(float scalar);
 
 /**
  * @brief Calculates the rotation matrix that rotates around an axis by a certain angle.
- * @param angle The rotation angle.
+ * @param angle The rotation angle in degrees.
  * @param axis The rotation axis.
  * @return The rotation matrix.
  */
@@ -92,21 +92,21 @@ Matrix4 rotate(float angle, const Vector& axis);
 
 /**
  * @brief Calculates the rotation matrix that rotates around the X axis by a certain angle.
- * @param angle The rotation angle.
+ * @param angle The rotation angle in degrees.
  * @return The rotation matrix.
  */
 Matrix4 rotateX(float angle);
 
 /**
  * @brief Calculates the rotation matrix that rotates around the Y axis by a certain angle.
- * @param angle The rotation angle.
+ * @param angle The rotation angle in degrees.
  * @return The rotation matrix.
  */
 Matrix4 rotateY(float angle);
 
 /**
  * @brief Calculates the rotation matrix that rotates around the Z axis by a certain angle.
- * @param angle The rotation angle.
+ * @param angle The rotation angle in degrees.
  * @return The rotation matrix.
  */
 Matrix4 rotateZ(float angle);
