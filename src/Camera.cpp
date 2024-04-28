@@ -9,7 +9,7 @@ Camera::Camera(const Point& position)
     : position(position),
       front(0.0f, 0.0f, -1.0f),
       up(0.0f, 1.0f, 0.0f),
-      yaw(2.0f * M_PIf),
+      yaw(M_PI_2f),
       pitch(0.0f) { }
 
 Matrix4 Camera::getLookAt() {
