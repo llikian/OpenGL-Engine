@@ -5,7 +5,6 @@ project(OpenGL-Engine)
 # Find packages
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
-find_package(glm REQUIRED)
 
 # Compiler options
 set(CMAKE_CXX_STANDARD 23)
@@ -25,13 +24,18 @@ set(SOURCES
         src/Image.cpp
         src/Shader.cpp
 
+        src/maths/Matrix4.cpp
+        src/maths/vec2.cpp
+        src/maths/vec3.cpp
+        src/maths/vec4.cpp
+
         src/mesh/Mesh.cpp
-        src/mesh/meshes.cpp
         src/mesh/Vertex.cpp
 
         # Other Sources
         src/callbacks.cpp
         src/maths/transformations.cpp
+        src/mesh/meshes.cpp
 
         # Libraries
         lib/glad/src/glad.c
@@ -54,7 +58,6 @@ set(LIBRARIES
         Xxf86vm
         Xrandr
         Xi
-        glm::glm
 )
 
 # Add executable

@@ -1,7 +1,7 @@
 # OpenGL Engine
 ## Project Description
 This project is an implementation of a graphics engine using OpenGL with the GLAD implementation.
-It uses GLFW for window and event handling and GLM for maths utilities.
+It uses GLFW for window and event handling.
 
 This project is a way to learn OpenGL, I am following [Joey de Vries's tutorial](https://learnopengl.com/).
 
@@ -9,7 +9,7 @@ This project is a way to learn OpenGL, I am following [Joey de Vries's tutorial]
 ### Dependencies
 On a Debian system you can install the needed dependencies using:
 ```shell
-sudo apt install g++ cmake make libglfw3-dev libxxf86vm-dev libxi-dev libglm-dev -y
+sudo apt install g++ cmake make libglfw3-dev libxxf86vm-dev libxi-dev -y
 ```
 
 ### Clone Repository
@@ -39,7 +39,5 @@ bin/OpenGL-Engine
 Graphics are handled with [OpenGL](https://www.opengl.org/), using the [GLAD](https://github.com/Dav1dde/glad) implementation.
 
 Window management and event handling are done with [GLFW](https://www.glfw.org/).
-
-Maths functionalities like matrices and vectors are handled with [GLM](https://github.com/g-truc/glm).
 
 Image loading is done with [stb_image](https://github.com/nothings/stb).
