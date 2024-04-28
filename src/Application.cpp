@@ -12,13 +12,12 @@
 #include "mesh/meshes.hpp"
 
 Application::Application()
-    : window(nullptr), width(800), height(600),
+    : window(nullptr), width(1600), height(900),
       time(0), delta(0),
-      wireframe(false),
+      wireframe(false), mouseVisible(false),
       shader(nullptr),
-      view(translate(0.0f, 0.0f, -3.0f)),
-      projection(perspective(M_PI_4f, 800.0f / 600.0f, 0.1f, 100.0f)),
-      camera(Point(0.0f, 0.0f, -3.0f)) {
+      projection(perspective(M_PI_4f, static_cast<float>(width) / height, 0.1f, 100.0f)),
+      camera(Point(0.0f, 3.0f, -3.0f)) {
 
     /**** GLFW ****/
     if(!glfwInit()) {
@@ -56,17 +55,15 @@ Application::Application()
     /**** OpenGL ****/
     glViewport(0, 0, width, height);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
     glActiveTexture(GL_TEXTURE0);
 
     /**** Shaders & Uniforms ****/
     shader = new Shader("data/shaders/default.vert", "data/shaders/default.frag");
     shader->use();
 
-    shader->setUniform("u_texture0", 0);
-
-    setModel(Matrix4(1.0f));
-    shader->setUniform("u_view", view);
-    shader->setUniform("u_projection", projection);
+    shader->setUniform("texture0", 0);
+    calculateMVP(Matrix4(1.0f));
 }
 
 Application::~Application() {
@@ -77,22 +74,14 @@ Application::~Application() {
 }
 
 void Application::run() {
-    Mesh mesh = Meshes::cube();
-
-    Point cubePositions[]{
-        {0.0f,  0.0f,  0.0f},
-        {2.0f,  5.0f,  -15.0f},
-        {-1.5f, -2.2f, -2.5f},
-        {-3.8f, -2.0f, -12.3f},
-        {2.4f,  -0.4f, -3.5f},
-        {-1.7f, 3.0f,  -7.5f},
-        {1.3f,  -2.0f, -2.5f},
-        {1.5f,  2.0f,  -2.5f},
-        {1.5f,  0.2f,  -1.5f},
-        {-1.3f, 1.0f,  -1.5f}
-    };
+    Mesh grid = Meshes::grid(10.0f, 10);
+    Mesh cube = Meshes::cube();
 
     /**** Texture ****/
+    const unsigned char white[3] {255, 255, 255};
+    glBindTexture(1, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, white);
+
     Image im("data/textures/container.jpg");
     unsigned int textureID;
     glGenTextures(1, &textureID);
@@ -112,14 +101,13 @@ void Application::run() {
         time = glfwGetTime();
 
         shader->use();
-        shader->setUniform("u_view", camera.getLookAt());
+        calculateMVP(Matrix4(1.0f));
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        grid.draw();
 
         glBindTexture(GL_TEXTURE_2D, textureID);
-
-        for(const vec3& v: cubePositions) {
-            setModel(translate(v));
-            mesh.draw();
-        }
+        cube.draw();
 
         glfwSwapBuffers(window);
     }
@@ -129,7 +117,7 @@ void Application::setWindowSize(int width, int height) {
     this->width = width;
     this->height = height;
 
-    projection = perspective(M_PI_4f, static_cast<float>(width) / height, 0.1f, 100.0f);
+    projection[0][0] = 1.0f / (static_cast<float>(width) / height * glm::tan(M_PI_4f / 2.0f));
 }
 
 void Application::handleKeyCallback(int key, int action, int /* mods */) {
@@ -141,7 +129,9 @@ void Application::handleKeyCallback(int key, int action, int /* mods */) {
 }
 
 void Application::handleCursorPositionEvent(float xPos, float yPos) {
-    camera.look(vec2(xPos - mousePos.x, yPos - mousePos.y));
+    if(!mouseVisible) {
+        camera.look(vec2(xPos - mousePos.x, yPos - mousePos.y));
+    }
 
     mousePos.x = xPos;
     mousePos.y = yPos;
@@ -162,7 +152,14 @@ void Application::handleKeyboardEvents() {
                 case GLFW_KEY_Z:
                     glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
                     wireframe = !wireframe;
-                    keys[GLFW_KEY_Z] = false;
+                    keys[key.first] = false;
+
+                    break;
+                case GLFW_KEY_F5:
+                    glfwSetInputMode(window, GLFW_CURSOR,
+                                     mouseVisible ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+                    mouseVisible = !mouseVisible;
+                    keys[key.first] = false;
 
                     break;
                 case GLFW_KEY_W:
@@ -188,6 +185,6 @@ void Application::handleKeyboardEvents() {
     }
 }
 
-void Application::setModel(const Matrix4& model) {
-    shader->setUniform("u_model", model);
+void Application::calculateMVP(Matrix4 model) {
+    shader->setUniform("mvp", model * camera.getLookAt() * projection);
 }

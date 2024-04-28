@@ -77,11 +77,11 @@ private:
     void handleKeyboardEvents();
 
     /**
-     * @brief Passes a new value of the model matrix to the shader.
+     * @brief Calculates the MVP (Matrix-View-Projection) Matrix and sends it to the shader.
      * @param model The new value of the model matrix. It is a product of translation, scale
      * and rotation matrices used to apply transformations on the scene's objects.
      */
-    void setModel(const Matrix4& model);
+     void calculateMVP(Matrix4 model);
 
     /**** Variables & Constants ****/
     GLFWwindow* window;  ///< GLFW window.
@@ -95,13 +95,12 @@ private:
     float time;  ///< The current time in seconds;
     float delta; ///< The time difference between this frame and the previous in seconds.
 
-    bool wireframe; ///< Whether the display mode is in wireframe.
+    bool wireframe;    ///< Whether the display mode is in wireframe.
+    bool mouseVisible; ///< Whether the mouse is currently visible.
 
     Shader* shader; ///< The default shader program.
 
-    Matrix4 view;       ///< Allows to simulate the camera's position and orientation.
-    Matrix4 projection; ///< Allows to simulate the perspective distortion that occurs when viewing
-                        ///< a 3D scene from a specific viewpoint.
+    Matrix4 projection; ///< The projection matrix.
 
-    Camera camera; ///< A first camera to move around the scene.
+    Camera camera; ///< A first person camera to move around the scene.
 };
