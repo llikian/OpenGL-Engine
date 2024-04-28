@@ -15,10 +15,10 @@
 Application::Application()
     : window(nullptr), width(1600), height(900),
       time(0), delta(0),
-      wireframe(false), cursorVisible(false),
+      wireframe(false), cullface(true), cursorVisible(false),
       shader(nullptr),
       projection(perspective(M_PI_4f, static_cast<float>(width) / height, 0.1f, 100.0f)),
-      camera(Point(0.0f, 3.0f, -3.0f)) {
+      camera(Point(0.0f, 1.0f, -3.0f)) {
 
     /**** GLFW ****/
     if(!glfwInit()) {
@@ -60,7 +60,7 @@ Application::Application()
     glActiveTexture(GL_TEXTURE0);
 
     // Sets the default texture to a plain white color
-    const unsigned char white[3] {255, 255, 255};
+    const unsigned char white[3]{255, 255, 255};
     glBindTexture(1, 0);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, white);
 
@@ -154,6 +154,12 @@ void Application::handleKeyboardEvents() {
                 case GLFW_KEY_Z:
                     glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
                     wireframe = !wireframe;
+                    keys[key.first] = false;
+
+                    break;
+                case GLFW_KEY_C:
+                    (cullface ? glDisable : glEnable)(GL_CULL_FACE);
+                    cullface = !cullface;
                     keys[key.first] = false;
 
                     break;
