@@ -118,60 +118,76 @@ std::istream& operator >>(std::istream& stream, vec3& vec);
  *  @param right The right operand.
  *  @return The component-wise sum of the two vec3.
  */
-vec3 operator+(const vec3& left, const vec3& right);
+vec3 operator +(const vec3& left, const vec3& right);
 
 /** @brief Subtracts a vec3's components by another's.
  *  @param left The left operand.
  *  @param right The right operand.
  *  @return The component-wise subtraction of the first vec3 by the second.
  */
-vec3 operator-(const vec3& left, const vec3& right);
+vec3 operator -(const vec3& left, const vec3& right);
 
 /** @brief Multiplies a vec3's components by another's.
  *  @param left The left operand.
  *  @param right The right operand.
  *  @return The component-wise product of the two vec3.
  */
-vec3 operator*(const vec3& left, const vec3& right);
+vec3 operator *(const vec3& left, const vec3& right);
 
 /** @brief Divides a vec3's components by another's.
  *  @param left The left operand.
  *  @param right The right operand.
  *  @return The component-wise division of the first vec3 by the second.
  */
-vec3 operator/(const vec3& left, const vec3& right);
+vec3 operator /(const vec3& left, const vec3& right);
 
 /** @brief Adds a scalar to each of a vec3's components.
  *  @param vec The vec3.
  *  @param scalar The scalar.
  *  @return The component-wise sum of a vec3 by a scalar.
  */
-vec3 operator+(const vec3& vec, float scalar);
+vec3 operator +(const vec3& vec, float scalar);
 
 /** @brief Subtracts each of a vec3's components by a scalar.
  *  @param vec The vec3.
  *  @param scalar The scalar.
  *  @return The component-wise subtraction of a vec3 by a scalar.
  */
-vec3 operator-(const vec3& vec, float scalar);
+vec3 operator -(const vec3& vec, float scalar);
 
 /** @brief Multiplies each of a vec3's components by a scalar.
  *  @param vec The vec3.
  *  @param scalar The scalar.
  *  @return The component-wise product of a vec3 by a scalar.
  */
-vec3 operator*(const vec3& vec, float scalar);
+vec3 operator *(const vec3& vec, float scalar);
 
 /** @brief Multiplies each of a vec3's components by a scalar.
  *  @param scalar The scalar.
  *  @param vec The vec3.
  *  @return The component-wise product of a vec3 by a scalar.
  */
-vec3 operator*(float scalar, const vec3& vec);
+vec3 operator *(float scalar, const vec3& vec);
 
 /** @brief Divides each of a vec3's components by a scalar.
  *  @param vec The vec3.
  *  @param scalar The scalar.
  *  @return The component-wise division of a vec3 by a scalar.
  */
-vec3 operator/(const vec3& vec, float scalar);
+vec3 operator /(const vec3& vec, float scalar);
+
+/**
+ * @brief Tests whether two vec3 are equal.
+ * @param left The left operand.
+ * @param right The right operand.
+ * @return Whether the two vec3 are equal.
+ */
+bool operator ==(const vec3& left, const vec3& right);
+
+/**
+ * @brief Tests whether two vec3 are different.
+ * @param left The left operand.
+ * @param right The right operand.
+ * @return Whether the two vec3 are different.
+ */
+bool operator !=(const vec3& left, const vec3& right);

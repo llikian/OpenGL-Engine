@@ -156,3 +156,11 @@ vec3 operator /(const vec3& vec, float scalar) {
         vec.z / scalar
     );
 }
+
+bool operator ==(const vec3& left, const vec3& right) {
+    return left.x == right.x && left.y == right.y && left.z == right.z;
+}
+
+bool operator !=(const vec3& left, const vec3& right) {
+    return left.x != right.x || left.y != right.y || left.z != right.z;
+}

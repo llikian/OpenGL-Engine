@@ -173,3 +173,11 @@ vec4 operator /(const vec4& vec, float scalar) {
         vec.w / scalar
     );
 }
+
+bool operator ==(const vec4& left, const vec4& right) {
+    return left.x == right.x && left.y == right.y && left.z == right.z && left.w == right.w;
+}
+
+bool operator !=(const vec4& left, const vec4& right) {
+    return left.x != right.x || left.y != right.y || left.z != right.z || left.w != right.w;
+}

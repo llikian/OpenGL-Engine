@@ -139,3 +139,11 @@ vec2 operator /(const vec2& vec, float scalar) {
         vec.y / scalar
     );
 }
+
+bool operator ==(const vec2& left, const vec2& right) {
+    return left.x == right.x && left.y == right.y;
+}
+
+bool operator !=(const vec2& left, const vec2& right) {
+    return left.x != right.x || left.y != right.y;
+}

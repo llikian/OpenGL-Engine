@@ -114,60 +114,76 @@ std::istream& operator >>(std::istream& stream, vec2& vec);
  *  @param right The right operand.
  *  @return The component-wise sum of the two vec2.
  */
-vec2 operator+(const vec2& left, const vec2& right);
+vec2 operator +(const vec2& left, const vec2& right);
 
 /** @brief Subtracts a vec2's components by another's.
  *  @param left The left operand.
  *  @param right The right operand.
  *  @return The component-wise subtraction of the first vec2 by the second.
  */
-vec2 operator-(const vec2& left, const vec2& right);
+vec2 operator -(const vec2& left, const vec2& right);
 
 /** @brief Multiplies a vec2's components by another's.
  *  @param left The left operand.
  *  @param right The right operand.
  *  @return The component-wise product of the two vec2.
  */
-vec2 operator*(const vec2& left, const vec2& right);
+vec2 operator *(const vec2& left, const vec2& right);
 
 /** @brief Divides a vec2's components by another's.
  *  @param left The left operand.
  *  @param right The right operand.
  *  @return The component-wise division of the first vec2 by the second.
  */
-vec2 operator/(const vec2& left, const vec2& right);
+vec2 operator /(const vec2& left, const vec2& right);
 
 /** @brief Adds a scalar to each of a vec2's components.
  *  @param vec The vec2.
  *  @param scalar The scalar.
  *  @return The component-wise sum of a vec2 by a scalar.
  */
-vec2 operator+(const vec2& vec, float scalar);
+vec2 operator +(const vec2& vec, float scalar);
 
 /** @brief Subtracts each of a vec2's components by a scalar.
  *  @param vec The vec2.
  *  @param scalar The scalar.
  *  @return The component-wise subtraction of a vec2 by a scalar.
  */
-vec2 operator-(const vec2& vec, float scalar);
+vec2 operator -(const vec2& vec, float scalar);
 
 /** @brief Multiplies each of a vec2's components by a scalar.
  *  @param vec The vec2.
  *  @param scalar The scalar.
  *  @return The component-wise product of a vec2 by a scalar.
  */
-vec2 operator*(const vec2& vec, float scalar);
+vec2 operator *(const vec2& vec, float scalar);
 
 /** @brief Multiplies each of a vec2's components by a scalar.
  *  @param scalar The scalar.
  *  @param vec The vec2.
  *  @return The component-wise product of a vec2 by a scalar.
  */
-vec2 operator*(float scalar, const vec2& vec);
+vec2 operator *(float scalar, const vec2& vec);
 
 /** @brief Divides each of a vec2's components by a scalar.
  *  @param vec The vec2.
  *  @param scalar The scalar.
  *  @return The component-wise division of a vec2 by a scalar.
  */
-vec2 operator/(const vec2& vec, float scalar);
+vec2 operator /(const vec2& vec, float scalar);
+
+/**
+ * @brief Tests whether two vec2 are equal.
+ * @param left The left operand.
+ * @param right The right operand.
+ * @return Whether the two vec2 are equal.
+ */
+bool operator ==(const vec2& left, const vec2& right);
+
+/**
+ * @brief Tests whether two vec2 are different.
+ * @param left The left operand.
+ * @param right The right operand.
+ * @return Whether the two vec2 are different.
+ */
+bool operator !=(const vec2& left, const vec2& right);

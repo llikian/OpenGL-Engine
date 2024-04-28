@@ -117,60 +117,76 @@ std::istream& operator >>(std::istream& stream, vec4& vec);
  *  @param right The right operand.
  *  @return The component-wise sum of the two vec4.
  */
-vec4 operator+(const vec4& left, const vec4& right);
+vec4 operator +(const vec4& left, const vec4& right);
 
 /** @brief Subtracts a vec4's components by another's.
  *  @param left The left operand.
  *  @param right The right operand.
  *  @return The component-wise subtraction of the first vec4 by the second.
  */
-vec4 operator-(const vec4& left, const vec4& right);
+vec4 operator -(const vec4& left, const vec4& right);
 
 /** @brief Multiplies a vec4's components by another's.
  *  @param left The left operand.
  *  @param right The right operand.
  *  @return The component-wise product of the two vec4.
  */
-vec4 operator*(const vec4& left, const vec4& right);
+vec4 operator *(const vec4& left, const vec4& right);
 
 /** @brief Divides a vec4's components by another's.
  *  @param left The left operand.
  *  @param right The right operand.
  *  @return The component-wise division of the first vec4 by the second.
  */
-vec4 operator/(const vec4& left, const vec4& right);
+vec4 operator /(const vec4& left, const vec4& right);
 
 /** @brief Adds a scalar to each of a vec4's components.
  *  @param vec The vec4.
  *  @param scalar The scalar.
  *  @return The component-wise sum of a vec4 by a scalar.
  */
-vec4 operator+(const vec4& vec, float scalar);
+vec4 operator +(const vec4& vec, float scalar);
 
 /** @brief Subtracts each of a vec4's components by a scalar.
  *  @param vec The vec4.
  *  @param scalar The scalar.
  *  @return The component-wise subtraction of a vec4 by a scalar.
  */
-vec4 operator-(const vec4& vec, float scalar);
+vec4 operator -(const vec4& vec, float scalar);
 
 /** @brief Multiplies each of a vec4's components by a scalar.
  *  @param vec The vec4.
  *  @param scalar The scalar.
  *  @return The component-wise product of a vec4 by a scalar.
  */
-vec4 operator*(const vec4& vec, float scalar);
+vec4 operator *(const vec4& vec, float scalar);
 
 /** @brief Multiplies each of a vec4's components by a scalar.
  *  @param scalar The scalar.
  *  @param vec The vec4.
  *  @return The component-wise product of a vec4 by a scalar.
  */
-vec4 operator*(float scalar, const vec4& vec);
+vec4 operator *(float scalar, const vec4& vec);
 
 /** @brief Divides each of a vec4's components by a scalar.
  *  @param vec The vec4.
  *  @param scalar The scalar.
  *  @return The component-wise division of a vec4 by a scalar.
  */
-vec4 operator/(const vec4& vec, float scalar);
+vec4 operator /(const vec4& vec, float scalar);
+
+/**
+ * @brief Tests whether two vec4 are equal.
+ * @param left The left operand.
+ * @param right The right operand.
+ * @return Whether the two vec4 are equal.
+ */
+bool operator ==(const vec4& left, const vec4& right);
+
+/**
+ * @brief Tests whether two vec4 are different.
+ * @param left The left operand.
+ * @param right The right operand.
+ * @return Whether the two vec4 are different.
+ */
+bool operator !=(const vec4& left, const vec4& right);
