@@ -3,7 +3,6 @@
  * @brief Declaration of functions for 3D transformations
  **************************************************************************************************/
 
-#include <glm/gtc/matrix_transform.hpp>
 #include "Matrix4.hpp"
 #include "vec4.hpp"
 #include "vec3.hpp"

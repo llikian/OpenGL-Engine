@@ -5,6 +5,10 @@
 
 #include "maths/transformations.hpp"
 
+#include <cmath>
+#include "maths/geometry.hpp"
+#include "maths/trigonometry.hpp"
+
 Matrix4 scale(float scalar) {
     return Matrix4(
         scalar, 0.0f, 0.0f, 0.0f,
@@ -96,10 +100,10 @@ Matrix4 translateZ(float scalar) {
 }
 
 Matrix4 rotate(float angle, const Vector& axis) {
-    angle = glm::radians(angle);
+    angle = radians(angle);
 
-    float cosine = cosf(angle);
-    float sine = sinf(angle);
+    float cosine = std::cos(angle);
+    float sine = std::sin(angle);
 
     Vector nAxis = axis;
     if(nAxis != Vector(0.0f, 0.0f, 0.0f)) {
@@ -109,19 +113,19 @@ Matrix4 rotate(float angle, const Vector& axis) {
     Vector temp = (1.0f - cosine) * nAxis;
 
     return Matrix4(
-        cosine + temp[0] * nAxis[0],
-        temp[0] * nAxis[1] + sine * nAxis[2],
-        temp[0] * nAxis[2] - sine * nAxis[1],
+        cosine + temp.x * nAxis.x,
+        temp.x * nAxis.y + sine * nAxis.z,
+        temp.x * nAxis.z - sine * nAxis.y,
         0.0f,
 
-        temp[1] * nAxis[0] - sine * nAxis[2],
-        cosine + temp[1] * nAxis[1],
-        temp[1] * nAxis[2] + sine * nAxis[0],
+        temp.y * nAxis.x - sine * nAxis.z,
+        cosine + temp.y * nAxis.y,
+        temp.y * nAxis.z + sine * nAxis.x,
         0.0f,
 
-        temp[2] * nAxis[0] + sine * nAxis[1],
-        temp[2] * nAxis[1] - sine * nAxis[0],
-        cosine + temp[2] * nAxis[2],
+        temp.x * nAxis.x + sine * nAxis.y,
+        temp.x * nAxis.y - sine * nAxis.x,
+        cosine + temp.x * nAxis.z,
         0.0f,
 
         0.0f,
@@ -132,10 +136,10 @@ Matrix4 rotate(float angle, const Vector& axis) {
 }
 
 Matrix4 rotateX(float angle) {
-    angle = glm::radians(angle);
+    angle = radians(angle);
 
-    const float cosine = glm::cos(angle);
-    const float sine = glm::sin(angle);
+    const float cosine = cosf(angle);
+    const float sine = sinf(angle);
 
     return Matrix4(
         1.0f, 0.0f, 0.0f, 0.0f,
@@ -146,10 +150,10 @@ Matrix4 rotateX(float angle) {
 }
 
 Matrix4 rotateY(float angle) {
-    angle = glm::radians(angle);
+    angle = radians(angle);
 
-    const float cosine = glm::cos(angle);
-    const float sine = glm::sin(angle);
+    const float cosine = cosf(angle);
+    const float sine = sinf(angle);
 
     return Matrix4(
         cosine, 0.0f, sine, 0.0f,
@@ -160,10 +164,10 @@ Matrix4 rotateY(float angle) {
 }
 
 Matrix4 rotateZ(float angle) {
-    angle = glm::radians(angle);
+    angle = radians(angle);
 
-    const float cosine = glm::cos(angle);
-    const float sine = glm::sin(angle);
+    const float cosine = cosf(angle);
+    const float sine = sinf(angle);
 
     return Matrix4(
         cosine, -sine, 0.0f, 0.0f,
@@ -188,8 +192,8 @@ Matrix4 lookAt(const Point& eye, const Point& center, const Vector& up) {
 
 Matrix4 perspective(float fov, float aspect, float near, float far) {
     return Matrix4(
-        1.0f / (aspect * glm::tan(0.5f * fov)), 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f / glm::tan(0.5f * fov), 0.0f, 0.0f,
+        1.0f / (aspect * tanf(0.5f * fov)), 0.0f, 0.0f, 0.0f,
+        0.0f, 1.0f / tanf(0.5f * fov), 0.0f, 0.0f,
         0.0f, 0.0f, -(far + near) / (far - near), -(2.0f * far * near) / (far - near),
         0.0f, 0.0f, -1.0f, 0.0f
     );
