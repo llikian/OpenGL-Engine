@@ -7,10 +7,10 @@
 
 #include <cmath>
 
-float radians(float degrees) {
-    return degrees * M_PIf / 180.0f;
+float radians(float deg) {
+    return deg * M_PIf / 180.0f;
 }
 
-float degrees(float radians) {
-    return radians * 180.0f / M_PIf;
+float degrees(float rad) {
+    return rad * 180.0f / M_PIf;
 }

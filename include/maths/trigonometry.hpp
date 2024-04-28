@@ -7,14 +7,14 @@
 
 /**
  * @brief Converts degrees to radians.
- * @param degrees The angle in degrees.
+ * @param deg The angle in degrees.
  * @return The angle in radians.
  */
-float radians(float degrees);
+float radians(float deg);
 
 /**
  * @brief Converts radians to degrees.
- * @param radians The angle in radians.
+ * @param rad The angle in radians.
  * @return The angle in degrees.
  */
-float degrees(float radians);
+float degrees(float rad);
