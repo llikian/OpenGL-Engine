@@ -188,5 +188,5 @@ void Application::handleKeyboardEvents() {
 }
 
 void Application::calculateMVP(Matrix4 model) {
-    shader->setUniform("mvp", model * camera.getLookAt() * projection);
+    shader->setUniform("mvp", projection * camera.getLookAt() * model);
 }
