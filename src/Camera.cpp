@@ -8,15 +8,16 @@
 Camera::Camera(const Point& position)
     : position(position),
       front(0.0f, 0.0f, -1.0f),
-      up(0.0f, 1.0f, 0.0f),
       yaw(M_PI_2f),
       pitch(0.0f) { }
 
 Matrix4 Camera::getLookAt() {
-    return lookAt(position, position + front, up);
+    static const Vector worldUp(0.0f, 1.0f, 0.0f);
+    return lookAt(position, position + front, worldUp);
 }
 
 void Camera::move(CameraControls direction, float deltaTime) {
+    static const Vector worldUp(0.0f, 1.0f, 0.0f);
     const float speed = 5.0f * deltaTime;
 
     switch(direction) {
@@ -27,16 +28,16 @@ void Camera::move(CameraControls direction, float deltaTime) {
             position -= front * speed;
             break;
         case CameraControls::left:
-            position -= normalize(cross(front, up)) * speed;
+            position -= normalize(cross(front, worldUp)) * speed;
             break;
         case CameraControls::right:
-            position += normalize(cross(front, up)) * speed;
+            position += normalize(cross(front, worldUp)) * speed;
             break;
         case CameraControls::upward:
-            position += up * speed;
+            position.y += speed;
             break;
         case CameraControls::downward:
-            position -= up * speed;
+            position.y -= speed;
             break;
     }
 }
