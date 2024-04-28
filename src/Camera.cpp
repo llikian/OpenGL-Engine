@@ -5,6 +5,10 @@
 
 #include "Camera.hpp"
 
+#include <cmath>
+#include "maths/geometry.hpp"
+#include "maths/trigonometry.hpp"
+
 Camera::Camera(const Point& position)
     : position(position),
       front(0.0f, 0.0f, -1.0f),
@@ -47,14 +51,14 @@ void Camera::look(vec2 mouseOffset) {
     constexpr float epsilon = 0.00001f;
     mouseOffset *= sensitivity;
 
-    yaw += glm::radians(mouseOffset.x);
+    yaw += radians(mouseOffset.x);
     if(yaw > 2.0f * M_PIf) {
         yaw -= 2.0f * M_PIf;
     } else if(yaw < -2.0f * M_PIf) {
         yaw += 2.0f * M_PIf;
     }
 
-    pitch -= glm::radians(mouseOffset.y);
+    pitch -= radians(mouseOffset.y);
     if(pitch > M_PI_2f - epsilon) {
         pitch = M_PI_2f - epsilon;
     } else if(pitch < -M_PI_2f + epsilon) {
