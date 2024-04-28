@@ -11,46 +11,41 @@
 
 Matrix4 scale(float scalar) {
     return Matrix4(
-        scalar, 0.0f, 0.0f, 0.0f,
-        0.0f, scalar, 0.0f, 0.0f,
-        0.0f, 0.0f, scalar, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
+        scalar, 0.0f, 0.0f,
+        0.0f, scalar, 0.0f,
+        0.0f, 0.0f, scalar
     );
 }
 
 Matrix4 scale(float x, float y, float z) {
     return Matrix4(
-        x, 0.0f, 0.0f, 0.0f,
-        0.0f, y, 0.0f, 0.0f,
-        0.0f, 0.0f, z, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
+        x, 0.0f, 0.0f,
+        0.0f, y, 0.0f,
+        0.0f, 0.0f, z
     );
 }
 
 Matrix4 scaleX(float scalar) {
     return Matrix4(
-        scalar, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
+        scalar, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 1.0f
     );
 }
 
 Matrix4 scaleY(float scalar) {
     return Matrix4(
-        1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, scalar, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
+        1.0f, 0.0f, 0.0f,
+        0.0f, scalar, 0.0f,
+        0.0f, 0.0f, 1.0f
     );
 }
 
 Matrix4 scaleZ(float scalar) {
     return Matrix4(
-        1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        0.0f, 0.0f, scalar, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
+        1.0f, 0.0f, 0.0f,
+        0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, scalar
     );
 }
 
@@ -102,8 +97,8 @@ Matrix4 translateZ(float scalar) {
 Matrix4 rotate(float angle, const Vector& axis) {
     angle = radians(angle);
 
-    float cosine = std::cos(angle);
-    float sine = std::sin(angle);
+    float cosine = cosf(angle);
+    float sine = sinf(angle);
 
     Vector nAxis = axis;
     if(nAxis != Vector(0.0f, 0.0f, 0.0f)) {
@@ -116,22 +111,14 @@ Matrix4 rotate(float angle, const Vector& axis) {
         cosine + temp.x * nAxis.x,
         temp.x * nAxis.y + sine * nAxis.z,
         temp.x * nAxis.z - sine * nAxis.y,
-        0.0f,
 
         temp.y * nAxis.x - sine * nAxis.z,
         cosine + temp.y * nAxis.y,
         temp.y * nAxis.z + sine * nAxis.x,
-        0.0f,
 
         temp.x * nAxis.x + sine * nAxis.y,
         temp.x * nAxis.y - sine * nAxis.x,
-        cosine + temp.x * nAxis.z,
-        0.0f,
-
-        0.0f,
-        0.0f,
-        0.0f,
-        1.0f
+        cosine + temp.x * nAxis.z
     );
 }
 
@@ -142,10 +129,9 @@ Matrix4 rotateX(float angle) {
     const float sine = sinf(angle);
 
     return Matrix4(
-        1.0f, 0.0f, 0.0f, 0.0f,
-        0.0f, cosine, -sine, 0.0f,
-        0.0f, sine, cosine, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
+        1.0f, 0.0f, 0.0f,
+        0.0f, cosine, -sine,
+        0.0f, sine, cosine
     );
 }
 
@@ -156,10 +142,9 @@ Matrix4 rotateY(float angle) {
     const float sine = sinf(angle);
 
     return Matrix4(
-        cosine, 0.0f, sine, 0.0f,
-        0.0f, 1.0f, 0.0f, 0.0f,
-        -sine, 0.0f, cosine, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
+        cosine, 0.0f, sine,
+        0.0f, 1.0f, 0.0f,
+        -sine, 0.0f, cosine
     );
 }
 
@@ -170,10 +155,9 @@ Matrix4 rotateZ(float angle) {
     const float sine = sinf(angle);
 
     return Matrix4(
-        cosine, -sine, 0.0f, 0.0f,
-        sine, cosine, 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
+        cosine, -sine, 0.0f,
+        sine, cosine, 0.0f,
+        0.0f, 0.0f, 1.0f
     );
 }
 
