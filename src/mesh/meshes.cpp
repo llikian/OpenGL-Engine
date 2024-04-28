@@ -71,3 +71,25 @@ Mesh Meshes::cube() {
 
     return mesh;
 }
+
+Mesh Meshes::grid(float size, int divisions) {
+    Mesh mesh(GL_LINES);
+
+    float square = -size / 2.0f;
+    const float squareSize = size / divisions;
+
+    const Vector normal(0.0f, 1.0f, 0.0f);
+    const TexCoord texCoord(0.0f, 0.0f);
+
+    for(int i = 0 ; i <= divisions ; ++i) {
+        mesh.addVertex(Point(square, 0.0f, -size / 2.0f), normal, texCoord);
+        mesh.addVertex(Point(square, 0.0f, size / 2.0f), normal, texCoord);
+
+        mesh.addVertex(Point(-size / 2.0f, 0.0f, square), normal, texCoord);
+        mesh.addVertex(Point(size / 2.0f, 0.0f, square), normal, texCoord);
+
+        square += squareSize;
+    }
+
+    return mesh;
+}

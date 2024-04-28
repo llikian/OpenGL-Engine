@@ -13,4 +13,11 @@ namespace Meshes {
      * The cube will have a side of size 1.
      */
     Mesh cube();
+
+    /**
+     * @brief Creates the mesh for a grid on the XZ plane.
+     * @param size Size of one line of the grid.
+     * @param divisions Number of divisions on the grid.
+     */
+    Mesh grid(float size, int divisions);
 }
