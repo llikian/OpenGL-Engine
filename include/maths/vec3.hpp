@@ -92,6 +92,7 @@ struct vec3 {
     float z; ///< The z component of the vec3.
 };
 
+using Color = vec3;
 using Point = vec3;
 using Vector = vec3;
 
