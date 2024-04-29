@@ -12,8 +12,15 @@
 Camera::Camera(const Point& position)
     : position(position),
       front(0.0f, 0.0f, -1.0f),
-      yaw(M_PI_2f),
-      pitch(0.0f) { }
+      yaw(0.0f),
+      pitch(0.0f) {
+
+    const Vector direction = -1.0f * normalize(position);
+    pitch = asinf(direction.y);
+    yaw = asinf(direction.z / cosf(pitch));
+
+    look(vec2());
+}
 
 Matrix4 Camera::getLookAt() {
     static const Vector worldUp(0.0f, 1.0f, 0.0f);
