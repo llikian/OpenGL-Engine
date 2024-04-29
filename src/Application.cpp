@@ -83,6 +83,7 @@ Application::~Application() {
 void Application::run() {
     Mesh grid = Meshes::grid(10.0f, 10);
     Mesh cube = Meshes::cube();
+    Mesh wcube = Meshes::wireframeCube();
 
     /**** Texture ****/
     Image im("data/textures/container.jpg");

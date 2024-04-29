@@ -51,7 +51,7 @@ Mesh Meshes::cube() {
      *      7└─────┘6
      */
 
-    int faces[6][4]{
+    unsigned int faces[6][4]{
         {1, 0, 4, 5},
         {0, 3, 7, 4},
         {0, 1, 2, 3},
@@ -78,6 +78,50 @@ Mesh Meshes::cube() {
         mesh.addTexCoord(1.0f, 1.0f);
 
         mesh.addFace((i * 4), (i * 4) + 1, (i * 4) + 2, (i * 4) + 3);
+    }
+
+    return mesh;
+}
+
+Mesh Meshes::wireframeCube() {
+    Mesh mesh(GL_LINES);
+
+    mesh.addPosition(-0.5f, 0.5f, -0.5f);
+    mesh.addPosition(-0.5f, 0.5f, 0.5f);
+    mesh.addPosition(0.5f, 0.5f, 0.5f);
+    mesh.addPosition(0.5f, 0.5f, -0.5f);
+    mesh.addPosition(-0.5f, -0.5f, -0.5f);
+    mesh.addPosition(-0.5f, -0.5f, 0.5f);
+    mesh.addPosition(0.5f, -0.5f, 0.5f);
+    mesh.addPosition(0.5f, -0.5f, -0.5f);
+
+    /* Vertices' index
+     *  0───1
+     *  │╲  │╲
+     *  │ 3───2
+     *  4─│─5 │
+     *   ╲│  ╲│
+     *    7───6
+     */
+
+    unsigned int lines[12][2]{
+        {0, 1},
+        {0, 3},
+        {0, 4},
+        {1, 2},
+        {1, 5},
+        {2, 3},
+        {2, 6},
+        {3, 7},
+        {4, 5},
+        {4, 7},
+        {5, 6},
+        {6, 7}
+    };
+
+    for(int i = 0 ; i < 12 ; ++i) {
+        mesh.addIndex(lines[i][0]);
+        mesh.addIndex(lines[i][1]);
     }
 
     return mesh;
