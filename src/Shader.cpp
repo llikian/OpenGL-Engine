@@ -97,6 +97,10 @@ void Shader::setUniform(const std::string& uniform, int value) const {
     glUniform1i(glGetUniformLocation(id, uniform.c_str()), value);
 }
 
+void Shader::setUniform(const std::string& uniform, unsigned int value) const {
+    glUniform1ui(glGetUniformLocation(id, uniform.c_str()), value);
+}
+
 void Shader::setUniform(const std::string& uniform, bool value) const {
     glUniform1i(glGetUniformLocation(id, uniform.c_str()), static_cast<int>(value));
 }

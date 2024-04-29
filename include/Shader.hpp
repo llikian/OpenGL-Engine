@@ -44,6 +44,13 @@ public:
     void setUniform(const std::string& uniform, int value) const;
 
     /**
+     * @brief Sets the value of an uniform of type unsigned int.
+     * @param uniform The uniform's name.
+     * @param value The new value of the uniform.
+     */
+    void setUniform(const std::string& uniform, unsigned int value) const;
+
+    /**
      * @brief Sets the value of an uniform of type bool.
      * @param uniform The uniform's name.
      * @param value The new value of the uniform.
