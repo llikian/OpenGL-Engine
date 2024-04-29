@@ -12,22 +12,22 @@ Mesh Meshes::cube() {
 
     Point positions[8]{
         {-0.5f, 0.5f,  -0.5f},
-        {-0.5f, 0.5f,  0.5f},
-        {0.5f,  0.5f,  0.5f},
         {0.5f,  0.5f,  -0.5f},
+        {0.5f,  0.5f,  0.5f},
+        {-0.5f, 0.5f,  0.5f},
         {-0.5f, -0.5f, -0.5f},
-        {-0.5f, -0.5f, 0.5f},
+        {0.5f,  -0.5f, -0.5f},
         {0.5f,  -0.5f, 0.5f},
-        {0.5f,  -0.5f, -0.5f}
+        {-0.5f, -0.5f, 0.5f}
     };
 
     Vector normals[6]{
-        {0.0f,  1.0f,  0.0f},
-        {-1.0f, 0.0f,  0.0f},
-        {0.0f,  0.0f,  1.0f},
-        {1.0f,  0.0f,  0.0f},
         {0.0f,  0.0f,  -1.0f},
-        {0.0f,  -1.0f, 0.0f}
+        {-1.0f, 0.0f,  0.0f},
+        {0.0f,  -1.0f, 0.0f},
+        {1.0f,  0.0f,  0.0f},
+        {0.0f,  1.0f,  0.0f},
+        {0.0f,  0.0f,  1.0f}
     };
 
     /* Vertices' index
@@ -40,24 +40,25 @@ Mesh Meshes::cube() {
      */
 
     /* Faces & Template
-     *      4┌─────┐5
+     *      0┌─────┐1
      *       │  0  │
-     * 4    0│     │1    5     4
+     * 0    4│ BAC │5    1     0
      * ┌─────┼─────┼─────┬─────┐
      * │  1  │  2  │  3  │  4  │
+     * │ LEF │ BOT │ RIG │ TOP │
      * └─────┼─────┼─────┴─────┘
-     * 7    3│     │2    6     7
-     *       │  5  │
-     *      7└─────┘6
+     * 3    7│  5  │6    2     3
+     *       │ FRO │
+     *      3└─────┘2
      */
 
     unsigned int faces[6][4]{
-        {1, 0, 4, 5},
-        {0, 3, 7, 4},
-        {0, 1, 2, 3},
-        {2, 1, 5, 6},
-        {7, 6, 5, 4},
-        {3, 2, 6, 7}
+        {0, 1, 5, 4},
+        {0, 4, 7, 3},
+        {4, 5, 6, 7},
+        {5, 1, 2, 6},
+        {1, 0, 3, 2},
+        {7, 6, 2, 3}
     };
 
     for(int i = 0 ; i < 6 ; ++i) {
@@ -87,13 +88,13 @@ Mesh Meshes::wireframeCube() {
     Mesh mesh(GL_LINES);
 
     mesh.addPosition(-0.5f, 0.5f, -0.5f);
-    mesh.addPosition(-0.5f, 0.5f, 0.5f);
-    mesh.addPosition(0.5f, 0.5f, 0.5f);
     mesh.addPosition(0.5f, 0.5f, -0.5f);
+    mesh.addPosition(0.5f, 0.5f, 0.5f);
+    mesh.addPosition(-0.5f, 0.5f, 0.5f);
     mesh.addPosition(-0.5f, -0.5f, -0.5f);
-    mesh.addPosition(-0.5f, -0.5f, 0.5f);
-    mesh.addPosition(0.5f, -0.5f, 0.5f);
     mesh.addPosition(0.5f, -0.5f, -0.5f);
+    mesh.addPosition(0.5f, -0.5f, 0.5f);
+    mesh.addPosition(-0.5f, -0.5f, 0.5f);
 
     /* Vertices' index
      *  0───1
