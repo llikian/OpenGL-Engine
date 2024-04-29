@@ -81,7 +81,7 @@ private:
      * @param model The new value of the model matrix. It is a product of translation, scale
      * and rotation matrices used to apply transformations on the scene's objects.
      */
-     void calculateMVP(Matrix4 model);
+     void calculateMVP(const Matrix4& model);
 
     /**** Variables & Constants ****/
     GLFWwindow* window;  ///< GLFW window.

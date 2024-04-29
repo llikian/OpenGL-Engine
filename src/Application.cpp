@@ -18,7 +18,7 @@ Application::Application()
       wireframe(false), cullface(true), cursorVisible(false),
       shader(nullptr),
       projection(perspective(M_PI_4f, static_cast<float>(width) / height, 0.1f, 100.0f)),
-      camera(Point(0.0f, 1.0f, -3.0f)) {
+      camera(Point(0.0f, 2.0f, 5.0f)) {
 
     /**** GLFW ****/
     if(!glfwInit()) {
@@ -82,6 +82,7 @@ Application::~Application() {
 
 void Application::run() {
     Mesh grid = Meshes::grid(10.0f, 10);
+    Mesh axis = Meshes::axis(1.0f);
     Mesh cube = Meshes::cube();
     Mesh wcube = Meshes::wireframeCube();
 
@@ -94,6 +95,8 @@ void Application::run() {
                  0, GL_RGB, GL_UNSIGNED_BYTE, im.getData());
     glGenerateMipmap(GL_TEXTURE_2D);
 
+    Point lightPos(10.0f);
+
     /**** Main Loop ****/
     while(!glfwWindowShouldClose(window)) {
         handleEvents();
@@ -104,13 +107,21 @@ void Application::run() {
         delta = glfwGetTime() - time;
         time = glfwGetTime();
 
+        lightPos = 10.0f * vec3(cosf(time), sinf(time), cosf(time));
+
         shader->use();
+        shader->setUniform("cameraPos", camera.getPosition());
+        shader->setUniform("lightPos", lightPos);
         calculateMVP(Matrix4(1.0f));
 
+        axis.draw();
         grid.draw();
 
-        glBindTexture(GL_TEXTURE_2D, textureID);
+        glBindTexture(GL_TEXTURE_2D, 0);
         cube.draw();
+
+        calculateMVP(translate(lightPos));
+        wcube.draw();
 
         glfwSwapBuffers(window);
     }
@@ -194,6 +205,7 @@ void Application::handleKeyboardEvents() {
     }
 }
 
-void Application::calculateMVP(Matrix4 model) {
+void Application::calculateMVP(const Matrix4& model) {
     shader->setUniform("mvp", projection * camera.getLookAt() * model);
+    shader->setUniform("model", model);
 }
