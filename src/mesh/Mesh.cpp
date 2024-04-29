@@ -7,7 +7,10 @@
 
 #include <glad/glad.h>
 
-Mesh::Mesh(unsigned int primitive) : shouldBind(true), primitive(primitive), attributes(1) {
+Mesh::Mesh(unsigned int primitive)
+    : primitive(primitive),
+      shouldBind(true),
+      attributes(0b00000001) {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
@@ -19,7 +22,7 @@ Mesh::~Mesh() {
     glDeleteBuffers(1, &EBO);
 }
 
-void Mesh::draw(const Shader* shader) {
+void Mesh::draw() {
     if(shouldBind) {
         bindBuffers();
         shouldBind = false;
@@ -27,10 +30,12 @@ void Mesh::draw(const Shader* shader) {
 
     glBindVertexArray(VAO);
 
-    shader->setUniform("attributes", static_cast<unsigned int>(attributes));
+    int shader;
+    glGetIntegerv(GL_CURRENT_PROGRAM, &shader);
+    glUniform1ui(glGetUniformLocation(shader, "attributes"), static_cast<unsigned int>(attributes));
 
     if(indices.empty()) {
-        glDrawArrays(primitive, 0, data.size() / (getStride()));
+        glDrawArrays(primitive, 0, data.size() / getStride());
     } else {
         glDrawElements(primitive, indices.size(), GL_UNSIGNED_INT, nullptr);
     }
@@ -99,16 +104,23 @@ void Mesh::addIndex(unsigned int index) {
 }
 
 void Mesh::addTriangle(unsigned int top, unsigned int right, unsigned int left) {
-    addIndex(top);
-    addIndex(right);
-    addIndex(left);
+    indices.push_back(top);
+    indices.push_back(right);
+    indices.push_back(left);
 }
 
 void Mesh::addFace(unsigned int topL, unsigned int topR,
                    unsigned int bottomR, unsigned int bottomL) {
 
-    addTriangle(topL, topR, bottomR);
-    addTriangle(bottomR, bottomL, topL);
+    // First Triangle
+    indices.push_back(topL);
+    indices.push_back(topR);
+    indices.push_back(bottomR);
+
+    // Second Triangle
+    indices.push_back(bottomR);
+    indices.push_back(bottomL);
+    indices.push_back(topL);
 }
 
 void Mesh::bindBuffers() {

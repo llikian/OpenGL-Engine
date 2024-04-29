@@ -106,11 +106,10 @@ void Application::run() {
         shader->use();
         calculateMVP(Matrix4(1.0f));
 
-        glBindTexture(GL_TEXTURE_2D, 0);
-        grid.draw(shader);
+        grid.draw();
 
         glBindTexture(GL_TEXTURE_2D, textureID);
-        cube.draw(shader);
+        cube.draw();
 
         glfwSwapBuffers(window);
     }
