@@ -145,3 +145,23 @@ Mesh Meshes::grid(float size, int divisions) {
 
     return mesh;
 }
+
+Mesh Meshes::axis(float size) {
+    Mesh mesh(GL_LINES);
+
+    const Point axes[3]{
+        {1.0f, 0.0f, 0.0f},
+        {0.0f, 1.0f, 0.0f},
+        {0.0f, 0.0f, 1.0f}
+    };
+
+    for(const Point& p: axes) {
+        mesh.addPosition(0.0f, 0.0f, 0.0f);
+        mesh.addColor(p);
+
+        mesh.addPosition(p);
+        mesh.addColor(p);
+    }
+
+    return mesh;
+}

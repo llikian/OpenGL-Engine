@@ -25,4 +25,11 @@ namespace Meshes {
      * @param divisions Number of divisions on the grid.
      */
     Mesh grid(float size, int divisions);
+
+    /**
+     * @brief Creates the mesh for the axes. The x axis is red, the y axis is green and the z axis
+     * is blue.
+     * @param size The size of the line for each axis.
+     */
+    Mesh axis(float size);
 }
