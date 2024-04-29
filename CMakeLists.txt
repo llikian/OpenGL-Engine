@@ -30,7 +30,6 @@ set(SOURCES
         src/maths/vec4.cpp
 
         src/mesh/Mesh.cpp
-        src/mesh/Vertex.cpp
 
         # Other Sources
         src/callbacks.cpp
