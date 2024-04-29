@@ -61,10 +61,21 @@ Mesh Meshes::cube() {
     };
 
     for(int i = 0 ; i < 6 ; ++i) {
-        mesh.addVertex(positions[faces[i][0]], normals[i], TexCoord(0.0f, 1.0f));
-        mesh.addVertex(positions[faces[i][1]], normals[i], TexCoord(0.0f, 0.0f));
-        mesh.addVertex(positions[faces[i][2]], normals[i], TexCoord(1.0f, 0.0f));
-        mesh.addVertex(positions[faces[i][3]], normals[i], TexCoord(1.0f, 1.0f));
+        mesh.addPosition(positions[faces[i][0]]);
+        mesh.addNormal(normals[i]);
+        mesh.addTexCoord(0.0f, 1.0f);
+
+        mesh.addPosition(positions[faces[i][1]]);
+        mesh.addNormal(normals[i]);
+        mesh.addTexCoord(0.0f, 0.0f);
+
+        mesh.addPosition(positions[faces[i][2]]);
+        mesh.addNormal(normals[i]);
+        mesh.addTexCoord(1.0f, 0.0f);
+
+        mesh.addPosition(positions[faces[i][3]]);
+        mesh.addNormal(normals[i]);
+        mesh.addTexCoord(1.0f, 1.0f);
 
         mesh.addFace((i * 4), (i * 4) + 1, (i * 4) + 2, (i * 4) + 3);
     }
@@ -78,15 +89,12 @@ Mesh Meshes::grid(float size, int divisions) {
     float square = -size / 2.0f;
     const float squareSize = size / divisions;
 
-    const Vector normal(0.0f, 1.0f, 0.0f);
-    const TexCoord texCoord(0.0f, 0.0f);
-
     for(int i = 0 ; i <= divisions ; ++i) {
-        mesh.addVertex(Point(square, 0.0f, -size / 2.0f), normal, texCoord);
-        mesh.addVertex(Point(square, 0.0f, size / 2.0f), normal, texCoord);
+        mesh.addPosition(square, 0.0f, -size / 2.0f);
+        mesh.addPosition(square, 0.0f, size / 2.0f);
 
-        mesh.addVertex(Point(-size / 2.0f, 0.0f, square), normal, texCoord);
-        mesh.addVertex(Point(size / 2.0f, 0.0f, square), normal, texCoord);
+        mesh.addPosition(-size / 2.0f, 0.0f, square);
+        mesh.addPosition(size / 2.0f, 0.0f, square);
 
         square += squareSize;
     }
