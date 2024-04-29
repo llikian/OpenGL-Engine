@@ -5,11 +5,11 @@
 
 #include "maths/vec3.hpp"
 
-vec3::vec3() : x(0.0f), y(0.0f) { }
+vec3::vec3() : x(0.0f), y(0.0f), z(0.0f) { }
 
 vec3::vec3(float x, float y, float z) : x(x), y(y), z(z) { }
 
-vec3::vec3(float scalar) : x(scalar), y(scalar) { }
+vec3::vec3(float scalar) : x(scalar), y(scalar), z(scalar) { }
 
 vec3& vec3::operator +=(const vec3& vec) {
     x += vec.x;

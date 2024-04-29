@@ -5,11 +5,11 @@
 
 #include "maths/vec4.hpp"
 
-vec4::vec4() : x(0.0f), y(0.0f) { }
+vec4::vec4() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) { }
 
 vec4::vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) { }
 
-vec4::vec4(float scalar) : x(scalar), y(scalar), w(scalar) { }
+vec4::vec4(float scalar) : x(scalar), y(scalar), z(scalar), w(scalar) { }
 
 vec4& vec4::operator +=(const vec4& vec) {
     x += vec.x;
