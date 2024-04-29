@@ -28,6 +28,19 @@ public:
     Mesh(unsigned int primitive);
 
     /**
+     * @brief Constructs a Mesh with the same data as another.
+     * @param mesh The mesh to copy.
+     */
+    Mesh(const Mesh& mesh);
+
+    /**
+     * @brief Copies a mesh's data in this one.
+     * @param mesh The mesh to copy.
+     * @return A reference to this mesh.
+     */
+    Mesh& operator= (const Mesh& mesh);
+
+    /**
      * @brief Deletes the VAO, the VBO and the EBO.
      */
     ~Mesh();
@@ -103,6 +116,30 @@ public:
      */
     void addFace(unsigned int topL, unsigned int topR, unsigned int bottomR, unsigned int bottomL);
 
+    /**
+     * @brief Getter for the primitive member.
+     * @return The primitive of the mesh.
+     */
+    unsigned int getPrimitive() const;
+
+    /**
+     * @brief Getter for the attributes member.
+     * @return The attributes of the mesh.
+     */
+    u_int8_t getAttributes() const;
+
+    /**
+     * @brief Getter fot the data member.
+     * @return The data of the mesh.
+     */
+    const std::vector<float>* getData() const;
+
+    /**
+     * @brief Getter for the indices member.
+     * @return The indices of the mesh.
+     */
+    const std::vector<unsigned int>* getIndices() const;
+
 private:
     /**
      * @brief Binds the data to the VBO correctly. If indices were sepcified also binds the
@@ -116,7 +153,7 @@ private:
      */
     unsigned int getStride() const;
 
-    const unsigned int primitive; ///< 3D Primitive used to draw. e.g. GL_TRIANGLES, GL_LINES, etc…
+    unsigned int primitive; ///< 3D Primitive used to draw. e.g. GL_TRIANGLES, GL_LINES, etc…
 
     bool shouldBind; ///< Whether the buffer should be bound before drawing.
 

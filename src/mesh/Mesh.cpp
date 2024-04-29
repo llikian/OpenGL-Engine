@@ -11,9 +11,43 @@ Mesh::Mesh(unsigned int primitive)
     : primitive(primitive),
       shouldBind(true),
       attributes(0b00000001) {
+
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
+}
+
+Mesh::Mesh(const Mesh& mesh)
+    : primitive(mesh.getPrimitive()),
+      shouldBind(true),
+      attributes(mesh.getAttributes()),
+      data(*mesh.getData()),
+      indices(*mesh.getIndices()) {
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+}
+
+Mesh& Mesh::operator =(const Mesh& mesh) {
+    if(&mesh == this) {
+        return *this;
+    }
+
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteBuffers(1, &EBO);
+
+    primitive = mesh.getPrimitive();
+    shouldBind = true;
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+    attributes = mesh.getAttributes();
+    data = *mesh.getData();
+    indices = *mesh.getIndices();
+
+    return *this;
 }
 
 Mesh::~Mesh() {
@@ -123,8 +157,24 @@ void Mesh::addFace(unsigned int topL, unsigned int topR,
     indices.push_back(topL);
 }
 
+unsigned int Mesh::getPrimitive() const {
+    return primitive;
+}
+
+u_int8_t Mesh::getAttributes() const {
+    return attributes;
+}
+
+const std::vector<float>* Mesh::getData() const {
+    return &data;
+}
+
+const std::vector<unsigned int>* Mesh::getIndices() const {
+    return &indices;
+}
+
 void Mesh::bindBuffers() {
-    unsigned int stride = getStride() * sizeof(float);
+    const unsigned int stride = getStride() * sizeof(float);
     int offset = 0;
 
     glBindVertexArray(VAO);
