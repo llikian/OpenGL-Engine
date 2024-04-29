@@ -42,6 +42,12 @@ public:
     Matrix4 getLookAt();
 
     /**
+     * @brief Getter for the position member.
+     * @return The position of the camera.
+     */
+    Point getPosition() const;
+
+    /**
      * @brief Moves the camera's position in the specified direction.
      * @param direction The direction of the movement.
      * @param deltaTime How much time has passed since the last frame in seconds.

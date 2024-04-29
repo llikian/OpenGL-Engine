@@ -20,6 +20,10 @@ Matrix4 Camera::getLookAt() {
     return lookAt(position, position + front, worldUp);
 }
 
+Point Camera::getPosition() const {
+    return position;
+}
+
 void Camera::move(CameraControls direction, float deltaTime) {
     static const Vector worldUp(0.0f, 1.0f, 0.0f);
     const float speed = 5.0f * deltaTime;
