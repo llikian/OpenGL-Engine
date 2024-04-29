@@ -35,6 +35,7 @@ Application::Application()
     }
 
     glfwMakeContextCurrent(window);
+    glfwMaximizeWindow(window);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     mousePos.x = width / 2.0f;
