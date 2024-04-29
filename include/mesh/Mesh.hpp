@@ -6,10 +6,12 @@
 #pragma once
 
 #include <vector>
-#include "Vertex.hpp"
+#include "maths/vec2.hpp"
+#include "maths/vec3.hpp"
+#include "maths/vec4.hpp"
+#include "Shader.hpp"
 
-typedef std::vector<Vertex> Vertices;
-typedef std::vector<unsigned int> Indices;
+using Indices = std::vector<unsigned int>;
 
 /**
  * @class Mesh
@@ -18,15 +20,22 @@ typedef std::vector<unsigned int> Indices;
 class Mesh {
 public:
     Mesh(unsigned int primitive);
-    Mesh(unsigned int primitive, const Vertices& vertices);
-    Mesh(unsigned int primitive, const Vertices& vertices, const Indices& indices);
 
     ~Mesh();
 
-    void draw();
+    void draw(const Shader* shader);
 
-    void addVertex(const Vertex& vertex);
-    void addVertex(const Point& position, const Vector& normal, const TexCoord& texCoord);
+    void addPosition(float x, float y, float z);
+    void addPosition(const Point& position);
+
+    void addNormal(float x, float y, float z);
+    void addNormal(const Vector& normal);
+
+    void addTexCoord(float x, float y);
+    void addTexCoord(const TexCoord& texCoord);
+
+    void addColor(float r, float g, float b);
+    void addColor(const Color& color);
 
     void addIndex(unsigned int index);
     void addTriangle(unsigned int top, unsigned int right, unsigned int left);
@@ -35,22 +44,41 @@ public:
 private:
     void bindBuffers();
 
+    /**
+     * @brief Calculates the stride according to which attributes are enabled.
+     * @return The stride between a vertex attribute's value and the next.
+     */
+    unsigned int getStride() const;
+
     bool shouldBind; ///< Whether the buffer should be bound before drawing.
 
     const unsigned int primitive; ///< 3D Primitive used to draw. e.g. GL_TRIANGLES, GL_LINES, etc…
 
     /**
-     * @brief Vector that holds the attributes for each 3D vertex in the mesh:
-     * position, normal and texture coordinates.
+     * @brief Attributes data. The currently available attributes are:\n
+     *   0 - Position\n
+     *   1 - Normal\n
+     *   2 - Texture Coordinates\n
+     *   3 - Color
      */
-    Vertices vertices;
+    std::vector<float> data;
 
     /**
-     * @brief Vector that can contain vertex indices in order to draw them according to the active
+     * @brief Bit masks for which attributes are enabled. For now the attributes are from right to
+     * left (in little endian) :\n
+     *   Position (vec3) : Is always enabled.\n
+     *   Normal (vec3)\n
+     *   Texture Coordinates (vec2)\n
+     *   Color (vec3)
+     */
+    u_int8_t attributes;
+
+    /**
+     * Vector that can contain vertex indices in order to draw them according to the active
      * primitive. So for example if the primitive is GL_TRIANGLES, then the vertices corresponding
      * to 3 consecutive indices will form a triangle.\n
      * Filling this vector up is optional, if it is empty, the consecutive Vertex in the vertices
-     * vector will be drawn according to the primitive.
+     * vector will be drawn according to the primitive. // TODO : update comment
      */
     Indices indices;
 

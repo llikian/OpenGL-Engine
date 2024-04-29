@@ -7,22 +7,11 @@
 
 #include <glad/glad.h>
 
-Mesh::Mesh(unsigned int primitive) : shouldBind(true), primitive(primitive) {
+Mesh::Mesh(unsigned int primitive) : shouldBind(true), primitive(primitive), attributes(1) {
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
 }
-
-Mesh::Mesh(unsigned int primitive, const Vertices& vertices)
-    : shouldBind(true),
-      primitive(primitive),
-      vertices(vertices) { }
-
-Mesh::Mesh(unsigned int primitive, const Vertices& vertices, const Indices& indices)
-    : shouldBind(true),
-      primitive(primitive),
-      vertices(vertices),
-      indices(indices) { }
 
 Mesh::~Mesh() {
     glDeleteVertexArrays(1, &VAO);
@@ -30,7 +19,7 @@ Mesh::~Mesh() {
     glDeleteBuffers(1, &EBO);
 }
 
-void Mesh::draw() {
+void Mesh::draw(const Shader* shader) {
     if(shouldBind) {
         bindBuffers();
         shouldBind = false;
@@ -38,19 +27,71 @@ void Mesh::draw() {
 
     glBindVertexArray(VAO);
 
+    shader->setUniform("attributes", static_cast<unsigned int>(attributes));
+
     if(indices.empty()) {
-        glDrawArrays(primitive, 0, vertices.size());
+        glDrawArrays(primitive, 0, data.size() / (getStride()));
     } else {
         glDrawElements(primitive, indices.size(), GL_UNSIGNED_INT, nullptr);
     }
 }
 
-void Mesh::addVertex(const Vertex& vertex) {
-    vertices.push_back(vertex);
+void Mesh::addPosition(float x, float y, float z) {
+    data.push_back(x);
+    data.push_back(y);
+    data.push_back(z);
 }
 
-void Mesh::addVertex(const Point& position, const Vector& normal, const TexCoord& texCoord) {
-    vertices.emplace_back(position, normal, texCoord);
+void Mesh::addPosition(const Point& position) {
+    data.push_back(position.x);
+    data.push_back(position.y);
+    data.push_back(position.z);
+}
+
+void Mesh::addNormal(float x, float y, float z) {
+    attributes |= 0b00000010;
+
+    data.push_back(x);
+    data.push_back(y);
+    data.push_back(z);
+}
+
+void Mesh::addNormal(const Vector& normal) {
+    attributes |= 0b00000010;
+
+    data.push_back(normal.x);
+    data.push_back(normal.y);
+    data.push_back(normal.z);
+}
+
+void Mesh::addTexCoord(float x, float y) {
+    attributes |= 0b00000100;
+
+    data.push_back(x);
+    data.push_back(y);
+}
+
+void Mesh::addTexCoord(const TexCoord& texCoord) {
+    attributes |= 0b00000100;
+
+    data.push_back(texCoord.x);
+    data.push_back(texCoord.y);
+}
+
+void Mesh::addColor(float r, float g, float b) {
+    attributes |= 0b00001000;
+
+    data.push_back(r);
+    data.push_back(g);
+    data.push_back(b);
+}
+
+void Mesh::addColor(const Color& color) {
+    attributes |= 0b00001000;
+
+    data.push_back(color.x);
+    data.push_back(color.y);
+    data.push_back(color.z);
 }
 
 void Mesh::addIndex(unsigned int index) {
@@ -71,28 +112,36 @@ void Mesh::addFace(unsigned int topL, unsigned int topR,
 }
 
 void Mesh::bindBuffers() {
-    constexpr unsigned int stride = sizeof(Vertex);
-    void* offset;
+    unsigned int stride = getStride() * sizeof(float);
+    int offset = 0;
 
     glBindVertexArray(VAO);
 
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * stride, vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, data.size() * sizeof(float), data.data(), GL_STATIC_DRAW);
 
-    // Positions
-    offset = reinterpret_cast<int*>(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, false, stride, offset);
+    // Position
+    glVertexAttribPointer(0, 3, GL_FLOAT, false, stride, reinterpret_cast<void*>(offset));
     glEnableVertexAttribArray(0);
+    offset += 3 * sizeof(float);
 
-    // Normals
-    offset = reinterpret_cast<int*>(sizeof(float) * 3);
-    glVertexAttribPointer(1, 3, GL_FLOAT, false, stride, offset);
-    glEnableVertexAttribArray(1);
+    if((attributes >> 1) & 1) { // Normal
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, stride, reinterpret_cast<void*>(offset));
+        glEnableVertexAttribArray(1);
+        offset += 3 * sizeof(float);
+    }
 
-    // Texture Coordinates
-    offset = reinterpret_cast<int*>(sizeof(float) * 6);
-    glVertexAttribPointer(2, 2, GL_FLOAT, false, stride, offset);
-    glEnableVertexAttribArray(2);
+    if((attributes >> 2) & 1) { // Texture Coordinates
+        glVertexAttribPointer(2, 2, GL_FLOAT, false, stride, reinterpret_cast<void*>(offset));
+        glEnableVertexAttribArray(2);
+        offset += 2 * sizeof(float);
+    }
+
+    if((attributes >> 3) & 1) { // Color
+        glVertexAttribPointer(3, 3, GL_FLOAT, false, stride, reinterpret_cast<void*>(offset));
+        glEnableVertexAttribArray(3);
+        offset += 3 * sizeof(float);
+    }
 
     if(!indices.empty()) {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
@@ -100,6 +149,22 @@ void Mesh::bindBuffers() {
                      indices.size() * sizeof(unsigned int),
                      indices.data(), GL_STATIC_DRAW);
     }
+}
 
-    glBindVertexArray(0);
+unsigned int Mesh::getStride() const {
+    unsigned int stride = 3;
+
+    if((attributes >> 1) & 1) { // Normal
+        stride += 3;
+    }
+
+    if((attributes >> 2) & 1) { // Texture Coordinates
+        stride += 2;
+    }
+
+    if((attributes >> 3) & 1) { // Color
+        stride += 3;
+    }
+
+    return stride;
 }
