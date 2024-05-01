@@ -85,29 +85,26 @@ void Application::run() {
     Mesh axis = Meshes::axis(1.0f);
     Mesh cube = Meshes::cube();
     Mesh wcube = Meshes::wireframeCube();
+    Mesh sphere = Meshes::sphere(16, 32);
 
-    /**** Texture ****/
-    Image im("data/textures/container.jpg");
-    unsigned int textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, im.getWidth(), im.getHeight(),
-                 0, GL_RGB, GL_UNSIGNED_BYTE, im.getData());
-    glGenerateMipmap(GL_TEXTURE_2D);
+    Texture container("data/textures/container.jpg");
 
-    Point lightPos(10.0f);
+    Point lightPos;
+
+    const float bgValue = 1.0f;
 
     /**** Main Loop ****/
     while(!glfwWindowShouldClose(window)) {
         handleEvents();
 
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(bgValue, bgValue, bgValue, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         delta = glfwGetTime() - time;
         time = glfwGetTime();
 
         lightPos = 10.0f * vec3(cosf(time), sinf(time), cosf(time));
+//        lightPos = 10.0f * vec3(1.0f);
 
         shader->use();
         shader->setUniform("cameraPos", camera.getPosition());
@@ -117,7 +114,11 @@ void Application::run() {
         axis.draw();
         grid.draw();
 
-        glBindTexture(GL_TEXTURE_2D, 0);
+        bindTexture(0);
+        sphere.draw();
+
+        bindTexture(container);
+        calculateMVP(translate(3.0f, 0.0f, 0.0f));
         cube.draw();
 
         calculateMVP(translate(lightPos));
@@ -208,4 +209,21 @@ void Application::handleKeyboardEvents() {
 void Application::calculateMVP(const Matrix4& model) {
     shader->setUniform("mvp", projection * camera.getLookAt() * model);
     shader->setUniform("model", model);
+}
+
+void Application::bindTexture(const Texture& texture, unsigned int texUnit) {
+    texture.bind(texUnit);
+}
+
+void Application::bindTexture(unsigned int textureID, unsigned int texUnit) {
+    glActiveTexture(GL_TEXTURE0 + texUnit);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+}
+
+void Application::bindTexture(const Texture& texture) {
+    texture.bind();
+}
+
+void Application::bindTexture(unsigned int textureID) {
+    glBindTexture(GL_TEXTURE_2D, textureID);
 }

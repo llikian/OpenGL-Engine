@@ -14,6 +14,7 @@
 
 #include "Camera.hpp"
 #include "Shader.hpp"
+#include "Texture.hpp"
 #include "maths/Matrix4.hpp"
 
 /**
@@ -32,9 +33,9 @@ public:
     /**
      * @brief Frees all allocated memory.
      */
-     ~Application();
+    ~Application();
 
-     /**** Public Methods ****/
+    /**** Public Methods ****/
 
     /**
      * @brief Contains the main loop.
@@ -81,7 +82,33 @@ private:
      * @param model The new value of the model matrix. It is a product of translation, scale
      * and rotation matrices used to apply transformations on the scene's objects.
      */
-     void calculateMVP(const Matrix4& model);
+    void calculateMVP(const Matrix4& model);
+
+    /**
+     * @brief Binds a texture to a specific texture unit.
+     * @param texture The texture to bind.
+     * @param texUnit The texture unit to bind to.
+     */
+    void bindTexture(const Texture& texture, unsigned int texUnit);
+
+    /**
+     * @brief Binds a texture class to a specific texture unit.
+     * @param textureID The texture's id.
+     * @param texUnit The texture unit to bind to.
+     */
+    void bindTexture(unsigned int textureID, unsigned int texUnit);
+
+    /**
+     * @brief Binds a texture to the active texture unit.
+     * @param texture The texture to bind.
+     */
+    void bindTexture(const Texture& texture);
+
+    /**
+     * @brief Binds a texture to the active texture unit.
+     * @param textureID The texture's id.
+     */
+    void bindTexture(unsigned int textureID);
 
     /**** Variables & Constants ****/
     GLFWwindow* window;  ///< GLFW window.
