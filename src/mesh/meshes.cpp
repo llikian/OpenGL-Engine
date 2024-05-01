@@ -5,6 +5,7 @@
 
 #include "mesh/meshes.hpp"
 
+#include <cmath>
 #include <glad/glad.h>
 
 Mesh Meshes::cube() {
@@ -166,3 +167,69 @@ Mesh Meshes::axis(float size) {
 
     return mesh;
 }
+
+Mesh Meshes::sphere(int divTheta, int divPhi) {
+    Mesh mesh(GL_TRIANGLES);
+
+    const double thetaStep = M_PI /  divTheta;
+    const double phiStep =  2.0f * M_PI / divPhi;
+
+    double theta = -M_PI_2 + thetaStep;
+    double phi = 0.0f;
+
+    vec3 point;
+    for(int i = 0 ; i < divTheta - 1; ++i) {
+        phi = 0.0;
+
+        for(int j = 0 ; j < divPhi ; ++j) {
+            point.x = cos(theta) * cos(phi);
+            point.y = sin(theta);
+            point.z = cos(theta) * sin(phi);
+
+            mesh.addPosition(point);
+            mesh.addNormal(point);
+
+            phi += phiStep;
+        }
+
+        theta += thetaStep;
+    }
+
+    auto index = [&](int column, int row) -> int {
+        return row + column * divPhi;
+    };
+
+    for(int i = 0 ; i < divTheta - 2 ; ++i) {
+        for(int j = 0 ; j < divPhi ; ++j) {
+            mesh.addFace(
+                index(i, j),
+                index(i + 1, j),
+                index(i + 1, (j + 1) % divPhi),
+                index(i, (j + 1) % divPhi)
+            );
+        }
+    }
+
+    mesh.addPosition(0.0f, -1.0f, 0.0f);
+    mesh.addNormal(0.0f, -1.0f, 0.0f);
+
+    mesh.addPosition(0.0f, 1.0f, 0.0f);
+    mesh.addNormal(0.0f, 1.0f, 0.0f);
+
+    for(int i = 0 ; i < divPhi ; ++i) {
+        mesh.addTriangle(
+            index(divTheta - 1, 0),
+            index(0, i),
+            index(0, (i + 1) % divPhi)
+        );
+
+        mesh.addTriangle(
+            index(divTheta - 2, i),
+            index(divTheta - 1, 0) + 1,
+            index(divTheta - 2, (i + 1) % divPhi)
+        );
+    }
+
+    return mesh;
+}
+

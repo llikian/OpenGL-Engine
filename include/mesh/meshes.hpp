@@ -32,4 +32,11 @@ namespace Meshes {
      * @param size The size of the line for each axis.
      */
     Mesh axis(float size);
+
+    /**
+     * @brief Creates the mesh for a sphere with a radius of 1.
+     * @param divTheta
+     * @param divPhi
+     */
+    Mesh sphere(int divTheta, int divPhi);
 }
