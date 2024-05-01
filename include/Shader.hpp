@@ -14,7 +14,8 @@
 
 /**
  * @class Shader
- * @brief
+ * @brief Compiles, links and creates a shader program that can be then be bound. Can set the value
+ * of uniforms in the shader program.
  */
 class Shader {
 public:
