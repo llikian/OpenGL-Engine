@@ -91,7 +91,7 @@ void Application::run() {
 
     Point lightPos;
 
-    const float bgValue = 1.0f;
+    const float bgValue = 0.1f;
 
     /**** Main Loop ****/
     while(!glfwWindowShouldClose(window)) {
@@ -121,8 +121,8 @@ void Application::run() {
         calculateMVP(translate(3.0f, 0.0f, 0.0f));
         cube.draw();
 
-        calculateMVP(translate(lightPos));
-        wcube.draw();
+        calculateMVP(translate(lightPos) * scale(0.2f));
+        sphere.draw();
 
         glfwSwapBuffers(window);
     }
