@@ -30,25 +30,25 @@ public:
      * @brief Getter for the data member.
      * @return The data of the image.
      */
-    const unsigned char* getData();
+    const unsigned char* getData() const;
 
     /**
      * @brief Getter for the width member.
      * @return The width of the image.
      */
-    unsigned int getWidth();
+    unsigned int getWidth() const;
 
     /**
      * @brief Getter for the height member.
      * @return The height of the image.
      */
-    unsigned int getHeight();
+    unsigned int getHeight() const;
 
     /**
      * @brief Getter for the nbChannels member.
      * @return The number of channels of the image.
      */
-    unsigned int getChannelsNumber();
+    unsigned int getChannelsNumber() const;
 
 private:
     unsigned char* data;     ///< The data of the image.
