@@ -23,6 +23,7 @@ set(SOURCES
         src/Camera.cpp
         src/Image.cpp
         src/Shader.cpp
+        src/Texture.cpp
 
         src/maths/Matrix4.cpp
         src/maths/vec2.cpp
