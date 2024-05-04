@@ -71,6 +71,9 @@ Application::Application()
 
     shader->setUniform("texture0", 0);
     calculateMVP(Matrix4(1.0f));
+
+    /**** Other ****/
+    stbi_set_flip_vertically_on_load(true);
 }
 
 Application::~Application() {
@@ -84,10 +87,12 @@ void Application::run() {
     Mesh grid = Meshes::grid(10.0f, 10);
     Mesh axis = Meshes::axis(1.0f);
     Mesh cube = Meshes::cube();
+    Mesh tcube = Meshes::texturedCube();
     Mesh wcube = Meshes::wireframeCube();
     Mesh sphere = Meshes::sphere(16, 32);
 
-    Texture container("data/textures/container.jpg");
+    Texture texContainer("data/textures/container.jpg");
+    Texture texCube("data/textures/cube.png");
 
     Point lightPos;
 
@@ -117,9 +122,13 @@ void Application::run() {
         bindTexture(0);
         sphere.draw();
 
-        bindTexture(container);
+        bindTexture(texContainer);
         calculateMVP(translate(3.0f, 0.0f, 0.0f));
         cube.draw();
+
+        bindTexture(texCube);
+        calculateMVP(translate(-3.0f, 0.0f, 0.0f));
+        tcube.draw();
 
         calculateMVP(translate(lightPos) * scale(0.2f));
         sphere.draw();
