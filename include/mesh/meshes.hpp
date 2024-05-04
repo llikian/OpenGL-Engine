@@ -9,10 +9,16 @@
 
 namespace Meshes {
     /**
-     * @brief Creates the mesh for a cube where all the faces will have the same texture.
-     * The cube will have a side of size 1.
+     * @brief Creates the mesh for a cube with side of size 1 where all the faces will have the
+     * same texture.
      */
     Mesh cube();
+
+    /**
+     * @brief Creates the mesh for a cube with sides of size 1 that can have different textures
+     * for each face.
+     */
+    Mesh texturedCube();
 
     /**
      * @brief Creates the mesh for a wireframe cube. The cube will have a side of size 1.

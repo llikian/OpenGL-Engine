@@ -11,6 +11,36 @@
 Mesh Meshes::cube() {
     Mesh mesh(GL_TRIANGLES);
 
+    /* Vertices' index
+     *  0───1
+     *  │╲  │╲
+     *  │ 3───2
+     *  4─│─5 │
+     *   ╲│  ╲│
+     *    7───6
+     *
+     * Faces & Template
+     *      0┌─────┐1
+     *       │  0  │
+     * 0    3│ TOP │2    1     0
+     * ┌─────┼─────┼─────┬─────┐
+     * │  1  │  2  │  3  │  4  │
+     * │ LEF │ FRO │ RIG │ BAC │
+     * └─────┼─────┼─────┴─────┘
+     * 4    7│  5  │6    5     4
+     *       │ BOT │
+     *      4└─────┘5
+     */
+
+    unsigned int faces[6][4]{
+        {0, 3, 2, 1},
+        {0, 4, 7, 3},
+        {3, 7, 6, 2},
+        {2, 6, 5, 1},
+        {1, 5, 4, 0},
+        {7, 4, 5, 6}
+    };
+
     Point positions[8]{
         {-0.5f, 0.5f,  -0.5f},
         {0.5f,  0.5f,  -0.5f},
@@ -23,43 +53,12 @@ Mesh Meshes::cube() {
     };
 
     Vector normals[6]{
-        {0.0f,  0.0f,  -1.0f},
-        {-1.0f, 0.0f,  0.0f},
-        {0.0f,  -1.0f, 0.0f},
-        {1.0f,  0.0f,  0.0f},
         {0.0f,  1.0f,  0.0f},
-        {0.0f,  0.0f,  1.0f}
-    };
-
-    /* Vertices' index
-     *  0───1
-     *  │╲  │╲
-     *  │ 3───2
-     *  4─│─5 │
-     *   ╲│  ╲│
-     *    7───6
-     */
-
-    /* Faces & Template
-     *      0┌─────┐1
-     *       │  0  │
-     * 0    4│ BAC │5    1     0
-     * ┌─────┼─────┼─────┬─────┐
-     * │  1  │  2  │  3  │  4  │
-     * │ LEF │ BOT │ RIG │ TOP │
-     * └─────┼─────┼─────┴─────┘
-     * 3    7│  5  │6    2     3
-     *       │ FRO │
-     *      3└─────┘2
-     */
-
-    unsigned int faces[6][4]{
-        {0, 1, 5, 4},
-        {0, 4, 7, 3},
-        {4, 5, 6, 7},
-        {5, 1, 2, 6},
-        {1, 0, 3, 2},
-        {7, 6, 2, 3}
+        {-1.0f, 0.0f,  0.0f},
+        {0.0f,  0.0f,  1.0f},
+        {1.0f,  0.0f,  0.0f},
+        {0.0f,  0.0f,  -1.0f},
+        {0.0f,  -1.0f, 0.0f}
     };
 
     for(int i = 0 ; i < 6 ; ++i) {
@@ -78,6 +77,94 @@ Mesh Meshes::cube() {
         mesh.addPosition(positions[faces[i][3]]);
         mesh.addNormal(normals[i]);
         mesh.addTexCoord(1.0f, 1.0f);
+
+        mesh.addFace((i * 4), (i * 4) + 1, (i * 4) + 2, (i * 4) + 3);
+    }
+
+    return mesh;
+}
+
+Mesh Meshes::texturedCube() {
+    Mesh mesh(GL_TRIANGLES);
+
+    /* Vertices' index
+     *  0───1
+     *  │╲  │╲
+     *  │ 3───2
+     *  4─│─5 │
+     *   ╲│  ╲│
+     *    7───6
+     *
+     * Faces & Template
+     *      0┌─────┐1
+     *       │  0  │
+     * 0    3│ TOP │2    1     0
+     * ┌─────┼─────┼─────┬─────┐
+     * │  1  │  2  │  3  │  4  │
+     * │ LEF │ FRO │ RIG │ BAC │
+     * └─────┼─────┼─────┴─────┘
+     * 4    7│  5  │6    5     4
+     *       │ BOT │
+     *      4└─────┘5
+     */
+
+    unsigned int faces[6][4]{
+        {0, 3, 2, 1},
+        {0, 4, 7, 3},
+        {3, 7, 6, 2},
+        {2, 6, 5, 1},
+        {1, 5, 4, 0},
+        {7, 4, 5, 6}
+    };
+
+    Point positions[8]{
+        {-0.5f, 0.5f,  -0.5f},
+        {0.5f,  0.5f,  -0.5f},
+        {0.5f,  0.5f,  0.5f},
+        {-0.5f, 0.5f,  0.5f},
+        {-0.5f, -0.5f, -0.5f},
+        {0.5f,  -0.5f, -0.5f},
+        {0.5f,  -0.5f, 0.5f},
+        {-0.5f, -0.5f, 0.5f}
+    };
+
+    Vector normals[6]{
+        {0.0f,  1.0f,  0.0f},
+        {-1.0f, 0.0f,  0.0f},
+        {0.0f,  0.0f,  1.0f},
+        {1.0f,  0.0f,  0.0f},
+        {0.0f,  0.0f,  -1.0f},
+        {0.0f,  -1.0f, 0.0f}
+    };
+
+    constexpr float n1_3 = 1.0f / 3.0f;
+    constexpr float n2_3 = 2.0f / 3.0f;
+
+    TexCoord texCoords[6]{
+        {0.25f, 1.0f},
+        {0.00f, n2_3},
+        {0.25f, n2_3},
+        {0.50f, n2_3},
+        {0.75f, n2_3},
+        {0.25f, n1_3}
+    };
+
+    for(int i = 0 ; i < 6 ; ++i) {
+        mesh.addPosition(positions[faces[i][0]]);
+        mesh.addNormal(normals[i]);
+        mesh.addTexCoord(texCoords[i]);
+
+        mesh.addPosition(positions[faces[i][1]]);
+        mesh.addNormal(normals[i]);
+        mesh.addTexCoord(texCoords[i].x, texCoords[i].y - n1_3);
+
+        mesh.addPosition(positions[faces[i][2]]);
+        mesh.addNormal(normals[i]);
+        mesh.addTexCoord(texCoords[i].x + 0.25f, texCoords[i].y - n1_3);
+
+        mesh.addPosition(positions[faces[i][3]]);
+        mesh.addNormal(normals[i]);
+        mesh.addTexCoord(texCoords[i].x + 0.25f, texCoords[i].y);
 
         mesh.addFace((i * 4), (i * 4) + 1, (i * 4) + 2, (i * 4) + 3);
     }
