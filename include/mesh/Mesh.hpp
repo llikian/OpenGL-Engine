@@ -106,15 +106,15 @@ public:
 
     /**
      * @brief Adds a triangle to the indices.
-     * @param top, right, left The triangle's indices.
+     * @param top, left, right The triangle's indices.
      */
-    void addTriangle(unsigned int top, unsigned int right, unsigned int left);
+    void addTriangle(unsigned int top, unsigned int left, unsigned int right);
 
     /**
      * @brief Adds a face to the indices.
-     * @param topL, topR, bottomR, bottomL The face's indices.
+     * @param topL, bottomL, bottomR, topR The face's indices.
      */
-    void addFace(unsigned int topL, unsigned int topR, unsigned int bottomR, unsigned int bottomL);
+    void addFace(unsigned int topL, unsigned int bottomL, unsigned int bottomR, unsigned int topR);
 
     /**
      * @brief Getter for the primitive member.

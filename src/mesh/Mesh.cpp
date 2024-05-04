@@ -137,24 +137,24 @@ void Mesh::addIndex(unsigned int index) {
     indices.push_back(index);
 }
 
-void Mesh::addTriangle(unsigned int top, unsigned int right, unsigned int left) {
+void Mesh::addTriangle(unsigned int top, unsigned int left, unsigned int right) {
     indices.push_back(top);
-    indices.push_back(right);
     indices.push_back(left);
+    indices.push_back(right);
 }
 
-void Mesh::addFace(unsigned int topL, unsigned int topR,
-                   unsigned int bottomR, unsigned int bottomL) {
+void Mesh::addFace(unsigned int topL, unsigned int bottomL,
+                   unsigned int bottomR, unsigned int topR) {
 
     // First Triangle
     indices.push_back(topL);
-    indices.push_back(topR);
+    indices.push_back(bottomL);
     indices.push_back(bottomR);
 
     // Second Triangle
-    indices.push_back(bottomR);
-    indices.push_back(bottomL);
     indices.push_back(topL);
+    indices.push_back(bottomR);
+    indices.push_back(topR);
 }
 
 unsigned int Mesh::getPrimitive() const {
