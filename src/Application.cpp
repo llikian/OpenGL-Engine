@@ -93,10 +93,20 @@ void Application::run() {
 
     Texture texContainer("data/textures/container.jpg");
     Texture texCube("data/textures/cube.png");
+    Texture texGrass("data/textures/grass_block.png");
+    Texture texDirt("data/textures/dirt.png");
 
     Point lightPos;
 
     const float bgValue = 0.1f;
+
+    std::vector<Point> cubes;
+    int size = 10;
+    for(int i = -size ; i < size ; ++i) {
+        for(int j = -size ; j < size ; ++j) {
+            cubes.emplace_back(i, rand() % 4, j);
+        }
+    }
 
     /**** Main Loop ****/
     while(!glfwWindowShouldClose(window)) {
@@ -108,8 +118,8 @@ void Application::run() {
         delta = glfwGetTime() - time;
         time = glfwGetTime();
 
-        lightPos = 10.0f * vec3(cosf(time), sinf(time), cosf(time));
-//        lightPos = 10.0f * vec3(1.0f);
+//        lightPos = 10.0f * vec3(cosf(time), sinf(time), cosf(time));
+        lightPos = 10.0f * vec3(1.0f);
 
         shader->use();
         shader->setUniform("cameraPos", camera.getPosition());
@@ -119,16 +129,28 @@ void Application::run() {
         axis.draw();
         grid.draw();
 
-        bindTexture(0);
-        sphere.draw();
+//        bindTexture(0);
+//        sphere.draw();
+//
+//        bindTexture(texContainer);
+//        calculateMVP(translate(3.0f, 0.0f, 0.0f));
+//        cube.draw();
+//
+//        bindTexture(texGrass);
+//        calculateMVP(translate(-3.0f, 0.0f, 0.0f));
+//        tcube.draw();
 
-        bindTexture(texContainer);
-        calculateMVP(translate(3.0f, 0.0f, 0.0f));
-        cube.draw();
+        for(const auto& pos: cubes) {
+            bindTexture(texGrass);
+            calculateMVP(translate(pos));
+            tcube.draw();
 
-        bindTexture(texCube);
-        calculateMVP(translate(-3.0f, 0.0f, 0.0f));
-        tcube.draw();
+            bindTexture(texDirt);
+            for(int i = 0 ; i <= pos.y ; ++i) {
+                calculateMVP(translate(pos.x, pos.y - i, pos.z));
+                cube.draw();
+            }
+        }
 
         calculateMVP(translate(lightPos) * scale(0.2f));
         sphere.draw();
