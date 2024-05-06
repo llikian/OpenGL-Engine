@@ -235,7 +235,7 @@ Mesh Meshes::grid(float size, int divisions) {
     return mesh;
 }
 
-Mesh Meshes::axis(float size) {
+Mesh Meshes::axes(float size) {
     Mesh mesh(GL_LINES);
 
     const Point axes[3]{

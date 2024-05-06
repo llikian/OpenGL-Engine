@@ -33,11 +33,11 @@ namespace Meshes {
     Mesh grid(float size, int divisions);
 
     /**
-     * @brief Creates the mesh for the axes. The x axis is red, the y axis is green and the z axis
+     * @brief Creates the mesh for the axes. The x axis is red, the y axis is green and the z axes
      * is blue.
-     * @param size The size of the line for each axis.
+     * @param size The size of the line for each axes.
      */
-    Mesh axis(float size);
+    Mesh axes(float size);
 
     /**
      * @brief Creates the mesh for a sphere with a radius of 1.
