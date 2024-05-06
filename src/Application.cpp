@@ -15,7 +15,7 @@
 Application::Application()
     : window(nullptr), width(1600), height(900),
       time(0), delta(0),
-      wireframe(false), cullface(true), cursorVisible(false),
+      wireframe(false), cullface(true), cursorVisible(false), areAxesDrawn(true), isGridDrawn(true),
       shader(nullptr),
       projection(perspective(M_PI_4f, static_cast<float>(width) / height, 0.1f, 100.0f)),
       camera(Point(0.0f, 2.0f, 5.0f)) {
@@ -85,7 +85,7 @@ Application::~Application() {
 
 void Application::run() {
     Mesh grid = Meshes::grid(10.0f, 10);
-    Mesh axis = Meshes::axis(1.0f);
+    Mesh axes = Meshes::axes(1.0f);
     Mesh cube = Meshes::cube();
     Mesh tcube = Meshes::texturedCube();
     Mesh wcube = Meshes::wireframeCube();
@@ -100,14 +100,6 @@ void Application::run() {
     Point lightPos(20.0f);
 
     const float bgValue = 0.1f;
-
-    std::vector<Point> cubes;
-    int size = 10;
-    for(int i = -size ; i < size ; ++i) {
-        for(int j = -size ; j < size ; ++j) {
-            cubes.emplace_back(i, rand() % 4, j);
-        }
-    }
 
     /**** Main Loop ****/
     while(!glfwWindowShouldClose(window)) {
@@ -127,8 +119,8 @@ void Application::run() {
         calculateMVP(Matrix4(1.0f));
 
         bindTexture(0);
-        axis.draw();
-        grid.draw();
+        if(areAxesDrawn) { axes.draw(); }
+        if(isGridDrawn) { grid.draw(); }
 
         sphere.draw();
 
@@ -210,6 +202,16 @@ void Application::handleKeyboardEvents() {
                     keys[key.first] = false;
 
                     break;
+                case GLFW_KEY_Q:
+                    areAxesDrawn = !areAxesDrawn;
+                    keys[key.first] = false;
+
+                    break;
+                case GLFW_KEY_G:
+                    isGridDrawn = !isGridDrawn;
+                    keys[key.first] = false;
+
+                    break;
                 case GLFW_KEY_W:
                     camera.move(CameraControls::forward, delta);
                     break;
@@ -234,7 +236,7 @@ void Application::handleKeyboardEvents() {
 }
 
 void Application::calculateMVP(const Matrix4& model) {
-    shader->setUniform("mvp", camera.getVPmatrix(projection) * model);
+    shader->setUniform("mvp", std::move(camera.getVPmatrix(projection) * model));
     shader->setUniform("model", model);
 }
 
