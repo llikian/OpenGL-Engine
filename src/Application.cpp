@@ -45,9 +45,9 @@ Application::Application()
     glfwSetWindowSizeCallback(window, windowSizeCallback);
     glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
     glfwSetKeyCallback(window, keyCallback);
-    glfwSetMouseButtonCallback(window, mouseButtonCallback);
+//    glfwSetMouseButtonCallback(window, mouseButtonCallback);
     glfwSetCursorPosCallback(window, cursorPositionCallback);
-    glfwSetScrollCallback(window, scrollCallback);
+//    glfwSetScrollCallback(window, scrollCallback);
 
     /**** GLAD ****/
     if(!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {

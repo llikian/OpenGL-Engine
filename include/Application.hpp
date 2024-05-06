@@ -125,7 +125,7 @@ private:
     bool wireframe;     ///< Whether to display in wireframe mode.
     bool cullface;      ///< Whether face culling is activated.
     bool cursorVisible; ///< Whether the cursor is currently visible.
-    bool areAxesDrawn;   ///< Whether the axes are drawn.
+    bool areAxesDrawn;  ///< Whether the axes are drawn.
     bool isGridDrawn;   ///< Whether the grid is drawn.
 
     Shader* shader; ///< The default shader program.
