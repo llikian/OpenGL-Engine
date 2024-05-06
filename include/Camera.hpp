@@ -36,10 +36,12 @@ public:
     Camera(const Point& position);
 
     /**
-     * @brief Calculates the look-at matrix corresponding to the camera's position, yaw and pitch.
-     * @return The look-at or view matrix.
+     * @brief Calculates the product of the projection matrix with the view (or look-at) matrix.
+     * @param projection The projection matrix.
+     * @return The product of the projection matrix with the view (or look-at) matrix corresponding
+     * to the camera.
      */
-    Matrix4 getLookAt();
+    Matrix4 getVPmatrix(const Matrix4& projection);
 
     /**
      * @brief Getter for the position member.
@@ -63,7 +65,14 @@ public:
 private:
     Point position; ///< The camera's position.
 
-    Vector front; ///< The direction the camera is looking in.
     float yaw;    ///< The camera's yaw ("left-right") angle.
     float pitch;  ///< The camera's pitch ("forward-back") angle.
+
+    Vector front; ///< The front vector, the direction the camera is looking in.
+    Vector right; ///< The right vector, cross product of the front vector and the world up.
+    Vector up;    ///< The up vector, cross product of the right vector and the front vector.
+
+    const Vector worldUp;
+
+    Matrix4 view; ///< The view matrix corresponding to the camera.
 };

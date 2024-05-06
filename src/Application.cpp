@@ -95,8 +95,9 @@ void Application::run() {
     Texture texCube("data/textures/cube.png");
     Texture texGrass("data/textures/grass_block.png");
     Texture texDirt("data/textures/dirt.png");
+    Texture texStone("data/textures/stone.png");
 
-    Point lightPos;
+    Point lightPos(20.0f);
 
     const float bgValue = 0.1f;
 
@@ -119,38 +120,33 @@ void Application::run() {
         time = glfwGetTime();
 
 //        lightPos = 10.0f * vec3(cosf(time), sinf(time), cosf(time));
-        lightPos = 10.0f * vec3(1.0f);
 
         shader->use();
         shader->setUniform("cameraPos", camera.getPosition());
         shader->setUniform("lightPos", lightPos);
         calculateMVP(Matrix4(1.0f));
 
+        bindTexture(0);
         axis.draw();
         grid.draw();
 
-//        bindTexture(0);
-//        sphere.draw();
-//
-//        bindTexture(texContainer);
-//        calculateMVP(translate(3.0f, 0.0f, 0.0f));
-//        cube.draw();
-//
-//        bindTexture(texGrass);
-//        calculateMVP(translate(-3.0f, 0.0f, 0.0f));
-//        tcube.draw();
+        sphere.draw();
 
-        for(const auto& pos: cubes) {
-            bindTexture(texGrass);
-            calculateMVP(translate(pos));
-            tcube.draw();
+        bindTexture(texContainer);
+        calculateMVP(translate(3.0f, 0.0f, 0.0f));
+        cube.draw();
 
-            bindTexture(texDirt);
-            for(int i = 0 ; i <= pos.y ; ++i) {
-                calculateMVP(translate(pos.x, pos.y - i, pos.z));
-                cube.draw();
-            }
-        }
+        bindTexture(texGrass);
+        calculateMVP(translate(-3.0f, 1.0f, 0.0f));
+        tcube.draw();
+
+        bindTexture(texDirt);
+        calculateMVP(translate(-3.0f, 0.0f, 0.0f));
+        cube.draw();
+
+        bindTexture(texStone);
+        calculateMVP(translate(-3.0f, -1.0f, 0.0f));
+        cube.draw();
 
         calculateMVP(translate(lightPos) * scale(0.2f));
         sphere.draw();
@@ -163,7 +159,7 @@ void Application::setWindowSize(int width, int height) {
     this->width = width;
     this->height = height;
 
-    projection[0][0] = 1.0f / (static_cast<float>(width) / height * tanf(M_PI_4f / 2.0f));
+    projection[0][0] = 1.0f / (tanf(M_PI_4f / 2.0f) * static_cast<float>(width) / height);
 }
 
 void Application::handleKeyCallback(int key, int action, int /* mods */) {
@@ -238,7 +234,7 @@ void Application::handleKeyboardEvents() {
 }
 
 void Application::calculateMVP(const Matrix4& model) {
-    shader->setUniform("mvp", projection * camera.getLookAt() * model);
+    shader->setUniform("mvp", camera.getVPmatrix(projection) * model);
     shader->setUniform("model", model);
 }
 
