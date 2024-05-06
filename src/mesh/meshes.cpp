@@ -248,7 +248,7 @@ Mesh Meshes::axes(float size) {
         mesh.addPosition(0.0f, 0.0f, 0.0f);
         mesh.addColor(p);
 
-        mesh.addPosition(p);
+        mesh.addPosition(size * p);
         mesh.addColor(p);
     }
 
