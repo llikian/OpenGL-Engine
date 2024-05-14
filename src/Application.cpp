@@ -14,8 +14,9 @@
 
 Application::Application()
     : window(nullptr), width(1600), height(900),
-      time(0), delta(0),
-      wireframe(false), cullface(true), cursorVisible(false), areAxesDrawn(true), isGridDrawn(true),
+      time(0.0f), delta(0.0f),
+      wireframe(false), cullface(true), cursorVisible(false),
+      areAxesDrawn(false), isGridDrawn(false), isGroundDrawn(true),
       shader(nullptr),
       projection(perspective(M_PI_4f, static_cast<float>(width) / height, 0.1f, 100.0f)),
       camera(Point(0.0f, 2.0f, 5.0f)) {
@@ -85,17 +86,26 @@ Application::~Application() {
 
 void Application::run() {
     Mesh grid = Meshes::grid(10.0f, 10);
-    Mesh axes = Meshes::axes(1.0f);
+    Mesh axes = Meshes::axes(100.0f);
     Mesh cube = Meshes::cube();
     Mesh tcube = Meshes::texturedCube();
     Mesh wcube = Meshes::wireframeCube();
     Mesh sphere = Meshes::sphere(16, 32);
+    Mesh plane = Meshes::plane(200.0f);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     Texture texContainer("data/textures/container.jpg");
     Texture texCube("data/textures/cube.png");
     Texture texGrass("data/textures/grass_block.png");
     Texture texDirt("data/textures/dirt.png");
     Texture texStone("data/textures/stone.png");
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    Texture texGround("data/textures/ground.png");
 
     Point lightPos(20.0f);
 
@@ -121,23 +131,27 @@ void Application::run() {
         bindTexture(0);
         if(areAxesDrawn) { axes.draw(); }
         if(isGridDrawn) { grid.draw(); }
+        if(isGroundDrawn) { bindTexture(texGround); plane.draw(); }
 
         sphere.draw();
 
+        calculateMVP(translate(0.0f, 1.75f, 0.0f) * scale(0.75f));
+        sphere.draw();
+
         bindTexture(texContainer);
-        calculateMVP(translate(3.0f, 0.0f, 0.0f));
+        calculateMVP(translate(3.0f, 0.5f, 0.0f));
         cube.draw();
 
         bindTexture(texGrass);
-        calculateMVP(translate(-3.0f, 1.0f, 0.0f));
+        calculateMVP(translate(-3.0f, 2.5f, 0.0f));
         tcube.draw();
 
         bindTexture(texDirt);
-        calculateMVP(translate(-3.0f, 0.0f, 0.0f));
+        calculateMVP(translate(-3.0f, 1.5f, 0.0f));
         cube.draw();
 
         bindTexture(texStone);
-        calculateMVP(translate(-3.0f, -1.0f, 0.0f));
+        calculateMVP(translate(-3.0f, 0.5f, 0.0f));
         cube.draw();
 
         calculateMVP(translate(lightPos) * scale(0.2f));
@@ -209,6 +223,11 @@ void Application::handleKeyboardEvents() {
                     break;
                 case GLFW_KEY_G:
                     isGridDrawn = !isGridDrawn;
+                    keys[key.first] = false;
+
+                    break;
+                case GLFW_KEY_H:
+                    isGroundDrawn = !isGroundDrawn;
                     keys[key.first] = false;
 
                     break;

@@ -127,6 +127,7 @@ private:
     bool cursorVisible; ///< Whether the cursor is currently visible.
     bool areAxesDrawn;  ///< Whether the axes are drawn.
     bool isGridDrawn;   ///< Whether the grid is drawn.
+    bool isGroundDrawn; ///< Whether the ground is drawn.
 
     Shader* shader; ///< The default shader program.
 
