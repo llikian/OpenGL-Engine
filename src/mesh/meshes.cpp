@@ -258,14 +258,14 @@ Mesh Meshes::axes(float size) {
 Mesh Meshes::sphere(int divTheta, int divPhi) {
     Mesh mesh(GL_TRIANGLES);
 
-    const double thetaStep = M_PI /  divTheta;
-    const double phiStep =  2.0f * M_PI / divPhi;
+    const double thetaStep = M_PI / divTheta;
+    const double phiStep = 2.0f * M_PI / divPhi;
 
     double theta = -M_PI_2 + thetaStep;
     double phi = 0.0f;
 
     vec3 point;
-    for(int i = 0 ; i < divTheta - 1; ++i) {
+    for(int i = 0 ; i < divTheta - 1 ; ++i) {
         phi = 0.0;
 
         for(int j = 0 ; j < divPhi ; ++j) {
@@ -320,3 +320,37 @@ Mesh Meshes::sphere(int divTheta, int divPhi) {
     return mesh;
 }
 
+Mesh Meshes::plane(float size) {
+    Mesh mesh(GL_TRIANGLES);
+
+    size /= 2;
+
+    mesh.addPosition(-size, 0.0f, size);
+    mesh.addTexCoord(0.0f, size);
+
+    mesh.addPosition(size, 0.0f, size);
+    mesh.addTexCoord(size, size);
+
+    mesh.addPosition(size, 0.0f, -size);
+    mesh.addTexCoord(size, 0.0f);
+
+    mesh.addPosition(-size, 0.0f, -size);
+    mesh.addTexCoord(0.0f, 0.0f);
+
+    mesh.addFace(0, 1, 2, 3);
+
+    return mesh;
+}
+
+Mesh Meshes::screen() {
+    Mesh mesh(GL_TRIANGLES);
+
+    mesh.addPosition(-1.0f, 1.0f, 0.0f);
+    mesh.addPosition(-1.0f, -1.0f, 0.0f);
+    mesh.addPosition(1.0f, -1.0f, 0.0f);
+    mesh.addPosition(1.0f, 1.0f, 0.0f);
+
+    mesh.addFace(0, 1, 2, 3);
+
+    return mesh;
+}

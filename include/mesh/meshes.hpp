@@ -45,4 +45,17 @@ namespace Meshes {
      * @param divPhi
      */
     Mesh sphere(int divTheta, int divPhi);
+
+    /**
+     * @brief Creates the mesh for a plane with a certain size. The plane will be a cut of the XZ
+     * plane and will be centered at the origin.
+     * @param size The size of the plane, its dimensions will be (size ; 0 ; size).
+     */
+    Mesh plane(float size);
+
+    /**
+     * @brief Creates the mesh for the screen. It's just a plane from (1 ; 1 ; 0) to (-1 ; -1 ; 0)
+     * that can be used to render things directly on the screen.
+     */
+    Mesh screen();
 }
