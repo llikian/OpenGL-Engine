@@ -5,7 +5,7 @@
 
 #version 460 core
 
-out vec4 FragColor;
+out vec4 fragColor;
 
 in vec3 position;
 in vec3 normal;
@@ -17,7 +17,7 @@ uniform sampler2D texture0;
 uniform vec3 cameraPos;
 uniform vec3 lightPos;
 
-vec4 phongLighting() {
+vec3 phongLighting() {
     const vec3 lightColor = vec3(1.0f);
 
     // Ambient Lighting
@@ -33,21 +33,21 @@ vec4 phongLighting() {
     const vec3 reflectionDir = reflect(-lightDirection, normal);
     float specular = specularStreght * pow(max(dot(viewDirection, reflectionDir), 0.0f), 32.0f);
 
-    return vec4((ambient + diffuse + specular) * lightColor, 1.0f);
+    return (ambient + diffuse + specular) * lightColor;
 }
 
 void main() {
-    FragColor = vec4(1.0f);
+    fragColor = vec4(1.0f);
 
     if (((attributes >> 1) & 1u) == 1u) {
-        FragColor = phongLighting();
+        fragColor.xyz = phongLighting();
     }
 
     if (((attributes >> 2) & 1u) == 1u) {
-        FragColor *= texture(texture0, texCoord);
+        fragColor *= texture(texture0, texCoord);
     }
 
     if (((attributes >> 3) & 1u) == 1u) {
-        FragColor.xyz *= color;
+        fragColor.xyz *= color;
     }
 }
