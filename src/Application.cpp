@@ -86,7 +86,7 @@ Application::~Application() {
 
 void Application::run() {
     Mesh grid = Meshes::grid(10.0f, 10);
-    Mesh axes = Meshes::axes(100.0f);
+    Mesh axes = Meshes::axes(1.0f);
     Mesh cube = Meshes::cube();
     Mesh tcube = Meshes::texturedCube();
     Mesh wcube = Meshes::wireframeCube();
@@ -111,6 +111,8 @@ void Application::run() {
 
     const float bgValue = 0.1f;
 
+    vec3 temp;
+
     /**** Main Loop ****/
     while(!glfwWindowShouldClose(window)) {
         handleEvents();
@@ -126,14 +128,20 @@ void Application::run() {
         shader->use();
         shader->setUniform("cameraPos", camera.getPosition());
         shader->setUniform("lightPos", lightPos);
-        calculateMVP(Matrix4(1.0f));
 
+        calculateMVP(Matrix4(1.0f));
         bindTexture(0);
-        if(areAxesDrawn) { axes.draw(); }
+
         if(isGridDrawn) { grid.draw(); }
         if(isGroundDrawn) { bindTexture(texGround); plane.draw(); }
 
         sphere.draw();
+
+        if(areAxesDrawn) {
+            temp = camera.getPosition() + 2.0f * camera.getDirection();
+            calculateMVP(translate(temp) * scale(0.5f));
+            axes.draw();
+        }
 
         calculateMVP(translate(0.0f, 1.75f, 0.0f) * scale(0.75f));
         sphere.draw();
