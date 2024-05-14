@@ -29,6 +29,18 @@ Point Camera::getPosition() const {
     return position;
 }
 
+Point Camera::getDirection() const {
+    return front;
+}
+
+Point Camera::getRight() const {
+    return right;
+}
+
+Point Camera::getUp() const {
+    return up;
+}
+
 void Camera::move(CameraControls direction, float deltaTime) {
     const float speed = 5.0f * deltaTime;
 

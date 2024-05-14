@@ -50,6 +50,24 @@ public:
     Point getPosition() const;
 
     /**
+     * @brief Getter for the front member.
+     * @return The direction of the camera.
+     */
+    Point getDirection() const;
+
+    /**
+     * @brief Getter for the right member.
+     * @return The right vector of the camera.
+     */
+    Point getRight() const;
+
+    /**
+     * @brief Getter for the up member.
+     * @return The up vector of the camera.
+     */
+    Point getUp() const;
+
+    /**
      * @brief Moves the camera's position in the specified direction.
      * @param direction The direction of the movement.
      * @param deltaTime How much time has passed since the last frame in seconds.
