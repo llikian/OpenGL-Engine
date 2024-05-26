@@ -63,9 +63,14 @@ Matrix4& Matrix4::operator -=(const Matrix4& mat) {
 }
 
 Matrix4& Matrix4::operator *=(const Matrix4& mat) {
+    Matrix4 copy = *this;
+
     for(int i = 0 ; i < 4 ; ++i) {
         for(int j = 0 ; j < 4 ; ++j) {
-            values[i][j] *= mat[i][j];
+            values[i][j] += copy[i][0] * mat[0][j];
+            values[i][j] += copy[i][1] * mat[1][j];
+            values[i][j] += copy[i][2] * mat[2][j];
+            values[i][j] += copy[i][3] * mat[3][j];
         }
     }
 
