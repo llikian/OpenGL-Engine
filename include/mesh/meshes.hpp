@@ -47,6 +47,13 @@ namespace Meshes {
     Mesh sphere(int divTheta, int divPhi);
 
     /**
+     * @brief Creates the mesh for a sphere with a radius of 1.
+     * @param divTheta
+     * @param divPhi
+     */
+    Mesh texturedSphere(int divTheta, int divPhi);
+
+    /**
      * @brief Creates the mesh for a plane with a certain size. The plane will be a cut of the XZ
      * plane and will be centered at the origin.
      * @param size The size of the plane, its dimensions will be (size ; 0 ; size).

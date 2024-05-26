@@ -320,6 +320,52 @@ Mesh Meshes::sphere(int divTheta, int divPhi) {
     return mesh;
 }
 
+Mesh Meshes::texturedSphere(int divTheta, int divPhi) {
+    Mesh mesh(GL_TRIANGLES);
+
+    const double thetaStep = M_PI / divTheta;
+    const double phiStep = 2.0 * M_PI / divPhi;
+
+    double theta = -M_PI_2 + thetaStep;
+    double phi = 0.0;
+
+    vec3 point;
+    for(int i = 0 ; i < divTheta ; ++i) {
+        phi = 0.0;
+
+        for(int j = 0 ; j <= divPhi ; ++j) {
+            point.x = cos(theta) * cos(phi);
+            point.y = sin(theta);
+            point.z = cos(theta) * sin(phi);
+
+            mesh.addPosition(point);
+            mesh.addNormal(point);
+            mesh.addTexCoord(static_cast<float>(j) / divPhi, 0.5 + point.y / 2.0);
+
+            phi += phiStep;
+        }
+
+        theta += thetaStep;
+    }
+
+    auto index = [&](int column, int row) -> int {
+        return row + column * (divPhi + 1);
+    };
+
+    for(int i = 0 ; i < divTheta - 1 ; ++i) {
+        for(int j = 0 ; j < divPhi ; ++j) {
+            mesh.addFace(
+                index(i, j),
+                index(i + 1, j),
+                index(i + 1, j + 1),
+                index(i, j + 1)
+            );
+        }
+    }
+
+    return mesh;
+}
+
 Mesh Meshes::plane(float size) {
     Mesh mesh(GL_TRIANGLES);
 
