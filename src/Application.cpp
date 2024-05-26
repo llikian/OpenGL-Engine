@@ -111,8 +111,6 @@ void Application::run() {
 
     const float bgValue = 0.1f;
 
-    vec3 temp;
-
     /**** Main Loop ****/
     while(!glfwWindowShouldClose(window)) {
         handleEvents();
@@ -130,16 +128,20 @@ void Application::run() {
         shader->setUniform("lightPos", lightPos);
 
         calculateMVP(Matrix4(1.0f));
+
+        if(isGroundDrawn) {
+            bindTexture(texGround);
+            plane.draw();
+        }
+
         bindTexture(0);
 
         if(isGridDrawn) { grid.draw(); }
-        if(isGroundDrawn) { bindTexture(texGround); plane.draw(); }
-
         sphere.draw();
 
         if(areAxesDrawn) {
-            temp = camera.getPosition() + 2.0f * camera.getDirection();
-            calculateMVP(translate(temp) * scale(0.5f));
+            calculateMVP(translate(camera.getPosition() + 2.0f * camera.getDirection())
+                         * scale(0.5f));
             axes.draw();
         }
 
@@ -199,44 +201,44 @@ void Application::handleEvents() {
 }
 
 void Application::handleKeyboardEvents() {
-    for(const std::pair<int, bool> key: keys) {
-        if(key.second) {
-            switch(key.first) {
+    for(const auto& [key, isKeyActive]: keys) {
+        if(isKeyActive) {
+            switch(key) {
                 case GLFW_KEY_ESCAPE:
                     glfwSetWindowShouldClose(window, true);
                     break;
                 case GLFW_KEY_Z:
                     glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
                     wireframe = !wireframe;
-                    keys[key.first] = false;
+                    keys[key] = false;
 
                     break;
                 case GLFW_KEY_C:
                     (cullface ? glDisable : glEnable)(GL_CULL_FACE);
                     cullface = !cullface;
-                    keys[key.first] = false;
+                    keys[key] = false;
 
                     break;
                 case GLFW_KEY_F5:
                     glfwSetInputMode(window, GLFW_CURSOR,
                                      cursorVisible ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
                     cursorVisible = !cursorVisible;
-                    keys[key.first] = false;
+                    keys[key] = false;
 
                     break;
                 case GLFW_KEY_Q:
                     areAxesDrawn = !areAxesDrawn;
-                    keys[key.first] = false;
+                    keys[key] = false;
 
                     break;
                 case GLFW_KEY_G:
                     isGridDrawn = !isGridDrawn;
-                    keys[key.first] = false;
+                    keys[key] = false;
 
                     break;
                 case GLFW_KEY_H:
                     isGroundDrawn = !isGroundDrawn;
-                    keys[key.first] = false;
+                    keys[key] = false;
 
                     break;
                 case GLFW_KEY_W:
