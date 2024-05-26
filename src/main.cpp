@@ -14,7 +14,7 @@ int main() {
     try {
         app.run();
     } catch(const std::exception& exception) {
-        std::cout << "ERROR : " << exception.what() << '\n';
+        std::cerr << "ERROR : " << exception.what() << '\n';
         return -1;
     }
 
