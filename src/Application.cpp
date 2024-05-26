@@ -91,6 +91,7 @@ void Application::run() {
     Mesh tcube = Meshes::texturedCube();
     Mesh wcube = Meshes::wireframeCube();
     Mesh sphere = Meshes::sphere(16, 32);
+    Mesh tsphere = Meshes::texturedSphere(16, 32);
     Mesh plane = Meshes::plane(200.0f);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -101,6 +102,7 @@ void Application::run() {
     Texture texGrass("data/textures/grass_block.png");
     Texture texDirt("data/textures/dirt.png");
     Texture texStone("data/textures/stone.png");
+    Texture texVenus("data/textures/venus.jpg");
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -137,13 +139,16 @@ void Application::run() {
         bindTexture(0);
 
         if(isGridDrawn) { grid.draw(); }
-        sphere.draw();
 
         if(areAxesDrawn) {
             calculateMVP(translate(camera.getPosition() + 2.0f * camera.getDirection())
                          * scale(0.5f));
             axes.draw();
         }
+
+        bindTexture(texVenus);
+        calculateMVP(Matrix4(1.0f));
+        tsphere.draw();
 
         calculateMVP(translate(0.0f, 1.75f, 0.0f) * scale(0.75f));
         sphere.draw();
