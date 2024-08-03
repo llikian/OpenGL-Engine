@@ -19,8 +19,10 @@ uniform mat4 mvp;
 uniform mat4 model;
 
 void main() {
-    gl_Position = mvp * vec4(aPos, 1.0f);
-    position = (model * vec4(aPos, 1.0f)).xyz;
+    vec4 pos = vec4(aPos, 1.0f);
+
+    gl_Position = mvp * pos;
+    position = (model * pos).xyz;
     normal = normalize(transpose(inverse(mat3(model))) * aNormal);
     texCoord = aTexCoord;
     color = aColor;
