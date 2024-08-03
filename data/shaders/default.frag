@@ -28,10 +28,9 @@ vec3 phongLighting() {
     const float diffuse = max(dot(normal, lightDirection), 0.0f);
 
     // Specular lighting
-    const float specularStreght = 0.25f;
     const vec3 viewDirection = normalize(cameraPos - position);
     const vec3 reflectionDir = reflect(-lightDirection, normal);
-    float specular = specularStreght * pow(max(dot(viewDirection, reflectionDir), 0.0f), 32.0f);
+    float specular = 0.25f * pow(max(dot(viewDirection, reflectionDir), 0.0f), 32.0f);
 
     return (ambient + diffuse + specular) * lightColor;
 }
