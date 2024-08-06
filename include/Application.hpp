@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "Camera.hpp"
+#include "Light.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
 #include "maths/Matrix4.hpp"
@@ -66,6 +67,16 @@ public:
 
 private:
     /**** Private Methods ****/
+
+    /**
+     * @brief Initializes all the uniforms to their correct default values.
+     */
+    void initUniforms();
+
+    /**
+     * @brief Updates all the uniforms.
+     */
+    void updateUniforms();
 
     /**
      * @brief Polls and handles events with glfw.
@@ -134,4 +145,8 @@ private:
     Matrix4 projection; ///< The projection matrix.
 
     Camera camera; ///< A first person camera to move around the scene.
+
+    DirectionalLight directionalLight;   ///< Light used for global illumination.
+    FlashLight flashlight;               ///< A flashlight.
+    std::vector<PointLight> pointLights; ///< Point lights used to light up smaller areas.
 };

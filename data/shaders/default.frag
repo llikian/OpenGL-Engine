@@ -58,7 +58,6 @@ in vec3 color;
 
 uniform uint attributes;
 uniform vec3 cameraPos;
-uniform vec3 lightPos;
 
 uniform Material material;
 
@@ -74,14 +73,14 @@ vec3 calculatePointLights(vec3 viewDirection);
 void main() {
     fragColor = vec4(1.0f);
 
-    if(((attributes >> 1) & 1u) == 1u) { // Mesh has normals
+    if(((attributes >> 1) & 1u) == 1u) { // Mesh has normals.
         fragColor = vec4(0.0f, 0.0, 0.0, 1.0f);
         vec3 viewDirection = normalize(cameraPos - position);
 
 //        fragColor.xyz += calculateDirectionalLight(viewDirection);
         fragColor.xyz += calculateSpotLight(viewDirection);
-//        fragColor.xyz += calculatePointLights(viewDirection);
-    } else if(((attributes >> 2) & 1u) == 1u) { // Mesh doesn't have normals but has texture coords
+        fragColor.xyz += calculatePointLights(viewDirection);
+    } else if(((attributes >> 2) & 1u) == 1u) { // Mesh doesn't have normals but has texture coords.
         fragColor *= texture(material.diffuse, texCoord);
     } else { // Mesh has neither normals or texture coords.
         fragColor = vec4(1.0f);
@@ -127,8 +126,8 @@ vec3 calculateSpotLight(vec3 viewDirection) {
 
     float distance = length(spotlight.position - position);
     float attenuation = 1.0f / (spotlight.constant +
-    spotlight.linear * distance +
-    spotlight.quadratic * distance * distance);
+                                spotlight.linear * distance +
+                                spotlight.quadratic * distance * distance);
 
     float theta = dot(lightDirection, normalize(-spotlight.direction));
     float epsilon = spotlight.cutOff - spotlight.outerCutOff;

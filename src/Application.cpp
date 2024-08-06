@@ -70,51 +70,58 @@ Application::Application()
 
     glBindTexture(GL_TEXTURE_2D, 1);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, white);
+    
+    /**** Lights ****/
+    // Directional Light
+    directionalLight.direction = normalize(vec3(-2.0f, -3.0f, -2.0f));
+    directionalLight.ambient = vec3(0.1f);
+    directionalLight.diffuse = vec3(1.0f);
+    directionalLight.specular = vec3(1.0f);
+
+    // Flashlight
+    flashlight.cutOff = std::cos(radians(12.5f));
+    flashlight.outerCutOff = std::cos(radians(15.0f));
+
+    flashlight.constant = 1.0f;
+    flashlight.linear = 0.09f;
+    flashlight.quadratic = 0.032f;
+
+    flashlight.ambient = vec3(0.0f);
+    flashlight.diffuse = vec3(1.0f);
+    flashlight.specular = vec3(1.0f);
+    
+    // Point Lights
+    vec3 pointLightPositions[] {
+        vec3(5.0f, 1.0f, 5.0f),
+        vec3(5.0f, 1.0f, -5.0f),
+        vec3(-5.0f, 1.0f, 5.0f),
+        vec3(-5.0f, 1.0f, -5.0f)
+    };
+
+    vec3 pointLightColors[] {
+        vec3(1.0f, 0.0f, 0.0f),
+        vec3(0.0f, 1.0f, 0.0f),
+        vec3(0.0f, 0.0f, 1.0f),
+        vec3(1.0f, 0.0f, 1.0f)
+    };
+
+    pointLights.resize(4);
+    for(unsigned int i = 0 ; i < pointLights.size() ; ++i) {
+        pointLights[i].position = pointLightPositions[i];
+
+        pointLights[i].constant = 1.0f;
+        pointLights[i].linear = 0.09f;
+        pointLights[i].quadratic = 0.032f;
+
+        pointLights[i].ambient = vec3(0.25f);
+        pointLights[i].diffuse = pointLightColors[i];
+        pointLights[i].specular = vec3(1.0f);
+    }
 
     /**** Shaders & Uniforms ****/
     shader = new Shader("data/shaders/default.vert", "data/shaders/default.frag");
     shader->use();
-
-    shader->setUniform("material.diffuse", 0);
-    shader->setUniform("material.specular", 1);
-    shader->setUniform("material.shininess", 32.0f);
-
-    shader->setUniform("directionalLight.direction", normalize(vec3(-2.0f, -3.0f, -2.0f)));
-    shader->setUniform("directionalLight.ambient", 0.1f, 0.1f, 0.1f);
-    shader->setUniform("directionalLight.diffuse", 1.0f, 1.0f, 1.0f);
-    shader->setUniform("directionalLight.specular", 1.0f, 1.0f, 1.0f);
-
-    shader->setUniform("pointLights[0].position", 5.0f, 1.0f, 5.0f);
-    shader->setUniform("pointLights[1].position", 5.0f, 1.0f, -5.0f);
-    shader->setUniform("pointLights[2].position", -5.0f, 1.0f, 5.0f);
-    shader->setUniform("pointLights[3].position", -5.0f, 1.0f, -5.0f);
-    shader->setUniform("pointLights[0].diffuse", 1.0f, 0.0f, 0.0f);
-    shader->setUniform("pointLights[1].diffuse", 0.0f, 1.0f, 0.0f);
-    shader->setUniform("pointLights[2].diffuse", 0.0f, 0.0f, 1.0f);
-    shader->setUniform("pointLights[3].diffuse", 1.0f, 0.0f, 1.0f);
-    std::string nameStart = "pointLights[", name;
-    for(unsigned int i = 0 ; i < 4 ; ++i) {
-        name = nameStart + std::to_string(i) + "].";
-        shader->setUniform(name + "constant", 1.0f);
-        shader->setUniform(name + "linear", 0.09f);
-        shader->setUniform(name + "quadratic", 0.032f);
-
-        shader->setUniform(name + "ambient", 0.25f, 0.25f, 0.25f);
-        shader->setUniform(name + "specular", 1.0f, 1.0f, 1.0f);
-    }
-    
-    shader->setUniform("spotlight.cutOff", std::cos(radians(12.5f)));
-    shader->setUniform("spotlight.outerCutOff", std::cos(radians(15.0f)));
-
-    shader->setUniform("spotlight.constant", 1.0f);
-    shader->setUniform("spotlight.linear", 0.09f);
-    shader->setUniform("spotlight.quadratic", 0.032f);
-
-    shader->setUniform("spotlight.ambient", 0.0f, 0.0f, 0.0f);
-    shader->setUniform("spotlight.diffuse", 1.0f, 1.0f, 1.0f);
-    shader->setUniform("spotlight.specular", 1.0f, 1.0f, 1.0f);
-
-    calculateMVP(Matrix4(1.0f));
+    initUniforms();
 
     /**** Other ****/
     stbi_set_flip_vertically_on_load(true);
@@ -152,8 +159,6 @@ void Application::run() {
 
     Texture texGround("data/textures/ground.png");
 
-    Point lightPos(20.0f);
-
     const float bgValue = 0.1f;
 
     /**** Main Loop ****/
@@ -169,11 +174,7 @@ void Application::run() {
 //        lightPos = 10.0f * vec3(cosf(time), sinf(time), cosf(time));
 
         shader->use();
-        shader->setUniform("cameraPos", camera.getPosition());
-        shader->setUniform("lightPos", lightPos);
-        
-        shader->setUniform("spotlight.position", camera.getPosition());
-        shader->setUniform("spotlight.direction", camera.getDirection());
+        updateUniforms();
 
         calculateMVP(Matrix4(1.0f));
 
@@ -215,9 +216,6 @@ void Application::run() {
         calculateMVP(translate(-3.0f, 0.5f, 0.0f));
         cube.draw();
 
-        calculateMVP(translate(lightPos) * scale(0.2f));
-        sphere.draw();
-
         glfwSwapBuffers(window);
     }
 }
@@ -244,6 +242,48 @@ void Application::handleCursorPositionEvent(float xPos, float yPos) {
 
     mousePos.x = xPos;
     mousePos.y = yPos;
+}
+
+void Application::initUniforms() {
+    shader->setUniform("material.diffuse", 0);
+    shader->setUniform("material.specular", 1);
+    shader->setUniform("material.shininess", 32.0f);
+
+    shader->setUniform("directionalLight.direction", directionalLight.direction);
+    shader->setUniform("directionalLight.ambient", directionalLight.ambient);
+    shader->setUniform("directionalLight.diffuse", directionalLight.diffuse);
+    shader->setUniform("directionalLight.specular", directionalLight.specular);
+
+    shader->setUniform("spotlight.cutOff", flashlight.cutOff);
+    shader->setUniform("spotlight.outerCutOff", flashlight.outerCutOff);
+    shader->setUniform("spotlight.constant", flashlight.constant);
+    shader->setUniform("spotlight.linear", flashlight.linear);
+    shader->setUniform("spotlight.quadratic", flashlight.quadratic);
+    shader->setUniform("spotlight.ambient", flashlight.ambient);
+    shader->setUniform("spotlight.diffuse", flashlight.diffuse);
+    shader->setUniform("spotlight.specular", flashlight.specular);
+
+    std::string nameStart("pointLights["), name;
+    for(unsigned int i = 0 ; i < pointLights.size() ; ++i) {
+        name = nameStart + std::to_string(i) + "].";
+
+        shader->setUniform(name + "position", pointLights[i].position);
+        shader->setUniform(name + "constant", pointLights[i].constant);
+        shader->setUniform(name + "linear", pointLights[i].linear);
+        shader->setUniform(name + "quadratic", pointLights[i].quadratic);
+        shader->setUniform(name + "ambient", pointLights[i].ambient);
+        shader->setUniform(name + "diffuse", pointLights[i].diffuse);
+        shader->setUniform(name + "specular", pointLights[i].specular);
+    }
+
+    calculateMVP(Matrix4(1.0f));
+}
+
+void Application::updateUniforms() {
+    shader->setUniform("cameraPos", camera.getPosition());
+
+    shader->setUniform("spotlight.position", camera.getPosition());
+    shader->setUniform("spotlight.direction", camera.getDirection());
 }
 
 void Application::handleEvents() {
