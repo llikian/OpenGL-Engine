@@ -394,20 +394,20 @@ Mesh Meshes::nplane(float size) {
     size /= 2;
 
     mesh.addPosition(-size, 0.0f, size);
-    mesh.addTexCoord(0.0f, size);
     mesh.addNormal(0.0f, 1.0f, 0.0f);
+    mesh.addTexCoord(0.0f, size);
 
     mesh.addPosition(size, 0.0f, size);
-    mesh.addTexCoord(size, size);
     mesh.addNormal(0.0f, 1.0f, 0.0f);
+    mesh.addTexCoord(size, size);
 
     mesh.addPosition(size, 0.0f, -size);
-    mesh.addTexCoord(size, 0.0f);
     mesh.addNormal(0.0f, 1.0f, 0.0f);
+    mesh.addTexCoord(size, 0.0f);
 
     mesh.addPosition(-size, 0.0f, -size);
-    mesh.addTexCoord(0.0f, 0.0f);
     mesh.addNormal(0.0f, 1.0f, 0.0f);
+    mesh.addTexCoord(0.0f, 0.0f);
 
     mesh.addFace(0, 1, 2, 3);
 
