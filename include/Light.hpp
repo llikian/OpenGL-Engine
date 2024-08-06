@@ -56,3 +56,18 @@ struct SpotLight : public Light {
     float linear;    ///< The attenuation formula's linear component.
     float quadratic; ///< The attenuation formula's quadratic component.
 };
+
+/**
+ * @struct FlashLight
+ * @brief A spotlight that is located at the camera's position and looks in the same direction as
+ * the camera.
+ */
+struct FlashLight : public Light {
+    float cutOff;      ///< The cosinus of the radius of the spotlight.
+    float outerCutOff; ///< The cosinus of the radius of the outer edge of the spotlight.
+                       ///< Soft edges will appear between the cutoff and the outer cutoff angles.
+
+    float constant;  ///< The attenuation formula's constant component.
+    float linear;    ///< The attenuation formula's linear component.
+    float quadratic; ///< The attenuation formula's quadratic component.
+};
