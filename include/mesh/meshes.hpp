@@ -26,6 +26,11 @@ namespace Meshes {
     Mesh wireframeCube();
 
     /**
+     * @brief Creates the mesh for a cube without normals.
+     */
+    Mesh plainCube();
+
+    /**
      * @brief Creates the mesh for a grid on the XZ plane.
      * @param size Size of one line of the grid.
      * @param divisions Number of divisions on the grid.
