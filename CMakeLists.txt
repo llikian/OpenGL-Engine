@@ -22,6 +22,7 @@ set(SOURCES
         src/Application.cpp
         src/Camera.cpp
         src/Image.cpp
+        src/Light.cpp
         src/Shader.cpp
         src/Texture.cpp
 
