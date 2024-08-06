@@ -6,6 +6,7 @@
 #pragma once
 
 #include "Image.hpp"
+#include "maths/vec3.hpp"
 
 /**
  * @class Texture
@@ -24,6 +25,20 @@ public:
      * @param image The image.
      */
     Texture(const Image& image);
+
+    /**
+     * @brief Constructs a 1*1px texture with a specific color.
+     * @param color The color of the texture.
+     */
+    Texture(const Color& color);
+
+    /**
+     * @brief Constructs a 1*1px texture with a specific color.
+     * @param r The r component of the texture's color.
+     * @param g The g component of the texture's color.
+     * @param b The b component of the texture's color.
+     */
+    Texture(unsigned char r, unsigned char g, unsigned char b);
 
     /**
      * @brief Deletes the texture.

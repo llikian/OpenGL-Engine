@@ -33,3 +33,23 @@ void Texture::bind(unsigned int texUnit) const {
     glActiveTexture(GL_TEXTURE0 + texUnit);
     glBindTexture(GL_TEXTURE_2D, id);
 }
+
+Texture::Texture(const Color& color) {
+    unsigned char c[3]{
+        static_cast<unsigned char>(color.x * 255.0f),
+        static_cast<unsigned char>(color.y * 255.0f),
+        static_cast<unsigned char>(color.z * 255.0f)
+    };
+
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, c);
+}
+
+Texture::Texture(unsigned char r, unsigned char g, unsigned char b) {
+    unsigned char c[3]{r, g, b};
+
+    glGenTextures(1, &id);
+    glBindTexture(GL_TEXTURE_2D, id);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, c);
+}
