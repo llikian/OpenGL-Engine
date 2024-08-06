@@ -17,6 +17,24 @@ uniform sampler2D texture0;
 uniform vec3 cameraPos;
 uniform vec3 lightPos;
 
+vec3 phongLighting();
+
+void main() {
+    fragColor = vec4(1.0f);
+
+    if (((attributes >> 1) & 1u) == 1u) {
+        fragColor.xyz = phongLighting();
+    }
+
+    if (((attributes >> 2) & 1u) == 1u) {
+        fragColor *= texture(texture0, texCoord);
+    }
+
+    if (((attributes >> 3) & 1u) == 1u) {
+        fragColor.xyz *= color;
+    }
+}
+
 vec3 phongLighting() {
     const vec3 lightColor = vec3(1.0f);
 
@@ -33,20 +51,4 @@ vec3 phongLighting() {
     float specular = 0.25f * pow(max(dot(viewDirection, reflectionDir), 0.0f), 32.0f);
 
     return (ambient + diffuse + specular) * lightColor;
-}
-
-void main() {
-    fragColor = vec4(1.0f);
-
-    if (((attributes >> 1) & 1u) == 1u) {
-        fragColor.xyz = phongLighting();
-    }
-
-    if (((attributes >> 2) & 1u) == 1u) {
-        fragColor *= texture(texture0, texCoord);
-    }
-
-    if (((attributes >> 3) & 1u) == 1u) {
-        fragColor.xyz *= color;
-    }
 }
