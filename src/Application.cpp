@@ -215,21 +215,21 @@ void Application::handleKeyboardEvents() {
                 case GLFW_KEY_Z:
                     glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
                     wireframe = !wireframe;
-                    keys[key] = false;
 
+                    keys[key] = false;
                     break;
                 case GLFW_KEY_C:
                     (cullface ? glDisable : glEnable)(GL_CULL_FACE);
                     cullface = !cullface;
-                    keys[key] = false;
 
+                    keys[key] = false;
                     break;
                 case GLFW_KEY_F5:
                     glfwSetInputMode(window, GLFW_CURSOR,
                                      cursorVisible ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
                     cursorVisible = !cursorVisible;
-                    keys[key] = false;
 
+                    keys[key] = false;
                     break;
                 case GLFW_KEY_Q:
                     areAxesDrawn = !areAxesDrawn;
