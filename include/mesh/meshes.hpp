@@ -61,6 +61,13 @@ namespace Meshes {
     Mesh plane(float size);
 
     /**
+     * @brief Creates the mesh for a plane of a certain size with normals. The plane will be a cut
+     * of the XZ plane and will be centered at the origin.
+     * @param size The size of the plane, its dimensions will be (size ; 0 ; size).
+     */
+    Mesh nplane(float size);
+
+    /**
      * @brief Creates the mesh for the screen. It's just a plane from (1 ; 1 ; 0) to (-1 ; -1 ; 0)
      * that can be used to render things directly on the screen.
      */

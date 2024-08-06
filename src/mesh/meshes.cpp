@@ -388,6 +388,32 @@ Mesh Meshes::plane(float size) {
     return mesh;
 }
 
+Mesh Meshes::nplane(float size) {
+    Mesh mesh(GL_TRIANGLES);
+
+    size /= 2;
+
+    mesh.addPosition(-size, 0.0f, size);
+    mesh.addTexCoord(0.0f, size);
+    mesh.addNormal(0.0f, 1.0f, 0.0f);
+
+    mesh.addPosition(size, 0.0f, size);
+    mesh.addTexCoord(size, size);
+    mesh.addNormal(0.0f, 1.0f, 0.0f);
+
+    mesh.addPosition(size, 0.0f, -size);
+    mesh.addTexCoord(size, 0.0f);
+    mesh.addNormal(0.0f, 1.0f, 0.0f);
+
+    mesh.addPosition(-size, 0.0f, -size);
+    mesh.addTexCoord(0.0f, 0.0f);
+    mesh.addNormal(0.0f, 1.0f, 0.0f);
+
+    mesh.addFace(0, 1, 2, 3);
+
+    return mesh;
+}
+
 Mesh Meshes::screen() {
     Mesh mesh(GL_TRIANGLES);
 
