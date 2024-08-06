@@ -68,9 +68,6 @@ Application::Application()
     glBindTexture(GL_TEXTURE_2D, 0);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, white);
 
-    glBindTexture(GL_TEXTURE_2D, 1);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, white);
-    
     /**** Lights ****/
     // Directional Light
     directionalLight.direction = normalize(vec3(-2.0f, -3.0f, -2.0f));
@@ -89,16 +86,16 @@ Application::Application()
     flashlight.ambient = vec3(0.0f);
     flashlight.diffuse = vec3(1.0f);
     flashlight.specular = vec3(1.0f);
-    
+
     // Point Lights
-    vec3 pointLightPositions[] {
+    vec3 pointLightPositions[]{
         vec3(5.0f, 1.0f, 5.0f),
         vec3(5.0f, 1.0f, -5.0f),
         vec3(-5.0f, 1.0f, 5.0f),
         vec3(-5.0f, 1.0f, -5.0f)
     };
 
-    vec3 pointLightColors[] {
+    vec3 pointLightColors[]{
         vec3(1.0f, 0.0f, 0.0f),
         vec3(0.0f, 1.0f, 0.0f),
         vec3(0.0f, 0.0f, 1.0f),
@@ -140,6 +137,7 @@ void Application::run() {
     Mesh cube = Meshes::cube();
     Mesh tcube = Meshes::texturedCube();
     Mesh wcube = Meshes::wireframeCube();
+    Mesh pcube = Meshes::plainCube();
     Mesh sphere = Meshes::sphere(16, 32);
     Mesh tsphere = Meshes::texturedSphere(16, 32);
     Mesh plane = Meshes::nplane(200.0f);
@@ -153,6 +151,13 @@ void Application::run() {
     Texture texDirt("data/textures/dirt.png");
     Texture texStone("data/textures/stone.png");
     Texture texVenus("data/textures/venus.jpg");
+
+    Texture pointLightTextures[4]{
+        Texture(pointLights[0].diffuse),
+        Texture(pointLights[1].diffuse),
+        Texture(pointLights[2].diffuse),
+        Texture(pointLights[3].diffuse)
+    };
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -215,6 +220,12 @@ void Application::run() {
         bindTexture(texStone);
         calculateMVP(translate(-3.0f, 0.5f, 0.0f));
         cube.draw();
+
+        for(unsigned int i = 0 ; i < pointLights.size() ; ++i) {
+            bindTexture(pointLightTextures[i]);
+            calculateMVP(translate(pointLights[i].position) * scale(0.25f));
+            pcube.draw();
+        }
 
         glfwSwapBuffers(window);
     }
