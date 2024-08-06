@@ -8,7 +8,9 @@
 #include <cmath>
 #include "callbacks.hpp"
 #include "Image.hpp"
+#include "maths/geometry.hpp"
 #include "maths/transformations.hpp"
+#include "maths/trigonometry.hpp"
 #include "mesh/Mesh.hpp"
 #include "mesh/meshes.hpp"
 
@@ -61,16 +63,57 @@ Application::Application()
     glEnable(GL_CULL_FACE);
     glActiveTexture(GL_TEXTURE0);
 
-    // Sets the default texture to a plain white color
+    // Sets the default diffuse and specular maps to a plain white color
     const unsigned char white[3]{255, 255, 255};
-    glBindTexture(1, 0);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, white);
+
+    glBindTexture(GL_TEXTURE_2D, 1);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, white);
 
     /**** Shaders & Uniforms ****/
     shader = new Shader("data/shaders/default.vert", "data/shaders/default.frag");
     shader->use();
 
-    shader->setUniform("texture0", 0);
+    shader->setUniform("material.diffuse", 0);
+    shader->setUniform("material.specular", 1);
+    shader->setUniform("material.shininess", 32.0f);
+
+    shader->setUniform("directionalLight.direction", normalize(vec3(-2.0f, -3.0f, -2.0f)));
+    shader->setUniform("directionalLight.ambient", 0.1f, 0.1f, 0.1f);
+    shader->setUniform("directionalLight.diffuse", 1.0f, 1.0f, 1.0f);
+    shader->setUniform("directionalLight.specular", 1.0f, 1.0f, 1.0f);
+
+    shader->setUniform("pointLights[0].position", 5.0f, 1.0f, 5.0f);
+    shader->setUniform("pointLights[1].position", 5.0f, 1.0f, -5.0f);
+    shader->setUniform("pointLights[2].position", -5.0f, 1.0f, 5.0f);
+    shader->setUniform("pointLights[3].position", -5.0f, 1.0f, -5.0f);
+    shader->setUniform("pointLights[0].diffuse", 1.0f, 0.0f, 0.0f);
+    shader->setUniform("pointLights[1].diffuse", 0.0f, 1.0f, 0.0f);
+    shader->setUniform("pointLights[2].diffuse", 0.0f, 0.0f, 1.0f);
+    shader->setUniform("pointLights[3].diffuse", 1.0f, 0.0f, 1.0f);
+    std::string nameStart = "pointLights[", name;
+    for(unsigned int i = 0 ; i < 4 ; ++i) {
+        name = nameStart + std::to_string(i) + "].";
+        shader->setUniform(name + "constant", 1.0f);
+        shader->setUniform(name + "linear", 0.09f);
+        shader->setUniform(name + "quadratic", 0.032f);
+
+        shader->setUniform(name + "ambient", 0.25f, 0.25f, 0.25f);
+        shader->setUniform(name + "specular", 1.0f, 1.0f, 1.0f);
+    }
+    
+    shader->setUniform("spotlight.cutOff", std::cos(radians(12.5f)));
+    shader->setUniform("spotlight.outerCutOff", std::cos(radians(15.0f)));
+
+    shader->setUniform("spotlight.constant", 1.0f);
+    shader->setUniform("spotlight.linear", 0.09f);
+    shader->setUniform("spotlight.quadratic", 0.032f);
+
+    shader->setUniform("spotlight.ambient", 0.0f, 0.0f, 0.0f);
+    shader->setUniform("spotlight.diffuse", 1.0f, 1.0f, 1.0f);
+    shader->setUniform("spotlight.specular", 1.0f, 1.0f, 1.0f);
+
     calculateMVP(Matrix4(1.0f));
 
     /**** Other ****/
@@ -92,7 +135,7 @@ void Application::run() {
     Mesh wcube = Meshes::wireframeCube();
     Mesh sphere = Meshes::sphere(16, 32);
     Mesh tsphere = Meshes::texturedSphere(16, 32);
-    Mesh plane = Meshes::plane(200.0f);
+    Mesh plane = Meshes::nplane(200.0f);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -128,6 +171,9 @@ void Application::run() {
         shader->use();
         shader->setUniform("cameraPos", camera.getPosition());
         shader->setUniform("lightPos", lightPos);
+        
+        shader->setUniform("spotlight.position", camera.getPosition());
+        shader->setUniform("spotlight.direction", camera.getDirection());
 
         calculateMVP(Matrix4(1.0f));
 
