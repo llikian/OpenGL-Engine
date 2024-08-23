@@ -5,6 +5,8 @@
 
 #version 460 core
 
+#define NB_POINT_LIGHTS 4
+
 struct Material {
     sampler2D diffuse;
     sampler2D specular;
@@ -47,14 +49,12 @@ struct SpotLight {
     vec3 specular;
 };
 
-#define NB_POINT_LIGHTS 4
-
-out vec4 fragColor;
-
 in vec3 position;
 in vec3 normal;
 in vec2 texCoord;
 in vec3 color;
+
+out vec4 fragColor;
 
 uniform uint attributes;
 uniform vec3 cameraPos;
