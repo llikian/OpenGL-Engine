@@ -209,17 +209,17 @@ void Application::run() {
         calculateMVP(translate(3.0f, 0.5f, 0.0f));
         cube.draw();
 
-        bindTexture(texGrass);
-        calculateMVP(translate(-3.0f, 2.5f, 0.0f));
-        tcube.draw();
+        bindTexture(texStone);
+        calculateMVP(translate(-3.0f, 0.5f, 0.0f));
+        cube.draw();
 
         bindTexture(texDirt);
         calculateMVP(translate(-3.0f, 1.5f, 0.0f));
         cube.draw();
 
-        bindTexture(texStone);
-        calculateMVP(translate(-3.0f, 0.5f, 0.0f));
-        cube.draw();
+        bindTexture(texGrass);
+        calculateMVP(translate(-3.0f, 2.5f, 0.0f));
+        tcube.draw();
 
         for(unsigned int i = 0 ; i < pointLights.size() ; ++i) {
             bindTexture(pointLightTextures[i]);
