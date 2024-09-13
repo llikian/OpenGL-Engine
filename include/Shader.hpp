@@ -6,6 +6,7 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
 
 #include "maths/vec2.hpp"
 #include "maths/vec3.hpp"
@@ -36,6 +37,12 @@ public:
      * @brief Uses the shader program.
      */
     void use();
+
+    /**
+     * @brief Gets a uniform's id and adds it to the map.
+     * @param uniform The uniform's name.
+     */
+    void getLocation(const std::string& uniform);
 
     /**
      * @brief Sets the value of an uniform of type int.
@@ -122,4 +129,5 @@ public:
 
 private:
     unsigned int id; ///< The shader program's id.
+    std::unordered_map<std::string, int> uniforms; ///< Stores uniforms id's.
 };
