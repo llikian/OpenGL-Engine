@@ -65,6 +65,8 @@ uniform DirectionalLight directionalLight;
 uniform SpotLight spotlight;
 uniform PointLight[NB_POINT_LIGHTS] pointLights;
 
+uniform bool globalLighting;
+
 vec3 phongLighting();
 vec3 calculateDirectionalLight(vec3 viewDirection);
 vec3 calculateSpotLight(vec3 viewDirection);
@@ -77,9 +79,11 @@ void main() {
         fragColor = vec4(0.0f, 0.0, 0.0, 1.0f);
         vec3 viewDirection = normalize(cameraPos - position);
 
-//        fragColor.xyz += calculateDirectionalLight(viewDirection);
-        fragColor.xyz += calculateSpotLight(viewDirection);
-        fragColor.xyz += calculatePointLights(viewDirection);
+        if(globalLighting) {
+            fragColor.rgb += calculateDirectionalLight(viewDirection);
+        }
+        fragColor.rgb += calculateSpotLight(viewDirection);
+        fragColor.rgb += calculatePointLights(viewDirection);
     } else if(((attributes >> 2) & 1u) == 1u) { // Mesh doesn't have normals but has texture coords.
         fragColor *= texture(material.diffuse, texCoord);
     } else { // Mesh has neither normals or texture coords.
@@ -87,11 +91,11 @@ void main() {
     }
 
     if(((attributes >> 3) & 1u) == 1u) {
-        fragColor.xyz *= color;
+        fragColor.rgb *= color;
     }
 
-    // Fog
-    fragColor.rgb *= exp(-0.02f * length(cameraPos - position));
+//    // Fog
+//    fragColor.rgb *= exp(-0.02f * length(cameraPos - position));
 }
 
 vec3 calculateDirectionalLight(vec3 viewDirection) {

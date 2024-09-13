@@ -19,6 +19,7 @@ Application::Application()
       time(0.0f), delta(0.0f),
       wireframe(false), cullface(true), cursorVisible(false),
       areAxesDrawn(false), isGridDrawn(false), isGroundDrawn(true),
+      hasGlobalLighting(false),
       shader(nullptr),
       projection(perspective(M_PI_4f, static_cast<float>(width) / height, 0.1f, 100.0f)),
       camera(Point(0.0f, 2.0f, 5.0f)) {
@@ -328,18 +329,24 @@ void Application::handleKeyboardEvents() {
                     break;
                 case GLFW_KEY_Q:
                     areAxesDrawn = !areAxesDrawn;
-                    keys[key] = false;
 
+                    keys[key] = false;
                     break;
                 case GLFW_KEY_G:
                     isGridDrawn = !isGridDrawn;
-                    keys[key] = false;
 
+                    keys[key] = false;
                     break;
                 case GLFW_KEY_H:
                     isGroundDrawn = !isGroundDrawn;
-                    keys[key] = false;
 
+                    keys[key] = false;
+                    break;
+                case GLFW_KEY_J:
+                    hasGlobalLighting = !hasGlobalLighting;
+                    shader->setUniform("globalLighting", hasGlobalLighting);
+
+                    keys[key] = false;
                     break;
                 case GLFW_KEY_W:
                     camera.move(CameraControls::forward, delta);

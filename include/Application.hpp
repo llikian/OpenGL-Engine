@@ -133,12 +133,13 @@ private:
     float time;  ///< The current time in seconds;
     float delta; ///< The time difference between this frame and the previous in seconds.
 
-    bool wireframe;     ///< Whether to display in wireframe mode.
-    bool cullface;      ///< Whether face culling is activated.
-    bool cursorVisible; ///< Whether the cursor is currently visible.
-    bool areAxesDrawn;  ///< Whether the axes are drawn.
-    bool isGridDrawn;   ///< Whether the grid is drawn.
-    bool isGroundDrawn; ///< Whether the ground is drawn.
+    bool wireframe;         ///< Whether to display in wireframe mode.
+    bool cullface;          ///< Whether face culling is activated.
+    bool cursorVisible;     ///< Whether the cursor is currently visible.
+    bool areAxesDrawn;      ///< Whether the axes are drawn.
+    bool isGridDrawn;       ///< Whether the grid is drawn.
+    bool isGroundDrawn;     ///< Whether the ground is drawn.
+    bool hasGlobalLighting; ///< Whether the scene has global lighting.
 
     Shader* shader; ///< The default shader program.
 
