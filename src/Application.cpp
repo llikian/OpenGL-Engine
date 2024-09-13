@@ -164,13 +164,11 @@ void Application::run() {
 
     Texture texGround("data/textures/ground.png");
 
-    const float bgValue = 0.1f;
-
     /**** Main Loop ****/
     while(!glfwWindowShouldClose(window)) {
         handleEvents();
 
-        glClearColor(bgValue, bgValue, bgValue, 1.0f);
+        glClearColor(0.1, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         delta = glfwGetTime() - time;
