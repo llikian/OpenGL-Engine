@@ -164,13 +164,11 @@ void Application::run() {
 
     Texture texGround("data/textures/ground.png");
 
-    const float bgValue = 0.1f;
-
     /**** Main Loop ****/
     while(!glfwWindowShouldClose(window)) {
         handleEvents();
 
-        glClearColor(bgValue, bgValue, bgValue, 1.0f);
+        glClearColor(0.1, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         delta = glfwGetTime() - time;
@@ -209,17 +207,17 @@ void Application::run() {
         calculateMVP(translate(3.0f, 0.5f, 0.0f));
         cube.draw();
 
-        bindTexture(texGrass);
-        calculateMVP(translate(-3.0f, 2.5f, 0.0f));
-        tcube.draw();
+        bindTexture(texStone);
+        calculateMVP(translate(-3.0f, 0.5f, 0.0f));
+        cube.draw();
 
         bindTexture(texDirt);
         calculateMVP(translate(-3.0f, 1.5f, 0.0f));
         cube.draw();
 
-        bindTexture(texStone);
-        calculateMVP(translate(-3.0f, 0.5f, 0.0f));
-        cube.draw();
+        bindTexture(texGrass);
+        calculateMVP(translate(-3.0f, 2.5f, 0.0f));
+        tcube.draw();
 
         for(unsigned int i = 0 ; i < pointLights.size() ; ++i) {
             bindTexture(pointLightTextures[i]);
