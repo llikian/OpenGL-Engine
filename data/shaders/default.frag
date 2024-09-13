@@ -89,6 +89,9 @@ void main() {
     if(((attributes >> 3) & 1u) == 1u) {
         fragColor.xyz *= color;
     }
+
+    // Fog
+    fragColor.rgb *= exp(-0.02f * length(cameraPos - position));
 }
 
 vec3 calculateDirectionalLight(vec3 viewDirection) {
