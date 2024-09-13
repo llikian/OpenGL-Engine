@@ -83,6 +83,8 @@ Shader::Shader(const std::string& vertexShaderPath, const std::string& fragmentS
 
         throw std::runtime_error(errorMessage);
     }
+
+    getUniforms();
 }
 
 Shader::~Shader() {
@@ -93,8 +95,21 @@ void Shader::use() {
     glUseProgram(id);
 }
 
-void Shader::getLocation(const std::string& uniform) {
-    uniforms.emplace(uniform, glGetUniformLocation(id, uniform.c_str()));
+void Shader::getUniforms() {
+    int count;
+
+    const int bufferLength = 32;
+    int length;
+    GLenum type;
+    int size;
+    char name[bufferLength];
+
+    glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &count);
+
+    for(uint i = 0u ; i < static_cast<uint>(count) ; ++i) {
+        glGetActiveUniform(id, i, bufferLength, &length, &size, &type, name);
+        uniforms.emplace(name, i);
+    }
 }
 
 void Shader::setUniform(const std::string& uniform, int value) const {

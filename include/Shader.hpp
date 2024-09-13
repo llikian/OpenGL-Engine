@@ -39,10 +39,9 @@ public:
     void use();
 
     /**
-     * @brief Gets a uniform's id and adds it to the map.
-     * @param uniform The uniform's name.
+     * @brief Finds and adds all the shader's uniforms' id's to the map.
      */
-    void getLocation(const std::string& uniform);
+    void getUniforms();
 
     /**
      * @brief Sets the value of an uniform of type int.
