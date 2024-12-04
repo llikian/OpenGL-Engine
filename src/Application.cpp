@@ -117,7 +117,8 @@ Application::Application()
     }
 
     /**** Shaders & Uniforms ****/
-    shader = new Shader("data/shaders/default.vert", "data/shaders/default.frag");
+    std::string paths[2] {"data/shaders/default.vert", "data/shaders/default.frag"};
+    shader = new Shader(paths, 2, "Default");
     shader->use();
     initUniforms();
 

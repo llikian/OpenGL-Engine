@@ -5,13 +5,14 @@
 
 #pragma once
 
+#include <iostream>
 #include <string>
 #include <unordered_map>
 
 #include "maths/vec2.hpp"
 #include "maths/vec3.hpp"
 #include "maths/vec4.hpp"
-#include "maths/Matrix4.hpp"
+#include "maths/mat4.hpp"
 
 /**
  * @class Shader
@@ -20,18 +21,26 @@
  */
 class Shader {
 public:
+
     /**
-     * @brief Compiles then links and creates the shader program from the vertex and fragment
-     * shaders located at the given paths.
-     * @param vertexShaderPath The path to the vertex shader.
-     * @param fragmentShaderPath The path to the fragment shader.
+     * @brief Creates a shader program and compiles then attaches the shaders at the specified paths
+     * to it.
+     * @param paths The paths to each of the different shaders.
+     * @param count The amount of shaders to attach.
      */
-    Shader(const std::string& vertexShaderPath, const std::string& fragmentShaderPath);
+    Shader(const std::string* paths, unsigned int count, const std::string& name);
 
     /**
      * @brief Deletes the shader program.
      */
     ~Shader();
+
+    /**
+     * @brief Compiles a shader and returns its corresponding id.
+     * @param path The path to the shader file.
+     * @return The shader's corresponding id.
+     */
+    unsigned int compileShader(const std::string& path);
 
     /**
      * @brief Uses the shader program.
@@ -44,52 +53,83 @@ public:
     void getUniforms();
 
     /**
-     * @brief Sets the value of an uniform of type int.
+     * @brief Sets the value of a uniform of any of the available types.
      * @param uniform The uniform's name.
      * @param value The new value of the uniform.
      */
     template<typename... Value>
-    void setUniform(const std::string& uniform, Value... value) const {
+    void setUniform(const std::string& uniform, Value... value) {
         try {
-            int location = uniforms.at(uniform);
-            setUniform(location, value...);
+            setUniform(uniforms.at(uniform), value...);
         } catch(const std::exception&) {
-            std::cout << "The uniform named '" << uniform << "' is unknown.\n";
+            if(!unknownUniforms.contains(uniform)) {
+                std::cout << "The uniform named '" << uniform << "' is unknown or unused";
+                std::cout << " in shader program '" << name << "'.\n";
+
+                unknownUniforms.emplace(uniform, true);
+            }
         }
     }
 
 private:
 
     /**
-     * @brief Sets the value of an uniform of type int.
+     * @brief Sets the value of a uniform of type int.
      * @param location The uniform's location.
      * @param value The new value of the uniform.
      */
     void setUniform(int location, int value) const;
 
     /**
-     * @brief Sets the value of an uniform of type unsigned int.
+     * @brief Sets the value of a uniform of type ivec2.
+     * @param location The uniform's location.
+     * @param x The new x value of the uniform.
+     * @param y The new y value of the uniform.
+     */
+    void setUniform(int location, int x, int y) const;
+
+    /**
+     * @brief Sets the value of a uniform of type ivec3.
+     * @param location The uniform's location.
+     * @param x The new x value of the uniform.
+     * @param y The new y value of the uniform.
+     * @param z The new z value of the uniform.
+     */
+    void setUniform(int location, int x, int y, int z) const;
+
+    /**
+     * @brief Sets the value of a uniform of type ivec4.
+     * @param location The uniform's location.
+     * @param x The new x value of the uniform.
+     * @param y The new y value of the uniform.
+     * @param z The new z value of the uniform.
+     * @param w The new w value of the uniform.
+     */
+    void setUniform(int location, int x, int y, int z, int w) const;
+
+    /**
+     * @brief Sets the value of a uniform of type unsigned int.
      * @param location The uniform's location.
      * @param value The new value of the uniform.
      */
     void setUniform(int location, unsigned int value) const;
 
     /**
-     * @brief Sets the value of an uniform of type bool.
+     * @brief Sets the value of a uniform of type bool.
      * @param location The uniform's location.
      * @param value The new value of the uniform.
      */
     void setUniform(int location, bool value) const;
 
     /**
-     * @brief Sets the value of an uniform of type float.
+     * @brief Sets the value of a uniform of type float.
      * @param location The uniform's location.
      * @param value The new value of the uniform.
      */
     void setUniform(int location, float value) const;
 
     /**
-     * @brief Sets the value of an uniform of type vec2.
+     * @brief Sets the value of a uniform of type vec2.
      * @param location The uniform's location.
      * @param x The new x value of the uniform.
      * @param y The new y value of the uniform.
@@ -97,7 +137,7 @@ private:
     void setUniform(int location, float x, float y) const;
 
     /**
-     * @brief Sets the value of an uniform of type vec3.
+     * @brief Sets the value of a uniform of type vec3.
      * @param location The uniform's location.
      * @param x The new x value of the uniform.
      * @param y The new y value of the uniform.
@@ -106,7 +146,7 @@ private:
     void setUniform(int location, float x, float y, float z) const;
 
     /**
-     * @brief Sets the value of an uniform of type vec4.
+     * @brief Sets the value of a uniform of type vec4.
      * @param location The uniform's location.
      * @param x The new x value of the uniform.
      * @param y The new y value of the uniform.
@@ -116,33 +156,35 @@ private:
     void setUniform(int location, float x, float y, float z, float w) const;
 
     /**
-     * @brief Sets the value of an uniform of type vec2.
+     * @brief Sets the value of a uniform of type vec2.
      * @param location The uniform's location.
      * @param vec The new value of the uniform.
      */
     void setUniform(int location, const vec2& vec) const;
 
     /**
-     * @brief Sets the value of an uniform of type vec3.
+     * @brief Sets the value of a uniform of type vec3.
      * @param location The uniform's location.
      * @param vec The new value of the uniform.
      */
     void setUniform(int location, const vec3& vec) const;
 
     /**
-     * @brief Sets the value of an uniform of type vec4.
+     * @brief Sets the value of a uniform of type vec4.
      * @param location The uniform's location.
      * @param vec The new value of the uniform.
      */
     void setUniform(int location, const vec4& vec) const;
 
     /**
-     * @brief Sets the value of an uniform of type mat4.
+     * @brief Sets the value of a uniform of type mat4.
      * @param location The uniform's location.
      * @param matrix The new value of the uniform.
      */
-    void setUniform(int location, const Matrix4& matrix) const;
+    void setUniform(int location, const mat4& matrix) const;
 
     unsigned int id; ///< The shader program's id.
+    std::string name; ///< The shader's name.
     std::unordered_map<std::string, int> uniforms; ///< Stores uniforms id's.
+    std::unordered_map<std::string, bool> unknownUniforms; ///< Stores unknown uniforms.
 };
