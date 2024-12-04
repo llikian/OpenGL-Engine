@@ -76,13 +76,6 @@ struct mat4 {
     mat4& operator -=(const mat4& mat);
 
     /**
-     * @brief Multiplies the current instance's components by another mat4's components.
-     * @param mat The mat4 to multiply by.
-     * @return A reference to this instance.
-     */
-    mat4& operator *=(const mat4& mat);
-
-    /**
      * @brief Divides the current instance's components by another mat4's components.
      * @param mat The mat4 to divide by.
      * @return A reference to this instance.

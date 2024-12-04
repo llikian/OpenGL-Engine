@@ -193,8 +193,7 @@ void Application::run() {
         if(isGridDrawn) { grid.draw(); }
 
         if(areAxesDrawn) {
-            calculateMVP(translate(camera.getPosition() + 2.0f * camera.getDirection())
-                         * scale(0.5f));
+            calculateMVP(translate(camera.getPosition() + 2.0f * camera.getDirection()) * scale(0.5f));
             axes.draw();
         }
 
@@ -322,8 +321,7 @@ void Application::handleKeyboardEvents() {
                     keys[key] = false;
                     break;
                 case GLFW_KEY_F5:
-                    glfwSetInputMode(window, GLFW_CURSOR,
-                                     cursorVisible ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+                    glfwSetInputMode(window, GLFW_CURSOR, cursorVisible ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
                     cursorVisible = !cursorVisible;
 
                     keys[key] = false;
@@ -373,7 +371,7 @@ void Application::handleKeyboardEvents() {
 }
 
 void Application::calculateMVP(const mat4& model) {
-    shader->setUniform("mvp", std::move(camera.getVPmatrix(projection) * model));
+    shader->setUniform("mvp", camera.getVPmatrix(projection) * model);
     shader->setUniform("model", model);
 }
 

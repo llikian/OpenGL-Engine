@@ -6,43 +6,50 @@
 #include "Camera.hpp"
 
 #include <cmath>
+
 #include "maths/geometry.hpp"
 #include "maths/trigonometry.hpp"
 
-Camera::Camera(const Point& position)
-    : position(position),
+Camera::Camera(const vec3& position)
+    : movementSpeed(10.0f),
+      position(position),
+      yaw(M_PIf), pitch(0.0f),
       worldUp(0.0f, 1.0f, 0.0f),
-      view(1.0f) {
-
-    const Vector direction = -1.0f * normalize(position);
-    pitch = asinf(direction.y);
-    yaw = asinf(direction.z / cosf(pitch));
+      view(1.0f){
 
     look(vec2());
 }
 
-mat4 Camera::getVPmatrix(const mat4& projection) {
+mat4 Camera::getVPmatrix(const mat4& projection) const {
     return projection * view;
 }
 
-Point Camera::getPosition() const {
+const mat4& Camera::getViewMatrix() const {
+    return view;
+}
+
+vec3 Camera::getPosition() const {
     return position;
 }
 
-Point Camera::getDirection() const {
+const vec3& Camera::getPositionReference() const {
+    return position;
+}
+
+vec3 Camera::getDirection() const {
     return front;
 }
 
-Point Camera::getRight() const {
+vec3 Camera::getRight() const {
     return right;
 }
 
-Point Camera::getUp() const {
+vec3 Camera::getUp() const {
     return up;
 }
 
 void Camera::move(CameraControls direction, float deltaTime) {
-    const float speed = 5.0f * deltaTime;
+    const float speed = movementSpeed * deltaTime;
 
     switch(direction) {
         case CameraControls::forward:
@@ -65,9 +72,9 @@ void Camera::move(CameraControls direction, float deltaTime) {
             break;
     }
 
-    view[0][3] = -dot(right, position);
-    view[1][3] = -dot(up, position);
-    view[2][3] = dot(front, position);
+    view[3][0] = -dot(right, position);
+    view[3][1] = -dot(up, position);
+    view[3][2] = dot(front, position);
 }
 
 void Camera::look(vec2 mouseOffset) {
@@ -95,19 +102,19 @@ void Camera::look(vec2 mouseOffset) {
 
     right = normalize(cross(front, worldUp));
     up = normalize(cross(right, front));
-    
+
     view[0][0] = right.x;
-    view[0][1] = right.y;
-    view[0][2] = right.z;
-    view[0][3] = -dot(right, position);
-    
-    view[1][0] = up.x;
+    view[1][0] = right.y;
+    view[2][0] = right.z;
+    view[3][0] = -dot(right, position);
+
+    view[0][1] = up.x;
     view[1][1] = up.y;
-    view[1][2] = up.z;
-    view[1][3] = -dot(up, position);
-    
-    view[2][0] = -front.x;
-    view[2][1] = -front.y;
+    view[2][1] = up.z;
+    view[3][1] = -dot(up, position);
+
+    view[0][2] = -front.x;
+    view[1][2] = -front.y;
     view[2][2] = -front.z;
-    view[2][3] = dot(front, position);
+    view[3][2] = dot(front, position);
 }

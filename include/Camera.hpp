@@ -5,10 +5,10 @@
 
 #pragma once
 
-#include "maths/mat4.hpp"
-#include "maths/transformations.hpp"
-#include "maths/vec2.hpp"
-#include "maths/vec3.hpp"
+#include <maths/vec2.hpp>
+#include <maths/vec3.hpp>
+#include <maths/vec4.hpp>
+#include <maths/mat4.hpp>
 
 /**
  * @enum CameraControls
@@ -30,10 +30,10 @@ enum class CameraControls {
 class Camera {
 public:
     /**
-     * @brief
-     * @param position
+     * @brief Constructor.
+     * @param position The camera's position.
      */
-    Camera(const Point& position);
+    Camera(const vec3& position);
 
     /**
      * @brief Calculates the product of the projection matrix with the view (or look-at) matrix.
@@ -41,31 +41,43 @@ public:
      * @return The product of the projection matrix with the view (or look-at) matrix corresponding
      * to the camera.
      */
-    mat4 getVPmatrix(const mat4& projection);
+    mat4 getVPmatrix(const mat4& projection) const;
+
+    /**
+     * @brief Getter for the view member.
+     * @return The view (or look-at) matrix corresponding to the camera.
+     */
+    const mat4& getViewMatrix() const;
 
     /**
      * @brief Getter for the position member.
      * @return The position of the camera.
      */
-    Point getPosition() const;
+    vec3 getPosition() const;
+
+    /**
+     * @brief Getter for the position member.
+     * @return A const reference to the camera's position.
+     */
+    const vec3& getPositionReference() const;
 
     /**
      * @brief Getter for the front member.
      * @return The direction of the camera.
      */
-    Point getDirection() const;
+    vec3 getDirection() const;
 
     /**
      * @brief Getter for the right member.
      * @return The right vector of the camera.
      */
-    Point getRight() const;
+    vec3 getRight() const;
 
     /**
      * @brief Getter for the up member.
      * @return The up vector of the camera.
      */
-    Point getUp() const;
+    vec3 getUp() const;
 
     /**
      * @brief Moves the camera's position in the specified direction.
@@ -80,17 +92,19 @@ public:
      */
     void look(vec2 mouseOffset);
 
+    float movementSpeed; ///< The speed at which the camera moves.
+
 private:
-    Point position; ///< The camera's position.
+    vec3 position; ///< The camera's position.
 
     float yaw;    ///< The camera's yaw ("left-right") angle.
     float pitch;  ///< The camera's pitch ("forward-back") angle.
 
-    Vector front; ///< The front vector, the direction the camera is looking in.
-    Vector right; ///< The right vector, cross product of the front vector and the world up.
-    Vector up;    ///< The up vector, cross product of the right vector and the front vector.
+    vec3 front; ///< The front vector, the direction the camera is looking in.
+    vec3 right; ///< The right vector, cross product of the front vector and the world up.
+    vec3 up;    ///< The up vector, cross product of the right vector and the front vector.
 
-    const Vector worldUp;
+    const vec3 worldUp; ///< The world up vector, represents where the general "up" is.
 
     mat4 view; ///< The view matrix corresponding to the camera.
 };

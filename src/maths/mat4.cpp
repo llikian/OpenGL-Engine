@@ -62,21 +62,6 @@ mat4& mat4::operator -=(const mat4& mat) {
     return *this;
 }
 
-mat4& mat4::operator *=(const mat4& mat) {
-    mat4 copy = *this;
-
-    for(int i = 0 ; i < 4 ; ++i) {
-        for(int j = 0 ; j < 4 ; ++j) {
-            values[i][j] += copy[i][0] * mat[0][j];
-            values[i][j] += copy[i][1] * mat[1][j];
-            values[i][j] += copy[i][2] * mat[2][j];
-            values[i][j] += copy[i][3] * mat[3][j];
-        }
-    }
-
-    return *this;
-}
-
 mat4& mat4::operator /=(const mat4& mat) {
     for(int i = 0 ; i < 4 ; ++i) {
         for(int j = 0 ; j < 4 ; ++j) {
@@ -169,10 +154,9 @@ mat4 operator *(const mat4& left, const mat4& right) {
 
     for(int i = 0 ; i < 4 ; ++i) {
         for(int j = 0 ; j < 4 ; ++j) {
-            result[i][j] += left[i][0] * right[0][j];
-            result[i][j] += left[i][1] * right[1][j];
-            result[i][j] += left[i][2] * right[2][j];
-            result[i][j] += left[i][3] * right[3][j];
+            for(int k = 0 ; k < 4 ; ++k) {
+                result[i][j] += right[i][k] * left[k][j];
+            }
         }
     }
 
