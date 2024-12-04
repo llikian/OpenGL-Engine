@@ -21,7 +21,7 @@ Camera::Camera(const Point& position)
     look(vec2());
 }
 
-Matrix4 Camera::getVPmatrix(const Matrix4& projection) {
+mat4 Camera::getVPmatrix(const mat4& projection) {
     return projection * view;
 }
 

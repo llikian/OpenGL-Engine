@@ -16,7 +16,7 @@
 #include "Light.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
-#include "maths/Matrix4.hpp"
+#include "maths/mat4.hpp"
 
 /**
  * @class Application
@@ -93,7 +93,7 @@ private:
      * @param model The new value of the model matrix. It is a product of translation, scale
      * and rotation matrices used to apply transformations on the scene's objects.
      */
-    void calculateMVP(const Matrix4& model);
+    void calculateMVP(const mat4& model);
 
     /**
      * @brief Binds a texture to a specific texture unit.
@@ -143,7 +143,7 @@ private:
 
     Shader* shader; ///< The default shader program.
 
-    Matrix4 projection; ///< The projection matrix.
+    mat4 projection; ///< The projection matrix.
 
     Camera camera; ///< A first person camera to move around the scene.
 

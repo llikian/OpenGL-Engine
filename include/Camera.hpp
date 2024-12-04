@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "maths/Matrix4.hpp"
+#include "maths/mat4.hpp"
 #include "maths/transformations.hpp"
 #include "maths/vec2.hpp"
 #include "maths/vec3.hpp"
@@ -41,7 +41,7 @@ public:
      * @return The product of the projection matrix with the view (or look-at) matrix corresponding
      * to the camera.
      */
-    Matrix4 getVPmatrix(const Matrix4& projection);
+    mat4 getVPmatrix(const mat4& projection);
 
     /**
      * @brief Getter for the position member.
@@ -92,5 +92,5 @@ private:
 
     const Vector worldUp;
 
-    Matrix4 view; ///< The view matrix corresponding to the camera.
+    mat4 view; ///< The view matrix corresponding to the camera.
 };

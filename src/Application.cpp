@@ -180,7 +180,7 @@ void Application::run() {
         shader->use();
         updateUniforms();
 
-        calculateMVP(Matrix4(1.0f));
+        calculateMVP(mat4(1.0f));
 
         if(isGroundDrawn) {
             bindTexture(texGround);
@@ -198,7 +198,7 @@ void Application::run() {
         }
 
         bindTexture(texVenus);
-        calculateMVP(Matrix4(1.0f));
+        calculateMVP(mat4(1.0f));
         tsphere.draw();
 
         calculateMVP(translate(0.0f, 1.75f, 0.0f) * scale(0.75f));
@@ -286,7 +286,7 @@ void Application::initUniforms() {
         shader->setUniform(name + "specular", pointLights[i].specular);
     }
 
-    calculateMVP(Matrix4(1.0f));
+    calculateMVP(mat4(1.0f));
 }
 
 void Application::updateUniforms() {
@@ -371,7 +371,7 @@ void Application::handleKeyboardEvents() {
     }
 }
 
-void Application::calculateMVP(const Matrix4& model) {
+void Application::calculateMVP(const mat4& model) {
     shader->setUniform("mvp", std::move(camera.getVPmatrix(projection) * model));
     shader->setUniform("model", model);
 }
