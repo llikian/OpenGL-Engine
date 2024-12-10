@@ -3,9 +3,10 @@
  * @brief Implementation of the Application class
  **************************************************************************************************/
 
-#include "engine/Application.hpp"
+#include "applications/Application.hpp"
 
 #include <cmath>
+#include "engine/Callbacks.hpp"
 #include "engine/Image.hpp"
 #include "maths/geometry.hpp"
 #include "maths/transformations.hpp"
@@ -14,9 +15,7 @@
 #include "mesh/meshes.hpp"
 
 Application::Application()
-    : window(this),
-      mousePos(window.getWidth() / 2.0f, window.getHeight() / 2.0f),
-      time(0.0f), delta(0.0f),
+    : ApplicationBase(),
       wireframe(false), cullface(true), cursorVisible(false),
       areAxesDrawn(false), isGridDrawn(false), isGroundDrawn(true),
       hasGlobalLighting(false),
@@ -24,11 +23,41 @@ Application::Application()
       projection(perspective(M_PI_4f, window.getRatio(), 0.1f, 100.0f)),
       camera(Point(0.0f, 2.0f, 5.0f)) {
 
+    /* ---- Controls ---- */
+    controls.emplace(GLFW_KEY_ESCAPE);
+    controls.emplace(GLFW_KEY_Z);
+    controls.emplace(GLFW_KEY_C);
+    controls.emplace(GLFW_KEY_TAB);
+    controls.emplace(GLFW_KEY_Q);
+    controls.emplace(GLFW_KEY_G);
+    controls.emplace(GLFW_KEY_H);
+    controls.emplace(GLFW_KEY_J);
+    controls.emplace(GLFW_KEY_W);
+    controls.emplace(GLFW_KEY_S);
+    controls.emplace(GLFW_KEY_A);
+    controls.emplace(GLFW_KEY_D);
+    controls.emplace(GLFW_KEY_SPACE);
+    controls.emplace(GLFW_KEY_LEFT_SHIFT);
+
     /* ---- GLFW Callbacks ---- */
-    glfwSetWindowSizeCallback(window, windowSizeCallback);
-    glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
-    glfwSetKeyCallback(window, keyCallback);
-    glfwSetCursorPosCallback(window, cursorPositionCallback);
+    Callbacks callbacks;
+    callbacks.windowSizeCallback = [](GLFWwindow* window, int width, int height) {
+        static_cast<Application*>(glfwGetWindowUserPointer(window))->handleWindowSizeCallback(width, height);
+    };
+
+    callbacks.frameBufferSizeCallback = [](GLFWwindow* window, int width, int height) {
+        static_cast<Application*>(glfwGetWindowUserPointer(window))->handleFrameBufferSizeCallback(width, height);
+    };
+
+    callbacks.keyCallback = [](GLFWwindow* window, int key, int scancode, int action, int mods) {
+        static_cast<Application*>(glfwGetWindowUserPointer(window))->handleKeyCallback(key, scancode, action, mods);
+    };
+
+    callbacks.cursorPositionCallback = [](GLFWwindow* window, double xPos, double yPos) {
+        static_cast<Application*>(glfwGetWindowUserPointer(window))->handleCursorPositionCallback(xPos, yPos);
+    };
+
+    callbacks.applyCallbacks(window);
 
     /* ---- Lights ---- */
     // Directional Light
@@ -77,21 +106,14 @@ Application::Application()
         pointLights[i].specular = vec3(1.0f);
     }
 
-    /* ---- Shaders & Uniforms ---- */
-    std::string paths[2] {"data/shaders/default.vert", "data/shaders/default.frag"};
+    /* ---- Shaders ---- */
+    std::string paths[2]{"data/shaders/default.vert", "data/shaders/default.frag"};
     shader = new Shader(paths, 2, "Default");
-    shader->use();
     initUniforms();
-
-    /* ---- Other ---- */
-    stbi_set_flip_vertically_on_load(true);
 }
 
 Application::~Application() {
     delete shader;
-
-    glfwDestroyWindow(window);
-    glfwTerminate();
 }
 
 void Application::run() {
@@ -191,46 +213,88 @@ void Application::run() {
     }
 }
 
-void Application::windowSizeCallback(GLFWwindow* window, int width, int height) {
-    static_cast<Application*>(glfwGetWindowUserPointer(window))->setWindowSize(width, height);
-}
-
-void Application::frameBufferSizeCallback(GLFWwindow* /* window */, int width, int height) {
-    glViewport(0, 0, width, height);
-}
-
-void Application::keyCallback(GLFWwindow* window, int key, int /* scancode */, int action, int mods) {
-    static_cast<Application*>(glfwGetWindowUserPointer(window))->handleKeyCallback(key, action, mods);
-}
-
-void Application::cursorPositionCallback(GLFWwindow* window, double xPos, double yPos) {
-    static_cast<Application*>(glfwGetWindowUserPointer(window))->handleCursorPositionEvent(xPos, yPos);
-}
-
-void Application::setWindowSize(int width, int height) {
-    window.updateSize(width, height);
+void Application::handleWindowSizeCallback(int width, int height) {
+    ApplicationBase::handleWindowSizeCallback(width, height);
 
     projection[0][0] = 1.0f / (tanf(M_PI_4f / 2.0f) * window.getRatio());
 }
 
-void Application::handleKeyCallback(int key, int action, int /* mods */) {
-    if(action == GLFW_PRESS) {
-        keys[key] = true;
-    } else if(action == GLFW_RELEASE) {
-        keys[key] = false;
-    }
-}
-
-void Application::handleCursorPositionEvent(float xPos, float yPos) {
+void Application::handleCursorPositionCallback(double xPos, double yPos) {
     if(!cursorVisible) {
         camera.look(vec2(xPos - mousePos.x, yPos - mousePos.y));
     }
 
-    mousePos.x = xPos;
-    mousePos.y = yPos;
+    ApplicationBase::handleCursorPositionCallback(xPos, yPos);
+}
+
+void Application::handleKeyEvent(int key) {
+    switch(key) {
+        case GLFW_KEY_ESCAPE:
+            glfwSetWindowShouldClose(window, true);
+            break;
+        case GLFW_KEY_Z:
+            glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
+            wireframe = !wireframe;
+
+            keys[key] = false;
+            break;
+        case GLFW_KEY_C:
+            (cullface ? glDisable : glEnable)(GL_CULL_FACE);
+            cullface = !cullface;
+
+            keys[key] = false;
+            break;
+        case GLFW_KEY_TAB:
+            glfwSetInputMode(window, GLFW_CURSOR, cursorVisible ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+            cursorVisible = !cursorVisible;
+
+            keys[key] = false;
+            break;
+        case GLFW_KEY_Q:
+            areAxesDrawn = !areAxesDrawn;
+
+            keys[key] = false;
+            break;
+        case GLFW_KEY_G:
+            isGridDrawn = !isGridDrawn;
+
+            keys[key] = false;
+            break;
+        case GLFW_KEY_H:
+            isGroundDrawn = !isGroundDrawn;
+
+            keys[key] = false;
+            break;
+        case GLFW_KEY_J:
+            hasGlobalLighting = !hasGlobalLighting;
+            shader->setUniform("globalLighting", hasGlobalLighting);
+
+            keys[key] = false;
+            break;
+        case GLFW_KEY_W:
+            camera.move(CameraControls::forward, delta);
+            break;
+        case GLFW_KEY_S:
+            camera.move(CameraControls::backward, delta);
+            break;
+        case GLFW_KEY_A:
+            camera.move(CameraControls::left, delta);
+            break;
+        case GLFW_KEY_D:
+            camera.move(CameraControls::right, delta);
+            break;
+        case GLFW_KEY_SPACE:
+            camera.move(CameraControls::upward, delta);
+            break;
+        case GLFW_KEY_LEFT_SHIFT:
+            camera.move(CameraControls::downward, delta);
+            break;
+    }
 }
 
 void Application::initUniforms() {
+    shader->use();
+
     shader->setUniform("material.diffuse", 0);
     shader->setUniform("material.specular", 1);
     shader->setUniform("material.shininess", 32.0f);
@@ -270,80 +334,6 @@ void Application::updateUniforms() {
 
     shader->setUniform("spotlight.position", camera.getPosition());
     shader->setUniform("spotlight.direction", camera.getDirection());
-}
-
-void Application::handleEvents() {
-    glfwPollEvents();
-    handleKeyboardEvents();
-}
-
-void Application::handleKeyboardEvents() {
-    for(const auto& [key, isKeyActive]: keys) {
-        if(isKeyActive) {
-            switch(key) {
-                case GLFW_KEY_ESCAPE:
-                    glfwSetWindowShouldClose(window, true);
-                    break;
-                case GLFW_KEY_Z:
-                    glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
-                    wireframe = !wireframe;
-
-                    keys[key] = false;
-                    break;
-                case GLFW_KEY_C:
-                    (cullface ? glDisable : glEnable)(GL_CULL_FACE);
-                    cullface = !cullface;
-
-                    keys[key] = false;
-                    break;
-                case GLFW_KEY_F5:
-                    glfwSetInputMode(window, GLFW_CURSOR, cursorVisible ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
-                    cursorVisible = !cursorVisible;
-
-                    keys[key] = false;
-                    break;
-                case GLFW_KEY_Q:
-                    areAxesDrawn = !areAxesDrawn;
-
-                    keys[key] = false;
-                    break;
-                case GLFW_KEY_G:
-                    isGridDrawn = !isGridDrawn;
-
-                    keys[key] = false;
-                    break;
-                case GLFW_KEY_H:
-                    isGroundDrawn = !isGroundDrawn;
-
-                    keys[key] = false;
-                    break;
-                case GLFW_KEY_J:
-                    hasGlobalLighting = !hasGlobalLighting;
-                    shader->setUniform("globalLighting", hasGlobalLighting);
-
-                    keys[key] = false;
-                    break;
-                case GLFW_KEY_W:
-                    camera.move(CameraControls::forward, delta);
-                    break;
-                case GLFW_KEY_S:
-                    camera.move(CameraControls::backward, delta);
-                    break;
-                case GLFW_KEY_A:
-                    camera.move(CameraControls::left, delta);
-                    break;
-                case GLFW_KEY_D:
-                    camera.move(CameraControls::right, delta);
-                    break;
-                case GLFW_KEY_SPACE:
-                    camera.move(CameraControls::upward, delta);
-                    break;
-                case GLFW_KEY_LEFT_SHIFT:
-                    camera.move(CameraControls::downward, delta);
-                    break;
-            }
-        }
-    }
 }
 
 void Application::calculateMVP(const mat4& model) {

@@ -6,6 +6,7 @@
 #include "engine/Window.hpp"
 
 #include <stdexcept>
+#include "stb_image.h"
 
 Window::Window(void* windowUserPointer) : window(nullptr) {
     /* ---- GLFW ---- */
@@ -44,6 +45,9 @@ Window::Window(void* windowUserPointer) : window(nullptr) {
     const unsigned char white[3]{255, 255, 255};
     glBindTexture(GL_TEXTURE_2D, 0);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, white);
+
+    /* ---- STB ---- */
+    stbi_set_flip_vertically_on_load(true);
 }
 
 Window::~Window() {

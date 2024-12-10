@@ -19,7 +19,10 @@ set(SOURCES
         src/main.cpp
 
         # Classes
-        src/engine/Application.cpp
+        src/applications/Application.cpp
+
+        src/engine/ApplicationBase.cpp
+        src/engine/Callbacks.cpp
         src/engine/Camera.cpp
         src/engine/Image.cpp
         src/engine/Light.cpp
