@@ -13,12 +13,12 @@ Shader::Shader(const std::string* paths, unsigned int count, const std::string& 
     id(glCreateProgram()),
     name(name) {
 
-    /**** Shader Name ****/
+    /* ---- Shader Name ---- */
     if(name.size() == 0) {
         this->name = "shader" + std::to_string(id);
     }
 
-    /**** Shaders ****/
+    /* ---- Shaders ---- */
     unsigned int shaderID;
     for(unsigned int i = 0 ; i < count ; ++i) {
         shaderID = compileShader(paths[i]);
@@ -26,7 +26,7 @@ Shader::Shader(const std::string* paths, unsigned int count, const std::string& 
         glDeleteShader(shaderID);
     }
 
-    /**** Shader Program ****/
+    /* ---- Shader Program ---- */
     glLinkProgram(id);
 
     int messageLength;

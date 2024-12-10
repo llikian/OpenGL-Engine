@@ -24,13 +24,13 @@ Application::Application()
       projection(perspective(M_PI_4f, window.getRatio(), 0.1f, 100.0f)),
       camera(Point(0.0f, 2.0f, 5.0f)) {
 
-    /**** GLFW Callbacks ****/
+    /* ---- GLFW Callbacks ---- */
     glfwSetWindowSizeCallback(window, windowSizeCallback);
     glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
     glfwSetKeyCallback(window, keyCallback);
     glfwSetCursorPosCallback(window, cursorPositionCallback);
 
-    /**** Lights ****/
+    /* ---- Lights ---- */
     // Directional Light
     directionalLight.direction = normalize(vec3(-2.0f, -3.0f, -2.0f));
     directionalLight.ambient = vec3(0.1f);
@@ -77,13 +77,13 @@ Application::Application()
         pointLights[i].specular = vec3(1.0f);
     }
 
-    /**** Shaders & Uniforms ****/
+    /* ---- Shaders & Uniforms ---- */
     std::string paths[2] {"data/shaders/default.vert", "data/shaders/default.frag"};
     shader = new Shader(paths, 2, "Default");
     shader->use();
     initUniforms();
 
-    /**** Other ****/
+    /* ---- Other ---- */
     stbi_set_flip_vertically_on_load(true);
 }
 
@@ -127,7 +127,7 @@ void Application::run() {
 
     Texture texGround("data/textures/ground.png");
 
-    /**** Main Loop ****/
+    /* ---- Main Loop ---- */
     while(!glfwWindowShouldClose(window)) {
         handleEvents();
 

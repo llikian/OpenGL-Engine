@@ -25,7 +25,7 @@
  */
 class Application {
 public:
-    /**** Constructor & Destructor ****/
+    /* ---- Constructor & Destructor ---- */
 
     /**
      * @brief Sets the default value of all member variables and constants.
@@ -37,7 +37,7 @@ public:
      */
     ~Application();
 
-    /**** Public Methods ****/
+    /* ---- Public Methods ---- */
 
     /**
      * @brief Contains the main loop.
@@ -74,7 +74,7 @@ public:
      */
     void handleCursorPositionEvent(float xPos, float yPos);
 
-    /**** Callbacks ****/
+    /* ---- Callbacks ---- */
 
     /**
      * @brief Callback for when the specified window is resized.
@@ -119,7 +119,7 @@ public:
     static void cursorPositionCallback(GLFWwindow* window, double xPos, double yPos);
 
 private:
-    /**** Private Methods ****/
+    /* ---- Private Methods ---- */
 
     /**
      * @brief Initializes all the uniforms to their correct default values.
@@ -174,7 +174,7 @@ private:
      */
     void bindTexture(unsigned int textureID);
 
-    /**** Variables & Constants ****/
+    /* ---- Variables & Constants ---- */
     Window window;  ///< The GLFW window.
 
     std::unordered_map<int, bool> keys; ///< Map of the current state of keys.

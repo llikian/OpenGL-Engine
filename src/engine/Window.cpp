@@ -8,7 +8,7 @@
 #include <stdexcept>
 
 Window::Window(void* windowUserPointer) : window(nullptr) {
-    /**** GLFW ****/
+    /* ---- GLFW ---- */
     if(!glfwInit()) {
         throw std::runtime_error("Failed to initialize GLFW.");
     }
@@ -29,12 +29,12 @@ Window::Window(void* windowUserPointer) : window(nullptr) {
     glfwMaximizeWindow(window);
     glfwGetWindowSize(window, reinterpret_cast<int*>(&width), reinterpret_cast<int*>(&height));
 
-    /**** GLAD ****/
+    /* ---- GLAD ---- */
     if(!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
         throw std::runtime_error("Failed to initialize GLAD.");
     }
 
-    /**** OpenGL ****/
+    /* ---- OpenGL ---- */
     glViewport(0, 0, width, height);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
