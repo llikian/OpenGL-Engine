@@ -8,11 +8,9 @@
 #include <iostream>
 #include <stdexcept>
 
-Application app;
-
 int main() {
     try {
-        app.run();
+        Application().run();
     } catch(const std::exception& exception) {
         std::cerr << "ERROR : " << exception.what() << '\n';
         return -1;

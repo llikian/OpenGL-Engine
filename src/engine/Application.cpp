@@ -39,6 +39,7 @@ Application::Application()
     }
 
     glfwMakeContextCurrent(window);
+    glfwSetWindowUserPointer(window, this);
     glfwMaximizeWindow(window);
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
