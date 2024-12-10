@@ -25,6 +25,7 @@ set(SOURCES
         src/engine/Light.cpp
         src/engine/Shader.cpp
         src/engine/Texture.cpp
+        src/engine/Window.cpp
 
         src/maths/mat4.cpp
         src/maths/vec2.cpp
@@ -34,7 +35,6 @@ set(SOURCES
         src/mesh/Mesh.cpp
 
         # Other Sources
-        src/engine/callbacks.cpp
         src/maths/geometry.cpp
         src/maths/transformations.cpp
         src/maths/trigonometry.cpp

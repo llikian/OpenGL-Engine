@@ -6,7 +6,6 @@
 #include "engine/Application.hpp"
 
 #include <cmath>
-#include "engine/callbacks.hpp"
 #include "engine/Image.hpp"
 #include "maths/geometry.hpp"
 #include "maths/transformations.hpp"
@@ -15,60 +14,21 @@
 #include "mesh/meshes.hpp"
 
 Application::Application()
-    : window(nullptr), width(1600), height(900),
+    : window(this),
+      mousePos(window.getWidth() / 2.0f, window.getHeight() / 2.0f),
       time(0.0f), delta(0.0f),
       wireframe(false), cullface(true), cursorVisible(false),
       areAxesDrawn(false), isGridDrawn(false), isGroundDrawn(true),
       hasGlobalLighting(false),
       shader(nullptr),
-      projection(perspective(M_PI_4f, static_cast<float>(width) / height, 0.1f, 100.0f)),
+      projection(perspective(M_PI_4f, window.getRatio(), 0.1f, 100.0f)),
       camera(Point(0.0f, 2.0f, 5.0f)) {
-
-    /**** GLFW ****/
-    if(!glfwInit()) {
-        throw std::runtime_error("Failed to initialize GLFW.");
-    }
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    window = glfwCreateWindow(width, height, "OpenGL Engine", nullptr, nullptr);
-    if(!window) {
-        throw std::runtime_error("Failed to create window.");
-    }
-
-    glfwMakeContextCurrent(window);
-    glfwSetWindowUserPointer(window, this);
-    glfwMaximizeWindow(window);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-    mousePos.x = width / 2.0f;
-    mousePos.y = height / 2.0f;
 
     /**** GLFW Callbacks ****/
     glfwSetWindowSizeCallback(window, windowSizeCallback);
     glfwSetFramebufferSizeCallback(window, frameBufferSizeCallback);
     glfwSetKeyCallback(window, keyCallback);
-//    glfwSetMouseButtonCallback(window, mouseButtonCallback);
     glfwSetCursorPosCallback(window, cursorPositionCallback);
-//    glfwSetScrollCallback(window, scrollCallback);
-
-    /**** GLAD ****/
-    if(!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
-        throw std::runtime_error("Failed to initialize GLAD.");
-    }
-
-    /**** OpenGL ****/
-    glViewport(0, 0, width, height);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
-    glActiveTexture(GL_TEXTURE0);
-
-    // Sets the default diffuse and specular maps to a plain white color
-    const unsigned char white[3]{255, 255, 255};
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, white);
 
     /**** Lights ****/
     // Directional Light
@@ -231,11 +191,26 @@ void Application::run() {
     }
 }
 
-void Application::setWindowSize(int width, int height) {
-    this->width = width;
-    this->height = height;
+void Application::windowSizeCallback(GLFWwindow* window, int width, int height) {
+    static_cast<Application*>(glfwGetWindowUserPointer(window))->setWindowSize(width, height);
+}
 
-    projection[0][0] = 1.0f / (tanf(M_PI_4f / 2.0f) * static_cast<float>(width) / height);
+void Application::frameBufferSizeCallback(GLFWwindow* /* window */, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
+void Application::keyCallback(GLFWwindow* window, int key, int /* scancode */, int action, int mods) {
+    static_cast<Application*>(glfwGetWindowUserPointer(window))->handleKeyCallback(key, action, mods);
+}
+
+void Application::cursorPositionCallback(GLFWwindow* window, double xPos, double yPos) {
+    static_cast<Application*>(glfwGetWindowUserPointer(window))->handleCursorPositionEvent(xPos, yPos);
+}
+
+void Application::setWindowSize(int width, int height) {
+    window.updateSize(width, height);
+
+    projection[0][0] = 1.0f / (tanf(M_PI_4f / 2.0f) * window.getRatio());
 }
 
 void Application::handleKeyCallback(int key, int action, int /* mods */) {
