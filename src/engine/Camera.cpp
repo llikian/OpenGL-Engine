@@ -3,7 +3,7 @@
  * @brief Implementation of the Camera class
  **************************************************************************************************/
 
-#include "Camera.hpp"
+#include "engine/Camera.hpp"
 
 #include <cmath>
 

@@ -3,7 +3,7 @@
  * @brief Implementation of the Shader class
  **************************************************************************************************/
 
-#include "Shader.hpp"
+#include "engine/Shader.hpp"
 
 #include <glad/glad.h>
 #include <fstream>

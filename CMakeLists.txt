@@ -19,12 +19,12 @@ set(SOURCES
         src/main.cpp
 
         # Classes
-        src/Application.cpp
-        src/Camera.cpp
-        src/Image.cpp
-        src/Light.cpp
-        src/Shader.cpp
-        src/Texture.cpp
+        src/engine/Application.cpp
+        src/engine/Camera.cpp
+        src/engine/Image.cpp
+        src/engine/Light.cpp
+        src/engine/Shader.cpp
+        src/engine/Texture.cpp
 
         src/maths/mat4.cpp
         src/maths/vec2.cpp
@@ -34,7 +34,7 @@ set(SOURCES
         src/mesh/Mesh.cpp
 
         # Other Sources
-        src/callbacks.cpp
+        src/engine/callbacks.cpp
         src/maths/geometry.cpp
         src/maths/transformations.cpp
         src/maths/trigonometry.cpp

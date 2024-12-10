@@ -3,7 +3,7 @@
  * @brief Implementation of the Image class
  **************************************************************************************************/
 
-#include "Image.hpp"
+#include "engine/Image.hpp"
 
 Image::Image(const std::string& path) {
     int W, H, nbC;

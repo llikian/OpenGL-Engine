@@ -3,7 +3,7 @@
  * @brief Contains the main program of the engine
  **************************************************************************************************/
 
-#include "Application.hpp"
+#include "engine/Application.hpp"
 
 #include <iostream>
 #include <stdexcept>

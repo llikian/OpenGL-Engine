@@ -3,11 +3,11 @@
  * @brief Implementation of the Application class
  **************************************************************************************************/
 
-#include "Application.hpp"
+#include "engine/Application.hpp"
 
 #include <cmath>
-#include "callbacks.hpp"
-#include "Image.hpp"
+#include "engine/callbacks.hpp"
+#include "engine/Image.hpp"
 #include "maths/geometry.hpp"
 #include "maths/transformations.hpp"
 #include "maths/trigonometry.hpp"

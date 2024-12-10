@@ -3,7 +3,7 @@
  * @brief Implementation of the Texture class
  **************************************************************************************************/
 
-#include "Texture.hpp"
+#include "engine/Texture.hpp"
 
 #include <glad/glad.h>
 

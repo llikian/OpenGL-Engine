@@ -9,7 +9,6 @@
 #include "maths/vec2.hpp"
 #include "maths/vec3.hpp"
 #include "maths/vec4.hpp"
-#include "Shader.hpp"
 
 /**
  * @class Mesh
