@@ -17,7 +17,7 @@
  * @class Application
  * @brief
  */
-class Application : public ApplicationBase {
+class Application : ApplicationBase {
 public:
     /* ---- Constructor & Destructor ---- */
 
