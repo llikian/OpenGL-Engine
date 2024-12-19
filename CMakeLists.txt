@@ -18,7 +18,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 set(SOURCES
         # Classes
         src/engine/ApplicationBase.cpp
-        src/engine/Callbacks.cpp
         src/engine/Camera.cpp
         src/engine/Image.cpp
         src/engine/Light.cpp
