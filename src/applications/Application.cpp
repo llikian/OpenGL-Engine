@@ -80,7 +80,7 @@ Application::Application()
     }
 
     /* ---- Shaders ---- */
-    std::string paths[2]{"data/shaders/default.vert", "data/shaders/default.frag"};
+    std::string paths[2]{"shaders/application/default.vert", "shaders/application/default.frag"};
     shader = new Shader(paths, 2, "Default");
     initUniforms();
 }
