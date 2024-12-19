@@ -28,7 +28,7 @@ GameOfLifeApp::GameOfLifeApp()
 
     /* ---- Shaders ---- */
     std::string paths[2]{"shaders/game_of_life/game_of_life.vert", "shaders/game_of_life/game_of_life.frag"};
-    shader = new Shader(paths, 2, "Default");
+    shader = new Shader(paths, 2, "Game of Life");
     initUniforms();
 }
 
