@@ -54,4 +54,7 @@ void ApplicationBase::handleEvents() {
             handleKeyEvent(key);
         }
     }
+
+    delta = glfwGetTime() - time;
+    time = glfwGetTime();
 }

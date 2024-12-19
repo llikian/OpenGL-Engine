@@ -129,9 +129,6 @@ void Application::run() {
         glClearColor(0.1, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        delta = glfwGetTime() - time;
-        time = glfwGetTime();
-
 //        lightPos = 10.0f * vec3(cosf(time), sinf(time), cosf(time));
 
         shader->use();
