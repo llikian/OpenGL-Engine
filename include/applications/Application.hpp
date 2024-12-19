@@ -17,7 +17,7 @@
  * @class Application
  * @brief An Application used to test functionalities.
  */
-class Application : public ApplicationBase {
+class Application : ApplicationBase {
 public:
     /* ---- Constructor & Destructor ---- */
 
