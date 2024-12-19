@@ -6,7 +6,6 @@
 #include "applications/Application.hpp"
 
 #include <cmath>
-#include "engine/Image.hpp"
 #include "maths/geometry.hpp"
 #include "maths/transformations.hpp"
 #include "maths/trigonometry.hpp"
