@@ -59,6 +59,10 @@ public:
 private:
     /* ---- Private Methods ---- */
 
+    /**
+     * @brief Handles what happends when a specific key is pressed.
+     * @param key The key.
+     */
     void handleKeyEvent(int key);
 
     /**
