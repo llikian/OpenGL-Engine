@@ -19,10 +19,16 @@ void ApplicationBase::handleFrameBufferSizeCallback(int width, int height) {
 }
 
 void ApplicationBase::handleKeyCallback(int key, int scancode, int action, int mods) {
-    if(action == GLFW_PRESS) {
-        keys[key] = true;
-    } else if(action == GLFW_RELEASE) {
-        keys[key] = false;
+    if(repeatableKeys.contains(key)) { // Key is repeatable
+        if(action == GLFW_PRESS) {
+            repeatableKeys[key] = true;
+        } else if(action == GLFW_RELEASE) {
+            repeatableKeys[key] = false;
+        }
+    } else { // Key is not repeatable
+        if(action == GLFW_PRESS) {
+            keyEvents.push(key);
+        }
     }
 }
 
@@ -38,8 +44,13 @@ void ApplicationBase::handleScrollCallback(double xOffset, double yOffset) { }
 void ApplicationBase::handleEvents() {
     glfwPollEvents();
 
-    for(int key : controls) {
-        if(keys[key]) {
+    while(!keyEvents.empty()) {
+        handleKeyEvent(keyEvents.front());
+        keyEvents.pop();
+    }
+
+    for(auto [key, isKeyActive] : repeatableKeys) {
+        if(isKeyActive) {
             handleKeyEvent(key);
         }
     }

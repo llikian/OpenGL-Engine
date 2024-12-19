@@ -15,7 +15,7 @@
 
 /**
  * @class Application
- * @brief
+ * @brief An Application used to test functionalities.
  */
 class Application : public ApplicationBase {
 public:
@@ -40,8 +40,20 @@ public:
 
     /* ---- Callbacks ----*/
 
+    /**
+     * @brief Handles what happens when the window is resized. Updates the width and height in Window, and
+     * updates the projection matrix.
+     * @param width The new width.
+     * @param height The new height.
+     */
     void handleWindowSizeCallback(int width, int height);
 
+    /**
+     * @brief Handles what happens when the cursor is moved. Handles the camera's movement and updates the
+     * mouse position.
+     * @param xPos The horizontal position of the mouse.
+     * @param yPos The vertical position of the mouse.
+     */
     void handleCursorPositionCallback(double xPos, double yPos);
 
 private:

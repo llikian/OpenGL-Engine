@@ -6,7 +6,6 @@
 #include "applications/Application.hpp"
 
 #include <cmath>
-#include "engine/Callbacks.hpp"
 #include "engine/Image.hpp"
 #include "maths/geometry.hpp"
 #include "maths/transformations.hpp"
@@ -23,41 +22,16 @@ Application::Application()
       projection(perspective(M_PI_4f, window.getRatio(), 0.1f, 100.0f)),
       camera(Point(0.0f, 2.0f, 5.0f)) {
 
-    /* ---- Controls ---- */
-    controls.emplace(GLFW_KEY_ESCAPE);
-    controls.emplace(GLFW_KEY_Z);
-    controls.emplace(GLFW_KEY_C);
-    controls.emplace(GLFW_KEY_TAB);
-    controls.emplace(GLFW_KEY_Q);
-    controls.emplace(GLFW_KEY_G);
-    controls.emplace(GLFW_KEY_H);
-    controls.emplace(GLFW_KEY_J);
-    controls.emplace(GLFW_KEY_W);
-    controls.emplace(GLFW_KEY_S);
-    controls.emplace(GLFW_KEY_A);
-    controls.emplace(GLFW_KEY_D);
-    controls.emplace(GLFW_KEY_SPACE);
-    controls.emplace(GLFW_KEY_LEFT_SHIFT);
+    /* ---- Repeatable Keys ---- */
+    repeatableKeys.emplace(GLFW_KEY_W, false);
+    repeatableKeys.emplace(GLFW_KEY_S, false);
+    repeatableKeys.emplace(GLFW_KEY_A, false);
+    repeatableKeys.emplace(GLFW_KEY_D, false);
+    repeatableKeys.emplace(GLFW_KEY_SPACE, false);
+    repeatableKeys.emplace(GLFW_KEY_LEFT_SHIFT, false);
 
     /* ---- GLFW Callbacks ---- */
-    Callbacks callbacks;
-    callbacks.windowSizeCallback = [](GLFWwindow* window, int width, int height) {
-        static_cast<Application*>(glfwGetWindowUserPointer(window))->handleWindowSizeCallback(width, height);
-    };
-
-    callbacks.frameBufferSizeCallback = [](GLFWwindow* window, int width, int height) {
-        static_cast<Application*>(glfwGetWindowUserPointer(window))->handleFrameBufferSizeCallback(width, height);
-    };
-
-    callbacks.keyCallback = [](GLFWwindow* window, int key, int scancode, int action, int mods) {
-        static_cast<Application*>(glfwGetWindowUserPointer(window))->handleKeyCallback(key, scancode, action, mods);
-    };
-
-    callbacks.cursorPositionCallback = [](GLFWwindow* window, double xPos, double yPos) {
-        static_cast<Application*>(glfwGetWindowUserPointer(window))->handleCursorPositionCallback(xPos, yPos);
-    };
-
-    callbacks.applyCallbacks(window);
+    setCallbacks<Application>(window, true, true, true, false, true, false);
 
     /* ---- Lights ---- */
     // Directional Light
@@ -235,41 +209,27 @@ void Application::handleKeyEvent(int key) {
         case GLFW_KEY_Z:
             glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
             wireframe = !wireframe;
-
-            keys[key] = false;
             break;
         case GLFW_KEY_C:
             (cullface ? glDisable : glEnable)(GL_CULL_FACE);
             cullface = !cullface;
-
-            keys[key] = false;
             break;
         case GLFW_KEY_TAB:
             glfwSetInputMode(window, GLFW_CURSOR, cursorVisible ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
             cursorVisible = !cursorVisible;
-
-            keys[key] = false;
             break;
         case GLFW_KEY_Q:
             areAxesDrawn = !areAxesDrawn;
-
-            keys[key] = false;
             break;
         case GLFW_KEY_G:
             isGridDrawn = !isGridDrawn;
-
-            keys[key] = false;
             break;
         case GLFW_KEY_H:
             isGroundDrawn = !isGroundDrawn;
-
-            keys[key] = false;
             break;
         case GLFW_KEY_J:
             hasGlobalLighting = !hasGlobalLighting;
             shader->setUniform("globalLighting", hasGlobalLighting);
-
-            keys[key] = false;
             break;
         case GLFW_KEY_W:
             camera.move(CameraControls::forward, delta);
