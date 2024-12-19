@@ -11,7 +11,7 @@
  * @class GameOfLifeApp
  * @brief
  */
-class GameOfLifeApp : ApplicationBase {
+class GameOfLifeApp : public ApplicationBase {
 public:
     /* ---- Constructor & Destructor ---- */
 
