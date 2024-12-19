@@ -17,9 +17,10 @@ class Window {
 public:
     /**
      * @brief Initializes GLFW, GLAD and OpenGL.
+     * @param name The name of the window.
      * @param windowUserPointer A pointer to
      */
-    Window(void* windowUserPointer);
+    Window(const std::string& name, void* windowUserPointer);
 
     /**
      * @brief Destroys the GLFW window.

@@ -5,8 +5,8 @@
 
 #include "engine/ApplicationBase.hpp"
 
-ApplicationBase::ApplicationBase()
-    : window(this),
+ApplicationBase::ApplicationBase(const std::string& name)
+    : window(name, this),
       mousePos(window.getWidth() / 2.0f, window.getHeight() / 2.0f),
       time(0.0f), delta(0.0f) { }
 

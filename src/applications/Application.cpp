@@ -13,7 +13,7 @@
 #include "mesh/meshes.hpp"
 
 Application::Application()
-    : ApplicationBase(),
+    : ApplicationBase("OpenGL Engine"),
       wireframe(false), cullface(true), cursorVisible(false),
       areAxesDrawn(false), isGridDrawn(false), isGroundDrawn(true),
       hasGlobalLighting(false),

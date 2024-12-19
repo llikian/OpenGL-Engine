@@ -21,8 +21,9 @@ public:
 
     /**
      * @brief Sets the default value of all member variables and constants.
+     * @param name The name of the application.
      */
-    ApplicationBase();
+    ApplicationBase(const std::string& name);
 
     /* ---- Public Methods ---- */
 

@@ -9,7 +9,7 @@
 #include "maths/transformations.hpp"
 
 GameOfLifeApp::GameOfLifeApp()
-    : ApplicationBase(),
+    : ApplicationBase("3D Game of Life"),
       wireframe(false), cullface(false), cursorVisible(false),
       shader(nullptr),
       projection(perspective(M_PI_4f, window.getRatio(), 0.1f, 100.0f)),

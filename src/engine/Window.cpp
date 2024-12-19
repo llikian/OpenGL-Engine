@@ -8,7 +8,7 @@
 #include <stdexcept>
 #include "stb_image.h"
 
-Window::Window(void* windowUserPointer) : window(nullptr) {
+Window::Window(const std::string& name, void* windowUserPointer) : window(nullptr) {
     /* ---- GLFW ---- */
     if(!glfwInit()) {
         throw std::runtime_error("Failed to initialize GLFW.");
@@ -18,7 +18,7 @@ Window::Window(void* windowUserPointer) : window(nullptr) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(1, 1, "OpenGL Engine", nullptr, nullptr);
+    window = glfwCreateWindow(1, 1, name.c_str(), nullptr, nullptr);
     if(!window) {
         throw std::runtime_error("Failed to create window.");
     }
