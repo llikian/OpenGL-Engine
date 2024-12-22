@@ -117,7 +117,9 @@ public:
     virtual void handleFrameBufferSizeCallback(int width, int height);
 
     /**
-     * @brief Handles what happens when a key is pressed, released or held down.
+     * @brief Handles what happens when a key is pressed, released or held down. If the pressed key is repeatable and a
+     * key is pressed, it is set as active in the repeatable keys map, if it is released we set it as inactive. If the
+     * key is not repeatable, we add it to the key event queue.
      * @param key The affected key. This is a platform-independent key code using GLFW_KEY_*.
      * @param scancode The system-specific scancode for the key.
      * @param action The action performed. Can be one of three values:\n
@@ -152,7 +154,7 @@ public:
     virtual void handleMouseButtonCallback(int button, int action, int mods);
 
     /**
-     * @brief Handles what happens when the cursor is moved.
+     * @brief Handles what happens when the cursor is moved. Updates the mouse position.
      * @param xPos The new horizontal position of the mouse.
      * @param yPos The new vertical position of the mouse.
      */
