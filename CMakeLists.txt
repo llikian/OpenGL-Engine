@@ -66,19 +66,19 @@ set(LIBRARIES
 )
 
 # Add executables
-add_executable(${PROJECT_NAME}
-        src/main.cpp
-        src/applications/Application.cpp
+add_executable(${PROJECT_NAME} src/main.cpp
         ${SOURCES}
+        src/applications/Application.cpp
 )
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDES})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBRARIES})
 
 
-add_executable(GameOfLife
-        src/game_of_life.cpp
-        src/applications/GameOfLifeApp.cpp
+add_executable(GameOfLife src/game_of_life.cpp
         ${SOURCES}
+        src/applications/GameOfLifeApp.cpp
+        src/applications/game_of_life/Cell.cpp
+        src/applications/game_of_life/Ruleset.cpp
 )
 target_include_directories(GameOfLife PUBLIC ${INCLUDES})
 target_link_libraries(GameOfLife PUBLIC ${LIBRARIES})
