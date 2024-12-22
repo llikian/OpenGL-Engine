@@ -13,7 +13,17 @@ Ruleset::Ruleset(const std::string& ruleset) : ruleset(ruleset) {
     read_values(read_rule(ruleset, index), survival);
     read_values(read_rule(ruleset, index), birth);
     read_values(read_rule(ruleset, index), death);
-    moore = ruleset[index] == 'M';
+
+    switch(ruleset[index]) {
+        case 'M':
+            neighborhoodType = NeighborhoodType::Moore;
+            break;
+        case 'N':
+            neighborhoodType = NeighborhoodType::VonNeumann;
+            break;
+        default:
+            throw std::runtime_error(std::string("Unknown neighborhood type: '") + ruleset[index] + "'");
+    }
 
     print_rules();
 }
@@ -68,7 +78,7 @@ void Ruleset::read_values(const std::string& rule, std::unordered_set<int>& valu
 }
 
 void Ruleset::print_rules() const {
-    static auto print_int_unordered_set = [](const std:: string& name, const std::unordered_set<int>& values) {
+    static auto print_int_unordered_set = [](const std:: string& name, const std::unordered_set<int>& values) -> void {
         std::cout << name << ": ";
 
         for(const int& val : values) {
@@ -78,21 +88,36 @@ void Ruleset::print_rules() const {
         std::cout << '\n';
     };
 
+    static auto print_neighborhood_type = [](NeighborhoodType type) -> void {
+        std::cout << "Neighborhood Type: ";
+
+        switch(type) {
+            case NeighborhoodType::Moore:
+                std::cout << "Moore";
+                break;
+            case NeighborhoodType::VonNeumann:
+                std::cout << "Von Neumann";
+                break;
+        }
+
+        std::cout << '\n';
+    };
+
     std::cout << "Ruleset: " << ruleset << '\n';
     print_int_unordered_set("Survival", survival);
     print_int_unordered_set("Birth", birth);
     print_int_unordered_set("Death", death);
-    std::cout << "Neighbourhood: " << (moore ? "Moore" : "Other") << '\n';
+    print_neighborhood_type(neighborhoodType);
 }
 
-bool Ruleset::survives(int neighbours) {
-    return survival.contains(neighbours);
+bool Ruleset::survives(int neighbors) {
+    return survival.contains(neighbors);
 }
 
-bool Ruleset::isBorn(int neighbours) {
-    return birth.contains(neighbours);
+bool Ruleset::isBorn(int neighbors) {
+    return birth.contains(neighbors);
 }
 
-bool Ruleset::dies(int neighbours) {
-    return death.contains(neighbours);
+bool Ruleset::dies(int neighbors) {
+    return death.contains(neighbors);
 }

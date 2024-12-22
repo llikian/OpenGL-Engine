@@ -8,6 +8,11 @@
 #include <string>
 #include <unordered_set>
 
+enum class NeighborhoodType {
+    Moore,
+    VonNeumann
+};
+
 /**
  * @class Ruleset
  * @brief
@@ -21,14 +26,14 @@ public:
 
     void print_rules() const;
 
-    bool survives(int neighbours);
-    bool isBorn(int neighbours);
-    bool dies(int neighbours);
+    bool survives(int neighbors);
+    bool isBorn(int neighbors);
+    bool dies(int neighbors);
 
 private:
     std::string ruleset;
     std::unordered_set<int> survival;
     std::unordered_set<int> birth;
     std::unordered_set<int> death;
-    bool moore;
+    NeighborhoodType neighborhoodType;
 };
