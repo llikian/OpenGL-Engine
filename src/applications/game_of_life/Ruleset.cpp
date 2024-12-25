@@ -49,6 +49,7 @@ std::string Ruleset::read_rule(const std::string& ruleset, int& index) {
 void Ruleset::read_values(const std::string& rule, std::unordered_set<unsigned int>& values) {
     std::string buf1;
     std::string buf2;
+    unsigned int value;
 
     for(unsigned int i = 0 ; i < rule.size() ; ++i) {
         if(rule[i] >= '0' && rule[i] <= '9') {
@@ -64,10 +65,8 @@ void Ruleset::read_values(const std::string& rule, std::unordered_set<unsigned i
                 i++;
             }
 
-            unsigned int val1 = std::stoi(buf1);
-            unsigned int val2 = std::stoi(buf2);
-
-            for(unsigned int j = val1 ; j <= val2 ; ++j) {
+            value = std::stoi(buf2);
+            for(unsigned int j = std::stoi(buf1) ; j <= value ; ++j) {
                 values.emplace(j);
             }
 
