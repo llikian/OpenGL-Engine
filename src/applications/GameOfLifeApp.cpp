@@ -6,14 +6,18 @@
 #include "applications/GameOfLifeApp.hpp"
 
 #include <cmath>
+#include <ctime>
 #include "maths/transformations.hpp"
 
 GameOfLifeApp::GameOfLifeApp()
     : ApplicationBase("3D Game of Life"),
       wireframe(false), cullface(false), cursorVisible(false),
       shader(nullptr),
-      projection(perspective(M_PI_4f, window.getRatio(), 0.1f, 100.0f)),
-      camera(Point(0.0f, 2.0f, 5.0f)) {
+      projection(perspective(M_PI_4f, window.getRatio(), 0.1f, 200.0f)),
+      camera(Point(0.0f, 2.0f, 5.0f)),
+      ruleset("9-26/5-7,12-13,15/5/M"),
+      cubeSize(50.0f),
+      cube(Meshes::cube()) {
 
     /* ---- Repeatable Keys ---- */
     repeatableKeys.emplace(GLFW_KEY_W, false);
@@ -37,6 +41,20 @@ GameOfLifeApp::~GameOfLifeApp() {
 }
 
 void GameOfLifeApp::run() {
+    Mesh wireframeCube = Meshes::wireframeCube();
+
+    srand(std::time(nullptr));
+
+    for(int i = 0 ; i < 8 ; ++i) {
+        for(int j = 0 ; j < 8 ; ++j) {
+            for(int k = 0 ; k < 8 ; ++k) {
+                if(rand() % 2) {
+                    cells[CELL_SIZE / 2 + i][CELL_SIZE / 2 + j][CELL_SIZE / 2 + k].state = ruleset.getStatesAmount() - 1;
+                }
+            }
+        }
+    }
+
     while(!glfwWindowShouldClose(window)) {
         handleEvents();
 
@@ -46,7 +64,26 @@ void GameOfLifeApp::run() {
         shader->use();
         updateUniforms();
 
-        calculateMVP(mat4(1.0f));
+        shader->setUniform("wireframeCube", false);
+        for(int i = 0 ; i < CELL_SIZE ; ++i) {
+            shader->setUniform("cellX", i);
+
+            for(int j = 0 ; j < CELL_SIZE ; ++j) {
+                shader->setUniform("cellY", j);
+
+                for(int k = 0 ; k < CELL_SIZE ; ++k) {
+                    shader->setUniform("cellZ", k);
+
+                    if(cells[i][j][k].state > 0) {
+                        cube.draw();
+                    }
+                }
+            }
+        }
+
+        shader->use();
+        shader->setUniform("wireframeCube", true);
+        wireframeCube.draw();
 
         glfwSwapBuffers(window);
     }
@@ -101,6 +138,9 @@ void GameOfLifeApp::handleKeyEvent(int key) {
         case GLFW_KEY_LEFT_SHIFT:
             camera.move(CameraControls::downward, delta);
             break;
+        case GLFW_KEY_N:
+            nextGeneration();
+            break;
     }
 }
 
@@ -109,10 +149,78 @@ void GameOfLifeApp::initUniforms() {
 }
 
 void GameOfLifeApp::updateUniforms() {
-    shader->setUniform("cameraPos", camera.getPosition());
+    shader->setUniform("vpMatrix", camera.getVPmatrix(projection));
+    shader->setUniform("cubeSize", cubeSize);
+    shader->setUniform("cellSize", cubeSize / CELL_SIZE);
 }
 
-void GameOfLifeApp::calculateMVP(const mat4& model) {
-    shader->setUniform("mvp", camera.getVPmatrix(projection) * model);
-    shader->setUniform("model", model);
+void GameOfLifeApp::nextGeneration() {
+    unsigned int ip, jp, kp;
+    unsigned int im, jm, km;
+
+    for(unsigned int i = 0 ; i < CELL_SIZE ; ++i) {
+        ip = (i + 1 + CELL_SIZE) % CELL_SIZE;
+        im = (i - 1 + CELL_SIZE) % CELL_SIZE;
+
+        for(unsigned int j = 0 ; j < CELL_SIZE ; ++j) {
+            jp = (j + 1 + CELL_SIZE) % CELL_SIZE;
+            jm = (j - 1 + CELL_SIZE) % CELL_SIZE;
+
+            for(unsigned int k = 0 ; k < CELL_SIZE ; ++k) {
+                Cell& cell = cells[i][j][k];
+
+                kp = (k + 1 + CELL_SIZE) % CELL_SIZE;
+                km = (k - 1 + CELL_SIZE) % CELL_SIZE;
+
+                cell.neighbors = cells[ip][jp][kp].state > 0;
+                cell.neighbors += cells[ip][jp][k].state > 0;
+                cell.neighbors += cells[ip][jp][km].state > 0;
+                cell.neighbors += cells[ip][j][kp].state > 0;
+                cell.neighbors += cells[ip][j][k].state > 0;
+                cell.neighbors += cells[ip][j][km].state > 0;
+                cell.neighbors += cells[ip][jm][kp].state > 0;
+                cell.neighbors += cells[ip][jm][k].state > 0;
+                cell.neighbors += cells[ip][jm][km].state > 0;
+
+                cell.neighbors += cells[i][jp][kp].state > 0;
+                cell.neighbors += cells[i][jp][k].state > 0;
+                cell.neighbors += cells[i][jp][km].state > 0;
+                cell.neighbors += cells[i][j][kp].state > 0;
+                cell.neighbors += cells[i][j][km].state > 0;
+                cell.neighbors += cells[i][jm][kp].state > 0;
+                cell.neighbors += cells[i][jm][k].state > 0;
+                cell.neighbors += cells[i][jm][km].state > 0;
+
+                cell.neighbors += cells[im][jp][kp].state > 0;
+                cell.neighbors += cells[im][jp][k].state > 0;
+                cell.neighbors += cells[im][jp][km].state > 0;
+                cell.neighbors += cells[im][j][kp].state > 0;
+                cell.neighbors += cells[im][j][k].state > 0;
+                cell.neighbors += cells[im][j][km].state > 0;
+                cell.neighbors += cells[im][jm][kp].state > 0;
+                cell.neighbors += cells[im][jm][k].state > 0;
+                cell.neighbors += cells[im][jm][km].state > 0;
+
+                if(cell.state > 0) { // Cell is not dead
+                    if(cell.state == ruleset.getStatesAmount() - 1) { // Cell is alive
+                        if(!ruleset.survives(cell.neighbors)) { // Cell starts to die
+                            cell.next = cell.state - 1;
+                        }
+                    } else { // Cell is dying
+                        cell.next = cell.state - 1;
+                    }
+                } else if(ruleset.isBorn(cell.neighbors)) { // Cell will be born
+                    cell.next = ruleset.getStatesAmount() - 1;
+                }
+            }
+        }
+    }
+
+    for(unsigned int i = 0 ; i < CELL_SIZE ; ++i) {
+        for(unsigned int j = 0 ; j < CELL_SIZE ; ++j) {
+            for(unsigned int k = 0 ; k < CELL_SIZE ; ++k) {
+                cells[i][j][k].flip();
+            }
+        }
+    }
 }

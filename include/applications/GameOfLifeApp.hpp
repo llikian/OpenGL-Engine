@@ -5,10 +5,15 @@
 
 #pragma once
 
+#include "applications/game_of_life/Cell.hpp"
+#include "applications/game_of_life/Ruleset.hpp"
 #include "engine/ApplicationBase.hpp"
 #include "engine/Camera.hpp"
 #include "engine/Shader.hpp"
 #include "maths/mat4.hpp"
+#include "mesh/meshes.hpp"
+
+#define CELL_SIZE 72
 
 /**
  * @class GameOfLifeApp
@@ -72,12 +77,7 @@ private:
      */
     void updateUniforms();
 
-    /**
-     * @brief Calculates the MVP (Matrix-View-Projection) Matrix and sends it to the shader.
-     * @param model The new value of the model matrix. It is a product of translation, scale
-     * and rotation matrices used to apply transformations on the scene's objects.
-     */
-    void calculateMVP(const mat4& model);
+    void nextGeneration();
 
     /* ---- Variables & Constants ---- */
     bool wireframe;     ///< Whether to display in wireframe mode.
@@ -89,4 +89,10 @@ private:
     mat4 projection; ///< The projection matrix.
 
     Camera camera; ///< A first person camera to move around the scene.
+
+    Ruleset ruleset;
+    Cell cells[CELL_SIZE][CELL_SIZE][CELL_SIZE];
+
+    float cubeSize;
+    Mesh cube;
 };

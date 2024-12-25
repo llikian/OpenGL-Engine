@@ -5,14 +5,16 @@
 
 #version 460 core
 
-in vec3 position;
-in vec3 normal;
-in vec2 texCoord;
-
 out vec4 fragColor;
 
-uniform vec3 cameraPos;
+uniform bool wireframeCube;
+
+uniform float cubeSize;
 
 void main() {
-    fragColor = vec4(1.0f);
+    if(wireframeCube) {
+        fragColor = vec4(0.7f, 0.2f, 0.8f, 1.0f);
+    } else {
+        fragColor = vec4(1.0f);
+    }
 }

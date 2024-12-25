@@ -11,9 +11,12 @@
  */
 struct Cell {
 public:
-    Cell(bool state);
+    Cell();
+    Cell(unsigned int state);
 
-    operator bool&();
+    void flip();
 
-    bool state;
+    unsigned int neighbors;
+    unsigned int state;
+    unsigned int next;
 };

@@ -5,8 +5,10 @@
 
 #include "applications/game_of_life/Cell.hpp"
 
-Cell::Cell(bool state) : state(state) { }
+Cell::Cell() : neighbors(0), state(0), next(0) { }
 
-Cell::operator bool&() {
-    return state;
+Cell::Cell(unsigned int state) : neighbors(0), state(state), next(state) { }
+
+void Cell::flip() {
+    state = next;
 }
