@@ -1,15 +1,15 @@
 /***************************************************************************************************
- * @file  GameOfLifeApp.cpp
- * @brief Implementation of the GameOfLifeApp class
+ * @file  CellularAutomataApp.cpp
+ * @brief Implementation of the CellularAutomataApp class
  **************************************************************************************************/
 
-#include "applications/GameOfLifeApp.hpp"
+#include "applications/CellularAutomataApp.hpp"
 
 #include <cmath>
 #include <ctime>
 #include "maths/transformations.hpp"
 
-GameOfLifeApp::GameOfLifeApp()
+CellularAutomataApp::CellularAutomataApp()
     : ApplicationBase("3D Game of Life"),
       wireframe(false), cullface(false), cursorVisible(false),
       shader(nullptr),
@@ -28,19 +28,19 @@ GameOfLifeApp::GameOfLifeApp()
     repeatableKeys.emplace(GLFW_KEY_LEFT_SHIFT, false);
 
     /* ---- GLFW Callbacks ---- */
-    setCallbacks<GameOfLifeApp>(window, true, true, true, false, true, false);
+    setCallbacks<CellularAutomataApp>(window, true, true, true, false, true, false);
 
     /* ---- Shaders ---- */
-    std::string paths[2]{"shaders/game_of_life/game_of_life.vert", "shaders/game_of_life/game_of_life.frag"};
+    std::string paths[2]{"shaders/cellular_automata/cellular_automata.vert", "shaders/cellular_automata/cellular_automata.frag"};
     shader = new Shader(paths, 2, "Game of Life");
     initUniforms();
 }
 
-GameOfLifeApp::~GameOfLifeApp() {
+CellularAutomataApp::~CellularAutomataApp() {
     delete shader;
 }
 
-void GameOfLifeApp::run() {
+void CellularAutomataApp::run() {
     Mesh wireframeCube = Meshes::wireframeCube();
 
     srand(std::time(nullptr));
@@ -89,13 +89,13 @@ void GameOfLifeApp::run() {
     }
 }
 
-void GameOfLifeApp::handleWindowSizeCallback(int width, int height) {
+void CellularAutomataApp::handleWindowSizeCallback(int width, int height) {
     ApplicationBase::handleWindowSizeCallback(width, height);
 
     projection[0][0] = 1.0f / (tanf(M_PI_4f / 2.0f) * window.getRatio());
 }
 
-void GameOfLifeApp::handleCursorPositionCallback(double xPos, double yPos) {
+void CellularAutomataApp::handleCursorPositionCallback(double xPos, double yPos) {
     if(!cursorVisible) {
         camera.look(vec2(xPos - mousePos.x, yPos - mousePos.y));
     }
@@ -103,7 +103,7 @@ void GameOfLifeApp::handleCursorPositionCallback(double xPos, double yPos) {
     ApplicationBase::handleCursorPositionCallback(xPos, yPos);
 }
 
-void GameOfLifeApp::handleKeyEvent(int key) {
+void CellularAutomataApp::handleKeyEvent(int key) {
     switch(key) {
         case GLFW_KEY_ESCAPE:
             glfwSetWindowShouldClose(window, true);
@@ -144,17 +144,17 @@ void GameOfLifeApp::handleKeyEvent(int key) {
     }
 }
 
-void GameOfLifeApp::initUniforms() {
+void CellularAutomataApp::initUniforms() {
     shader->use();
 }
 
-void GameOfLifeApp::updateUniforms() {
+void CellularAutomataApp::updateUniforms() {
     shader->setUniform("vpMatrix", camera.getVPmatrix(projection));
     shader->setUniform("cubeSize", cubeSize);
     shader->setUniform("cellSize", cubeSize / CELL_SIZE);
 }
 
-void GameOfLifeApp::nextGeneration() {
+void CellularAutomataApp::nextGeneration() {
     unsigned int ip, jp, kp;
     unsigned int im, jm, km;
 

@@ -1,12 +1,12 @@
 /***************************************************************************************************
- * @file  GameOfLifeApp.hpp
- * @brief Declaration of the GameOfLifeApp class
+ * @file  CellularAutomataApp.hpp
+ * @brief Declaration of the CellularAutomataApp class
  **************************************************************************************************/
 
 #pragma once
 
-#include "applications/game_of_life/Cell.hpp"
-#include "applications/game_of_life/Ruleset.hpp"
+#include "applications/cellular_automata/Cell.hpp"
+#include "applications/cellular_automata/Ruleset.hpp"
 #include "engine/ApplicationBase.hpp"
 #include "engine/Camera.hpp"
 #include "engine/Shader.hpp"
@@ -16,22 +16,22 @@
 #define CELL_SIZE 72
 
 /**
- * @class GameOfLifeApp
+ * @class CellularAutomataApp
  * @brief
  */
-class GameOfLifeApp : public ApplicationBase {
+class CellularAutomataApp : public ApplicationBase {
 public:
     /* ---- Constructor & Destructor ---- */
 
     /**
      * @brief Sets the default value of all member variables and constants.
      */
-    GameOfLifeApp();
+    CellularAutomataApp();
 
     /**
      * @brief Frees all allocated memory.
      */
-    ~GameOfLifeApp();
+    ~CellularAutomataApp();
 
     /* ---- Public Methods ---- */
 

@@ -74,11 +74,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDES})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBRARIES})
 
 
-add_executable(GameOfLife src/game_of_life.cpp
+add_executable(CellularAutomata src/cellular_automata.cpp
         ${SOURCES}
-        src/applications/GameOfLifeApp.cpp
-        src/applications/game_of_life/Cell.cpp
-        src/applications/game_of_life/Ruleset.cpp
+        src/applications/CellularAutomataApp.cpp
+        src/applications/cellular_automata/Cell.cpp
+        src/applications/cellular_automata/Ruleset.cpp
 )
-target_include_directories(GameOfLife PUBLIC ${INCLUDES})
-target_link_libraries(GameOfLife PUBLIC ${LIBRARIES})
+target_include_directories(CellularAutomata PUBLIC ${INCLUDES})
+target_link_libraries(CellularAutomata PUBLIC ${LIBRARIES})

@@ -3,7 +3,7 @@
  * @brief Implementation of the Ruleset class
  **************************************************************************************************/
 
-#include "applications/game_of_life/Ruleset.hpp"
+#include "applications/cellular_automata/Ruleset.hpp"
 
 #include <iostream>
 
