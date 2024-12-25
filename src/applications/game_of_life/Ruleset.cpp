@@ -12,7 +12,7 @@ Ruleset::Ruleset(const std::string& ruleset) : ruleset(ruleset) {
 
     read_values(read_rule(ruleset, index), survival);
     read_values(read_rule(ruleset, index), birth);
-    read_values(read_rule(ruleset, index), death);
+    statesAmount = std::stoi(read_rule(ruleset, index));
 
     switch(ruleset[index]) {
         case 'M':
@@ -46,7 +46,7 @@ std::string Ruleset::read_rule(const std::string& ruleset, int& index) {
     return rule;
 }
 
-void Ruleset::read_values(const std::string& rule, std::unordered_set<int>& values) {
+void Ruleset::read_values(const std::string& rule, std::unordered_set<unsigned int>& values) {
     std::string buf1;
     std::string buf2;
 
@@ -64,10 +64,10 @@ void Ruleset::read_values(const std::string& rule, std::unordered_set<int>& valu
                 i++;
             }
 
-            int val1 = std::stoi(buf1);
-            int val2 = std::stoi(buf2);
+            unsigned int val1 = std::stoi(buf1);
+            unsigned int val2 = std::stoi(buf2);
 
-            for(int j = val1 ; j <= val2 ; ++j) {
+            for(unsigned int j = val1 ; j <= val2 ; ++j) {
                 values.emplace(j);
             }
 
@@ -78,46 +78,45 @@ void Ruleset::read_values(const std::string& rule, std::unordered_set<int>& valu
 }
 
 void Ruleset::print_rules() const {
-    static auto print_int_unordered_set = [](const std:: string& name, const std::unordered_set<int>& values) -> void {
+    static auto print_int_unordered_set = [](const std:: string& name, const std::unordered_set<unsigned int>& values) {
         std::cout << name << ": ";
 
-        for(const int& val : values) {
+        for(const unsigned int& val : values) {
             std::cout << val << ' ';
         }
 
         std::cout << '\n';
     };
 
-    static auto print_neighborhood_type = [](NeighborhoodType type) -> void {
-        std::cout << "Neighborhood Type: ";
-
-        switch(type) {
-            case NeighborhoodType::Moore:
-                std::cout << "Moore";
-                break;
-            case NeighborhoodType::VonNeumann:
-                std::cout << "Von Neumann";
-                break;
-        }
-
-        std::cout << '\n';
-    };
-
     std::cout << "Ruleset: " << ruleset << '\n';
+
     print_int_unordered_set("Survival", survival);
     print_int_unordered_set("Birth", birth);
-    print_int_unordered_set("Death", death);
-    print_neighborhood_type(neighborhoodType);
+    std::cout << "States Amount: " << statesAmount << '\n';
+    std::cout << "Neighborhood Type: ";
+    switch(neighborhoodType) {
+        case NeighborhoodType::Moore:
+            std::cout << "Moore";
+            break;
+        case NeighborhoodType::VonNeumann:
+            std::cout << "Von Neumann";
+            break;
+    }
+    std::cout << '\n';
 }
 
-bool Ruleset::survives(int neighbors) {
+bool Ruleset::survives(unsigned int neighbors) const {
     return survival.contains(neighbors);
 }
 
-bool Ruleset::isBorn(int neighbors) {
+bool Ruleset::isBorn(unsigned int neighbors) const {
     return birth.contains(neighbors);
 }
 
-bool Ruleset::dies(int neighbors) {
-    return death.contains(neighbors);
+unsigned int Ruleset::getStatesAmount() const {
+    return statesAmount;
+}
+
+NeighborhoodType Ruleset::getNeighborhoodType() const {
+    return neighborhoodType;
 }
