@@ -58,18 +58,7 @@ public:
      * @param value The new value of the uniform.
      */
     template<typename... Value>
-    void setUniform(const std::string& uniform, Value... value) {
-        try {
-            setUniform(uniforms.at(uniform), value...);
-        } catch(const std::exception&) {
-            if(!unknownUniforms.contains(uniform)) {
-                std::cout << "The uniform named '" << uniform << "' is unknown or unused";
-                std::cout << " in shader program '" << name << "'.\n";
-
-                unknownUniforms.emplace(uniform, true);
-            }
-        }
-    }
+    void setUniform(const std::string& uniform, Value... value);
 
 private:
 
@@ -188,3 +177,5 @@ private:
     std::unordered_map<std::string, int> uniforms; ///< Stores uniforms id's.
     std::unordered_map<std::string, bool> unknownUniforms; ///< Stores unknown uniforms.
 };
+
+#include "Shader.tpp"
