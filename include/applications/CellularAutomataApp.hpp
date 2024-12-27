@@ -77,6 +77,7 @@ private:
      */
     void updateUniforms();
 
+    void countNeighbors();
     void nextGeneration();
 
     /* ---- Variables & Constants ---- */

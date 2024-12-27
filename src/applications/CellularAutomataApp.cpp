@@ -10,12 +10,12 @@
 #include "maths/transformations.hpp"
 
 CellularAutomataApp::CellularAutomataApp()
-    : ApplicationBase("3D Game of Life"),
+    : ApplicationBase("3D Cellular Automata"),
       wireframe(false), cullface(false), cursorVisible(false),
       shader(nullptr),
       projection(perspective(M_PI_4f, window.getRatio(), 0.1f, 200.0f)),
       camera(vec3(50.0f), vec3(0.0f)),
-      ruleset("9-26/5-7,12-13,15/5/M"),
+      ruleset("1, 0-6/1,3/2/N"),
       cubeSize(50.0f),
       cube(Meshes::cube()) {
 
@@ -31,8 +31,9 @@ CellularAutomataApp::CellularAutomataApp()
     setCallbacks<CellularAutomataApp>(window, true, true, true, false, true, false);
 
     /* ---- Shaders ---- */
-    std::string paths[2]{"shaders/cellular_automata/cellular_automata.vert", "shaders/cellular_automata/cellular_automata.frag"};
-    shader = new Shader(paths, 2, "Game of Life");
+    std::string paths[2]{"shaders/cellular_automata/cellular_automata.vert",
+                         "shaders/cellular_automata/cellular_automata.frag"};
+    shader = new Shader(paths, 2, "3D Cellular Automata");
     initUniforms();
 }
 
@@ -55,6 +56,18 @@ void CellularAutomataApp::run() {
         }
     }
 
+//    for(int i = 0 ; i < CELL_SIZE ; ++i) {
+//        for(int j = 0 ; j < CELL_SIZE ; ++j) {
+//            for(int k = 0 ; k < CELL_SIZE ; ++k) {
+//                if(rand() % 2) {
+//                    cells[i][j][k].state = ruleset.getStatesAmount() - 1;
+//                }
+//            }
+//        }
+//    }
+
+    countNeighbors();
+
     while(!glfwWindowShouldClose(window)) {
         handleEvents();
 
@@ -75,6 +88,7 @@ void CellularAutomataApp::run() {
                     shader->setUniform("cellZ", k);
 
                     if(cells[i][j][k].state > 0) {
+                        shader->setUniform("neighbors", (int) cells[i][j][k].neighbors);
                         cube.draw();
                     }
                 }
@@ -152,75 +166,225 @@ void CellularAutomataApp::updateUniforms() {
     shader->setUniform("vpMatrix", camera.getVPmatrix(projection));
     shader->setUniform("cubeSize", cubeSize);
     shader->setUniform("cellSize", cubeSize / CELL_SIZE);
+    switch(ruleset.getNeighborhoodType()) {
+        case NeighborhoodType::Moore:
+            shader->setUniform("maxNeighbors", 26);
+            break;
+        case NeighborhoodType::VonNeumann:
+            shader->setUniform("maxNeighbors", 6);
+            break;
+    }
+//    shader->setUniform("statesAmount", ruleset.getStatesAmount());
 }
 
-void CellularAutomataApp::nextGeneration() {
+void CellularAutomataApp::countNeighbors() {
+    Cell* cell;
+
     unsigned int ip, jp, kp;
     unsigned int im, jm, km;
 
-    for(unsigned int i = 0 ; i < CELL_SIZE ; ++i) {
-        ip = (i + 1 + CELL_SIZE) % CELL_SIZE;
-        im = (i - 1 + CELL_SIZE) % CELL_SIZE;
+    switch(ruleset.getNeighborhoodType()) {
+        case NeighborhoodType::Moore:
+            for(unsigned int i = 0 ; i < CELL_SIZE ; ++i) {
+                ip = (i + 1 + CELL_SIZE) % CELL_SIZE;
+                im = (i - 1 + CELL_SIZE) % CELL_SIZE;
 
-        for(unsigned int j = 0 ; j < CELL_SIZE ; ++j) {
-            jp = (j + 1 + CELL_SIZE) % CELL_SIZE;
-            jm = (j - 1 + CELL_SIZE) % CELL_SIZE;
+                for(unsigned int j = 0 ; j < CELL_SIZE ; ++j) {
+                    jp = (j + 1 + CELL_SIZE) % CELL_SIZE;
+                    jm = (j - 1 + CELL_SIZE) % CELL_SIZE;
 
-            for(unsigned int k = 0 ; k < CELL_SIZE ; ++k) {
-                Cell& cell = cells[i][j][k];
+                    for(unsigned int k = 0 ; k < CELL_SIZE ; ++k) {
+                        cell = &cells[i][j][k];
 
-                kp = (k + 1 + CELL_SIZE) % CELL_SIZE;
-                km = (k - 1 + CELL_SIZE) % CELL_SIZE;
+                        kp = (k + 1 + CELL_SIZE) % CELL_SIZE;
+                        km = (k - 1 + CELL_SIZE) % CELL_SIZE;
 
-                cell.neighbors = cells[ip][jp][kp].state > 0;
-                cell.neighbors += cells[ip][jp][k].state > 0;
-                cell.neighbors += cells[ip][jp][km].state > 0;
-                cell.neighbors += cells[ip][j][kp].state > 0;
-                cell.neighbors += cells[ip][j][k].state > 0;
-                cell.neighbors += cells[ip][j][km].state > 0;
-                cell.neighbors += cells[ip][jm][kp].state > 0;
-                cell.neighbors += cells[ip][jm][k].state > 0;
-                cell.neighbors += cells[ip][jm][km].state > 0;
+                        cell->neighbors = ruleset.isAlive(cells[ip][jp][kp].state);
+                        cell->neighbors += ruleset.isAlive(cells[ip][jp][k].state);
+                        cell->neighbors += ruleset.isAlive(cells[ip][jp][km].state);
+                        cell->neighbors += ruleset.isAlive(cells[ip][j][kp].state);
+                        cell->neighbors += ruleset.isAlive(cells[ip][j][k].state);
+                        cell->neighbors += ruleset.isAlive(cells[ip][j][km].state);
+                        cell->neighbors += ruleset.isAlive(cells[ip][jm][kp].state);
+                        cell->neighbors += ruleset.isAlive(cells[ip][jm][k].state);
+                        cell->neighbors += ruleset.isAlive(cells[ip][jm][km].state);
 
-                cell.neighbors += cells[i][jp][kp].state > 0;
-                cell.neighbors += cells[i][jp][k].state > 0;
-                cell.neighbors += cells[i][jp][km].state > 0;
-                cell.neighbors += cells[i][j][kp].state > 0;
-                cell.neighbors += cells[i][j][km].state > 0;
-                cell.neighbors += cells[i][jm][kp].state > 0;
-                cell.neighbors += cells[i][jm][k].state > 0;
-                cell.neighbors += cells[i][jm][km].state > 0;
+                        cell->neighbors += ruleset.isAlive(cells[i][jp][kp].state);
+                        cell->neighbors += ruleset.isAlive(cells[i][jp][k].state);
+                        cell->neighbors += ruleset.isAlive(cells[i][jp][km].state);
+                        cell->neighbors += ruleset.isAlive(cells[i][j][kp].state);
+                        cell->neighbors += ruleset.isAlive(cells[i][j][km].state);
+                        cell->neighbors += ruleset.isAlive(cells[i][jm][kp].state);
+                        cell->neighbors += ruleset.isAlive(cells[i][jm][k].state);
+                        cell->neighbors += ruleset.isAlive(cells[i][jm][km].state);
 
-                cell.neighbors += cells[im][jp][kp].state > 0;
-                cell.neighbors += cells[im][jp][k].state > 0;
-                cell.neighbors += cells[im][jp][km].state > 0;
-                cell.neighbors += cells[im][j][kp].state > 0;
-                cell.neighbors += cells[im][j][k].state > 0;
-                cell.neighbors += cells[im][j][km].state > 0;
-                cell.neighbors += cells[im][jm][kp].state > 0;
-                cell.neighbors += cells[im][jm][k].state > 0;
-                cell.neighbors += cells[im][jm][km].state > 0;
-
-                if(cell.state > 0) { // Cell is not dead
-                    if(cell.state == ruleset.getStatesAmount() - 1) { // Cell is alive
-                        if(!ruleset.survives(cell.neighbors)) { // Cell starts to die
-                            cell.next = cell.state - 1;
-                        }
-                    } else { // Cell is dying
-                        cell.next = cell.state - 1;
+                        cell->neighbors += ruleset.isAlive(cells[im][jp][kp].state);
+                        cell->neighbors += ruleset.isAlive(cells[im][jp][k].state);
+                        cell->neighbors += ruleset.isAlive(cells[im][jp][km].state);
+                        cell->neighbors += ruleset.isAlive(cells[im][j][kp].state);
+                        cell->neighbors += ruleset.isAlive(cells[im][j][k].state);
+                        cell->neighbors += ruleset.isAlive(cells[im][j][km].state);
+                        cell->neighbors += ruleset.isAlive(cells[im][jm][kp].state);
+                        cell->neighbors += ruleset.isAlive(cells[im][jm][k].state);
+                        cell->neighbors += ruleset.isAlive(cells[im][jm][km].state);
                     }
-                } else if(ruleset.isBorn(cell.neighbors)) { // Cell will be born
-                    cell.next = ruleset.getStatesAmount() - 1;
                 }
             }
-        }
-    }
 
-    for(unsigned int i = 0 ; i < CELL_SIZE ; ++i) {
-        for(unsigned int j = 0 ; j < CELL_SIZE ; ++j) {
-            for(unsigned int k = 0 ; k < CELL_SIZE ; ++k) {
-                cells[i][j][k].flip();
+            break;
+        case NeighborhoodType::VonNeumann:
+            for(unsigned int i = 0 ; i < CELL_SIZE ; ++i) {
+                ip = (i + 1 + CELL_SIZE) % CELL_SIZE;
+                im = (i - 1 + CELL_SIZE) % CELL_SIZE;
+
+                for(unsigned int j = 0 ; j < CELL_SIZE ; ++j) {
+                    jp = (j + 1 + CELL_SIZE) % CELL_SIZE;
+                    jm = (j - 1 + CELL_SIZE) % CELL_SIZE;
+
+                    for(unsigned int k = 0 ; k < CELL_SIZE ; ++k) {
+                        cell = &cells[i][j][k];
+
+                        kp = (k + 1 + CELL_SIZE) % CELL_SIZE;
+                        km = (k - 1 + CELL_SIZE) % CELL_SIZE;
+
+                        cell->neighbors = ruleset.isAlive(cells[ip][j][k].state);
+                        cell->neighbors += ruleset.isAlive(cells[im][j][k].state);
+                        cell->neighbors += ruleset.isAlive(cells[i][jp][k].state);
+                        cell->neighbors += ruleset.isAlive(cells[i][jm][k].state);
+                        cell->neighbors += ruleset.isAlive(cells[i][j][kp].state);
+                        cell->neighbors += ruleset.isAlive(cells[i][j][km].state);
+                    }
+                }
             }
-        }
+
+            break;
+    }
+}
+
+void CellularAutomataApp::nextGeneration() {
+    const unsigned int maxState = ruleset.getStatesAmount() - 1;
+
+    Cell* cell;
+
+    unsigned int ip, jp, kp;
+    unsigned int im, jm, km;
+
+    switch(ruleset.getNeighborhoodType()) {
+        case NeighborhoodType::Moore:
+            for(unsigned int i = 0 ; i < CELL_SIZE ; ++i) {
+                for(unsigned int j = 0 ; j < CELL_SIZE ; ++j) {
+                    for(unsigned int k = 0 ; k < CELL_SIZE ; ++k) {
+                        cell = &cells[i][j][k];
+
+                        if(cell->state) { // Cell is not dead
+                            if(cell->state) { // Cell is alive
+                                if(!ruleset.survives(cell->neighbors)) { // Cell starts to die
+                                    cell->next = cell->state - 1;
+                                }
+                            } else { // Cell is dying
+                                cell->next = cell->state - 1;
+                            }
+                        } else if(ruleset.isBorn(cell->neighbors)) { // Cell will be born
+                            cell->next = maxState;
+                        }
+                    }
+                }
+            }
+
+            for(unsigned int i = 0 ; i < CELL_SIZE ; ++i) {
+                ip = (i + 1 + CELL_SIZE) % CELL_SIZE;
+                im = (i - 1 + CELL_SIZE) % CELL_SIZE;
+
+                for(unsigned int j = 0 ; j < CELL_SIZE ; ++j) {
+                    jp = (j + 1 + CELL_SIZE) % CELL_SIZE;
+                    jm = (j - 1 + CELL_SIZE) % CELL_SIZE;
+
+                    for(unsigned int k = 0 ; k < CELL_SIZE ; ++k) {
+                        cell = &cells[i][j][k];
+
+                        kp = (k + 1 + CELL_SIZE) % CELL_SIZE;
+                        km = (k - 1 + CELL_SIZE) % CELL_SIZE;
+
+                        cell->neighbors = ruleset.isAlive(cells[ip][jp][kp].next);
+                        cell->neighbors += ruleset.isAlive(cells[ip][jp][k].next);
+                        cell->neighbors += ruleset.isAlive(cells[ip][jp][km].next);
+                        cell->neighbors += ruleset.isAlive(cells[ip][j][kp].next);
+                        cell->neighbors += ruleset.isAlive(cells[ip][j][k].next);
+                        cell->neighbors += ruleset.isAlive(cells[ip][j][km].next);
+                        cell->neighbors += ruleset.isAlive(cells[ip][jm][kp].next);
+                        cell->neighbors += ruleset.isAlive(cells[ip][jm][k].next);
+                        cell->neighbors += ruleset.isAlive(cells[ip][jm][km].next);
+                        cell->neighbors += ruleset.isAlive(cells[i][jp][kp].next);
+                        cell->neighbors += ruleset.isAlive(cells[i][jp][k].next);
+                        cell->neighbors += ruleset.isAlive(cells[i][jp][km].next);
+                        cell->neighbors += ruleset.isAlive(cells[i][j][kp].next);
+                        cell->neighbors += ruleset.isAlive(cells[i][j][km].next);
+                        cell->neighbors += ruleset.isAlive(cells[i][jm][kp].next);
+                        cell->neighbors += ruleset.isAlive(cells[i][jm][k].next);
+                        cell->neighbors += ruleset.isAlive(cells[i][jm][km].next);
+                        cell->neighbors += ruleset.isAlive(cells[im][jp][kp].next);
+                        cell->neighbors += ruleset.isAlive(cells[im][jp][k].next);
+                        cell->neighbors += ruleset.isAlive(cells[im][jp][km].next);
+                        cell->neighbors += ruleset.isAlive(cells[im][j][kp].next);
+                        cell->neighbors += ruleset.isAlive(cells[im][j][k].next);
+                        cell->neighbors += ruleset.isAlive(cells[im][j][km].next);
+                        cell->neighbors += ruleset.isAlive(cells[im][jm][kp].next);
+                        cell->neighbors += ruleset.isAlive(cells[im][jm][k].next);
+                        cell->neighbors += ruleset.isAlive(cells[im][jm][km].next);
+
+                        cell->state = cell->next;
+                    }
+                }
+            }
+
+            break;
+        case NeighborhoodType::VonNeumann:
+            for(unsigned int i = 0 ; i < CELL_SIZE ; ++i) {
+                for(unsigned int j = 0 ; j < CELL_SIZE ; ++j) {
+                    for(unsigned int k = 0 ; k < CELL_SIZE ; ++k) {
+                        cell = &cells[i][j][k];
+
+                        if(cell->state) { // Cell is not dead
+                            if(cell->state) { // Cell is alive
+                                if(!ruleset.survives(cell->neighbors)) { // Cell starts to die
+                                    cell->next = cell->state - 1;
+                                }
+                            } else { // Cell is dying
+                                cell->next = cell->state - 1;
+                            }
+                        } else if(ruleset.isBorn(cell->neighbors)) { // Cell will be born
+                            cell->next = maxState;
+                        }
+                    }
+                }
+            }
+
+            for(unsigned int i = 0 ; i < CELL_SIZE ; ++i) {
+                ip = (i + 1 + CELL_SIZE) % CELL_SIZE;
+                im = (i - 1 + CELL_SIZE) % CELL_SIZE;
+
+                for(unsigned int j = 0 ; j < CELL_SIZE ; ++j) {
+                    jp = (j + 1 + CELL_SIZE) % CELL_SIZE;
+                    jm = (j - 1 + CELL_SIZE) % CELL_SIZE;
+
+                    for(unsigned int k = 0 ; k < CELL_SIZE ; ++k) {
+                        cell = &cells[i][j][k];
+
+                        kp = (k + 1 + CELL_SIZE) % CELL_SIZE;
+                        km = (k - 1 + CELL_SIZE) % CELL_SIZE;
+
+                        cell->neighbors = ruleset.isAlive(cells[ip][j][k].next);
+                        cell->neighbors += ruleset.isAlive(cells[im][j][k].next);
+                        cell->neighbors += ruleset.isAlive(cells[i][jp][k].next);
+                        cell->neighbors += ruleset.isAlive(cells[i][jm][k].next);
+                        cell->neighbors += ruleset.isAlive(cells[i][j][kp].next);
+                        cell->neighbors += ruleset.isAlive(cells[i][j][km].next);
+
+                        cell->state = cell->next;
+                    }
+                }
+            }
+
+            break;
     }
 }
