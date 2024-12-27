@@ -5,6 +5,8 @@
 
 #pragma once
 
+#include <cstdlib>
+
 /**
  * @class Cell
  * @brief
@@ -14,9 +16,7 @@ public:
     Cell();
     Cell(unsigned int state);
 
-    void flip();
-
-    unsigned int neighbors;
-    unsigned int state;
-    unsigned int next;
+    u_int8_t neighbors;
+    u_int8_t state;
+    u_int8_t next;
 };
