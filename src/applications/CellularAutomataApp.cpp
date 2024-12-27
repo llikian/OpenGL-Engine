@@ -14,7 +14,7 @@ CellularAutomataApp::CellularAutomataApp()
       wireframe(false), cullface(false), cursorVisible(false),
       shader(nullptr),
       projection(perspective(M_PI_4f, window.getRatio(), 0.1f, 200.0f)),
-      camera(Point(0.0f, 2.0f, 5.0f)),
+      camera(vec3(50.0f), vec3(0.0f)),
       ruleset("9-26/5-7,12-13,15/5/M"),
       cubeSize(50.0f),
       cube(Meshes::cube()) {

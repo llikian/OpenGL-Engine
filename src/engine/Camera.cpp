@@ -15,9 +15,23 @@ Camera::Camera(const vec3& position)
       position(position),
       yaw(M_PIf), pitch(0.0f),
       worldUp(0.0f, 1.0f, 0.0f),
-      view(1.0f){
+      view(1.0f) {
 
-    look(vec2());
+    updateViewMatrix();
+}
+
+Camera::Camera(const vec3& position, const vec3& target)
+    : movementSpeed(10.0f),
+      position(position),
+      worldUp(0.0f, 1.0f, 0.0f),
+      view(1.0f) {
+
+    vec3 direction = normalize(target - position);
+
+    yaw = atan2f(direction.z, direction.x);
+    pitch = asinf(direction.y);
+
+    updateViewMatrix();
 }
 
 mat4 Camera::getVPmatrix(const mat4& projection) const {
@@ -59,10 +73,10 @@ void Camera::move(CameraControls direction, float deltaTime) {
             position -= front * speed;
             break;
         case CameraControls::left:
-            position -= normalize(cross(front, worldUp)) * speed;
+            position -= right * speed;
             break;
         case CameraControls::right:
-            position += normalize(cross(front, worldUp)) * speed;
+            position += right * speed;
             break;
         case CameraControls::upward:
             position.y += speed;
@@ -96,6 +110,10 @@ void Camera::look(vec2 mouseOffset) {
         pitch = -M_PI_2f + epsilon;
     }
 
+    updateViewMatrix();
+}
+
+void Camera::updateViewMatrix() {
     front.x = cosf(pitch) * cosf(yaw);
     front.y = sinf(pitch);
     front.z = cosf(pitch) * sinf(yaw);

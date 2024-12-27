@@ -30,10 +30,17 @@ enum class CameraControls {
 class Camera {
 public:
     /**
-     * @brief Constructor.
+     * @brief Creates a camera at a specified position looking forward.
      * @param position The camera's position.
      */
     Camera(const vec3& position);
+
+    /**
+     * @brief Creates a camera at a specified position looking towards a specified point.
+     * @param position The camera's position.
+     * @param target The point the camera is looking towards.
+     */
+    Camera(const vec3& position, const vec3& target);
 
     /**
      * @brief Calculates the product of the projection matrix with the view (or look-at) matrix.
@@ -95,6 +102,12 @@ public:
     float movementSpeed; ///< The speed at which the camera moves.
 
 private:
+
+    /**
+     * @brief Updates the front, right and up vectors and uses these values to update the view matrix.
+     */
+    void updateViewMatrix();
+
     vec3 position; ///< The camera's position.
 
     float yaw;    ///< The camera's yaw ("left-right") angle.
