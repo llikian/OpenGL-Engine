@@ -25,7 +25,7 @@ void main() {
     if(wireframeCube) {
         gl_Position = vpMatrix * vec4(cubeSize * aPos, 1.0f);
     } else {
-        position = cellSize * (aPos + vec3(cellX, cellY, cellZ)) + (cellSize - cubeSize) / 2.0f ;
+        position = cellSize * (aPos + vec3(cellX, cellY, cellZ)) + (cellSize - cubeSize) / 2.0f;
         normal = aNormal;
         gl_Position = vpMatrix * vec4(position, 1.0f);
     }
