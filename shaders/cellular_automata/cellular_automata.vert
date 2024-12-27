@@ -6,6 +6,10 @@
 #version 460 core
 
 layout (location = 0) in vec3 aPos;
+layout (location = 1) in vec3 aNormal;
+
+out vec3 position;
+out vec3 normal;
 
 uniform mat4 vpMatrix;
 
@@ -21,7 +25,8 @@ void main() {
     if(wireframeCube) {
         gl_Position = vpMatrix * vec4(cubeSize * aPos, 1.0f);
     } else {
-        vec3 pos = cellSize * (aPos + vec3(cellX, cellY, cellZ)) - cubeSize / 2.0f + cellSize / 2.0f;
-        gl_Position = vpMatrix * vec4(pos, 1.0f);
+        position = cellSize * (aPos + vec3(cellX, cellY, cellZ)) + (cellSize - cubeSize) / 2.0f ;
+        normal = aNormal;
+        gl_Position = vpMatrix * vec4(position, 1.0f);
     }
 }
