@@ -7,6 +7,7 @@
 
 #include <string>
 #include <unordered_set>
+#include "Cell.hpp"
 
 enum class NeighborhoodType {
     Moore,
@@ -28,6 +29,7 @@ public:
 
     bool survives(unsigned int neighbors) const;
     bool isBorn(unsigned int neighbors) const;
+    bool isAlive(unsigned int state) const;
     unsigned int getStatesAmount() const;
     NeighborhoodType getNeighborhoodType() const;
 

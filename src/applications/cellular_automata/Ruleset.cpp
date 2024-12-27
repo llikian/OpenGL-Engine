@@ -112,6 +112,10 @@ bool Ruleset::isBorn(unsigned int neighbors) const {
     return birth.contains(neighbors);
 }
 
+bool Ruleset::isAlive(unsigned int state) const {
+    return state == (getStatesAmount() - 1);
+}
+
 unsigned int Ruleset::getStatesAmount() const {
     return statesAmount;
 }
