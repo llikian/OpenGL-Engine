@@ -15,7 +15,7 @@ CellularAutomataApp::CellularAutomataApp()
       shader(nullptr),
       projection(perspective(M_PI_4f, window.getRatio(), 0.1f, 200.0f)),
       camera(vec3(50.0f), vec3(0.0f)),
-      ruleset("1, 0-6/1,3/2/N"),
+      ruleset("12-26/13-14/2/M"),
       cubeSize(50.0f),
       cube(Meshes::cube()) {
 
@@ -46,26 +46,26 @@ void CellularAutomataApp::run() {
 
     srand(std::time(nullptr));
 
-    for(int i = 0 ; i < 8 ; ++i) {
-        for(int j = 0 ; j < 8 ; ++j) {
-            for(int k = 0 ; k < 8 ; ++k) {
-                if(rand() % 2) {
-                    cells[CELL_SIZE / 2 + i][CELL_SIZE / 2 + j][CELL_SIZE / 2 + k].state =
-                        ruleset.getStatesAmount() - 1;
-                }
-            }
-        }
-    }
-
-//    for(int i = 0 ; i < CELL_SIZE ; ++i) {
-//        for(int j = 0 ; j < CELL_SIZE ; ++j) {
-//            for(int k = 0 ; k < CELL_SIZE ; ++k) {
+//    for(int i = 0 ; i < 16 ; ++i) {
+//        for(int j = 0 ; j < 16 ; ++j) {
+//            for(int k = 0 ; k < 16 ; ++k) {
 //                if(rand() % 2) {
-//                    cells[i][j][k].state = ruleset.getStatesAmount() - 1;
+//                    cells[CELL_SIZE / 2 + i][CELL_SIZE / 2 + j][CELL_SIZE / 2 + k].state =
+//                        ruleset.getStatesAmount() - 1;
 //                }
 //            }
 //        }
 //    }
+
+    for(int i = 0 ; i < CELL_SIZE ; ++i) {
+        for(int j = 0 ; j < CELL_SIZE ; ++j) {
+            for(int k = 0 ; k < CELL_SIZE ; ++k) {
+                if(rand() % 2) {
+                    cells[i][j][k].state = ruleset.getStatesAmount() - 1;
+                }
+            }
+        }
+    }
 
     countNeighbors();
 
@@ -179,20 +179,21 @@ void CellularAutomataApp::updateUniforms() {
 }
 
 void CellularAutomataApp::countNeighbors() {
+    unsigned int i, j, k;
     unsigned int ip, jp, kp;
     unsigned int im, jm, km;
 
     switch(ruleset.getNeighborhoodType()) {
         case NeighborhoodType::Moore:
-            for(unsigned int i = 0 ; i < CELL_SIZE ; ++i) {
+            for(i = 0 ; i < CELL_SIZE ; ++i) {
                 ip = (i + 1 + CELL_SIZE) % CELL_SIZE;
                 im = (i - 1 + CELL_SIZE) % CELL_SIZE;
 
-                for(unsigned int j = 0 ; j < CELL_SIZE ; ++j) {
+                for(j = 0 ; j < CELL_SIZE ; ++j) {
                     jp = (j + 1 + CELL_SIZE) % CELL_SIZE;
                     jm = (j - 1 + CELL_SIZE) % CELL_SIZE;
 
-                    for(unsigned int k = 0 ; k < CELL_SIZE ; ++k) {
+                    for(k = 0 ; k < CELL_SIZE ; ++k) {
                         kp = (k + 1 + CELL_SIZE) % CELL_SIZE;
                         km = (k - 1 + CELL_SIZE) % CELL_SIZE;
 
@@ -230,15 +231,15 @@ void CellularAutomataApp::countNeighbors() {
 
             break;
         case NeighborhoodType::VonNeumann:
-            for(unsigned int i = 0 ; i < CELL_SIZE ; ++i) {
+            for(i = 0 ; i < CELL_SIZE ; ++i) {
                 ip = (i + 1 + CELL_SIZE) % CELL_SIZE;
                 im = (i - 1 + CELL_SIZE) % CELL_SIZE;
 
-                for(unsigned int j = 0 ; j < CELL_SIZE ; ++j) {
+                for(j = 0 ; j < CELL_SIZE ; ++j) {
                     jp = (j + 1 + CELL_SIZE) % CELL_SIZE;
                     jm = (j - 1 + CELL_SIZE) % CELL_SIZE;
 
-                    for(unsigned int k = 0 ; k < CELL_SIZE ; ++k) {
+                    for(k = 0 ; k < CELL_SIZE ; ++k) {
                         kp = (k + 1 + CELL_SIZE) % CELL_SIZE;
                         km = (k - 1 + CELL_SIZE) % CELL_SIZE;
 
@@ -261,40 +262,39 @@ void CellularAutomataApp::countNeighbors() {
 void CellularAutomataApp::nextGeneration() {
     const unsigned int maxState = ruleset.getStatesAmount() - 1;
 
+    unsigned int i, j, k;
     unsigned int ip, jp, kp;
     unsigned int im, jm, km;
 
-    switch(ruleset.getNeighborhoodType()) {
-        case NeighborhoodType::Moore:
-            for(unsigned int i = 0 ; i < CELL_SIZE ; ++i) {
-                for(unsigned int j = 0 ; j < CELL_SIZE ; ++j) {
-                    for(unsigned int k = 0 ; k < CELL_SIZE ; ++k) {
-                        Cell& cell = cells[i][j][k];
+    for(i = 0 ; i < CELL_SIZE ; ++i) {
+        for(j = 0 ; j < CELL_SIZE ; ++j) {
+            for(k = 0 ; k < CELL_SIZE ; ++k) {
+                Cell& cell = cells[i][j][k];
 
-                        if(cell.state) { // Cell is not dead
-                            if(cell.state) { // Cell is alive
-                                if(!ruleset.survives(cell.neighbors)) { // Cell starts to die
-                                    cell.next = cell.state - 1;
-                                }
-                            } else { // Cell is dying
-                                cell.next = cell.state - 1;
-                            }
-                        } else if(ruleset.isBorn(cell.neighbors)) { // Cell will be born
-                            cell.next = maxState;
-                        }
+                if(cell.state == maxState) { // Cell is alive
+                    if(!ruleset.survives(cell.neighbors)) { // Cell starts to die
+                        cell.next = maxState - 1;
                     }
+                } else if(cell.state != 0) { // Cell is dying
+                    cell.next = cell.state - 1;
+                } else if(ruleset.isBorn(cell.neighbors)) { // Cell will be born
+                    cell.next = maxState;
                 }
             }
+        }
+    }
 
-            for(unsigned int i = 0 ; i < CELL_SIZE ; ++i) {
+    switch(ruleset.getNeighborhoodType()) {
+        case NeighborhoodType::Moore:
+            for(i = 0 ; i < CELL_SIZE ; ++i) {
                 ip = (i + 1 + CELL_SIZE) % CELL_SIZE;
                 im = (i - 1 + CELL_SIZE) % CELL_SIZE;
 
-                for(unsigned int j = 0 ; j < CELL_SIZE ; ++j) {
+                for(j = 0 ; j < CELL_SIZE ; ++j) {
                     jp = (j + 1 + CELL_SIZE) % CELL_SIZE;
                     jm = (j - 1 + CELL_SIZE) % CELL_SIZE;
 
-                    for(unsigned int k = 0 ; k < CELL_SIZE ; ++k) {
+                    for(k = 0 ; k < CELL_SIZE ; ++k) {
                         kp = (k + 1 + CELL_SIZE) % CELL_SIZE;
                         km = (k - 1 + CELL_SIZE) % CELL_SIZE;
 
@@ -334,35 +334,15 @@ void CellularAutomataApp::nextGeneration() {
 
             break;
         case NeighborhoodType::VonNeumann:
-            for(unsigned int i = 0 ; i < CELL_SIZE ; ++i) {
-                for(unsigned int j = 0 ; j < CELL_SIZE ; ++j) {
-                    for(unsigned int k = 0 ; k < CELL_SIZE ; ++k) {
-                        Cell& cell = cells[i][j][k];
-
-                        if(cell.state) { // Cell is not dead
-                            if(cell.state) { // Cell is alive
-                                if(!ruleset.survives(cell.neighbors)) { // Cell starts to die
-                                    cell.next = cell.state - 1;
-                                }
-                            } else { // Cell is dying
-                                cell.next = cell.state - 1;
-                            }
-                        } else if(ruleset.isBorn(cell.neighbors)) { // Cell will be born
-                            cell.next = maxState;
-                        }
-                    }
-                }
-            }
-
-            for(unsigned int i = 0 ; i < CELL_SIZE ; ++i) {
+            for(i = 0 ; i < CELL_SIZE ; ++i) {
                 ip = (i + 1 + CELL_SIZE) % CELL_SIZE;
                 im = (i - 1 + CELL_SIZE) % CELL_SIZE;
 
-                for(unsigned int j = 0 ; j < CELL_SIZE ; ++j) {
+                for(j = 0 ; j < CELL_SIZE ; ++j) {
                     jp = (j + 1 + CELL_SIZE) % CELL_SIZE;
                     jm = (j - 1 + CELL_SIZE) % CELL_SIZE;
 
-                    for(unsigned int k = 0 ; k < CELL_SIZE ; ++k) {
+                    for(k = 0 ; k < CELL_SIZE ; ++k) {
                         kp = (k + 1 + CELL_SIZE) % CELL_SIZE;
                         km = (k - 1 + CELL_SIZE) % CELL_SIZE;
 
