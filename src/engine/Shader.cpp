@@ -130,17 +130,17 @@ void Shader::getUniforms() {
     int size;
     char* name = new char[MAX_CHAR];
 
-    unsigned int count;
-    glGetProgramiv(id, GL_ACTIVE_UNIFORMS, reinterpret_cast<int*>(&count));
+    int count;
+    glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &count);
 
-    for(unsigned int i = 0u ; i < count ; ++i) {
+    for(int i = 0u ; i < count ; ++i) {
         glGetActiveUniform(id, i, MAX_CHAR, &length, &size, &type, name);
 
         if(size == 1) {
             uniforms.emplace(name, glGetUniformLocation(id, name));
         } else {
             std::string nameIndex;
-            for(unsigned int j = 0 ; j < static_cast<unsigned int>(size) ; ++j) {
+            for(int j = 0 ; j < size ; ++j) {
                 name[length - 2] = '\0';
                 nameIndex = name;
                 nameIndex += std::to_string(j) + ']';
