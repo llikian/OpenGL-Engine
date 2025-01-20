@@ -26,8 +26,11 @@ book.
 ```
 
 ### Functionalities
+#### Summary
+
+#### Details
 The engine currently supports a few functionalities, separated in multiple classes. First and most
-important, the ApplicationBase is a virtual class that is meant to provide the skeleton for any application
+important, ApplicationBase is a virtual class that is meant to provide the skeleton for any application
 using this engine. It initializes the window using the Window class which I'll ellaborate on further,
 defines virtual static methods used for handling the GLFW callbacks (which are used to handle events such
 as mouth movement, window resizing, key presses and such).
@@ -44,20 +47,38 @@ keys that were pressed that is handled each frame.
 So in short, when there's a key callback, we first check if the pressed key is repeatable, if it is,
 then we set the associated boolean in the `repeatableKeys` map to true if it was a key press, and to
 false if it was a key release (conveniently GLFW_PRESS is equal to 1 and GLFW_RELEASE is equal to 0).
-If the pressed key wasn't repeatable we simply add its code to the queue.
+If the pressed key wasn't repeatable we simply add its key code to the queue.
 
-Window
+The Window class initializes the libraries (OpenGL, GLFW, GLAD & stb) and the GLFW window. It also
+provides functionality for getting the width and height of the window as well as its size ratio.
 
-Shader
+Another very important part of the core engine is the Shader class, its job is to load, compile and
+link shaders into a shader program. It also allows to use said shader program and to modify the values
+of the uniforms in it. Once the shader program is created we use OpenGL's `glGetActiveUniform` in order
+to fill an unordered map which associates the name of each uniform in the program to its location.
+This way we only make one call to `glGetUniformLocation` for each uniform and when the `setUniform`
+method of Shader is called, it looks up its location in the map which is usually just a O(1) operation.
 
-Camera
+Movement and looking around is handled by the Camera class, it's a very basic implementation of a
+third-person camera using two angles: yaw and pitch in order to represent the direction its looking
+in. The yaw angle is the "left-right" angle, it represents a rotation around the y axis and the pitch
+angle is the "up-down" angle and represents a rotation around the x axis. The camera's direction vector
+is then calculated using the formula for the unit sphere:\
+`dir = vec3(cos(pitch) * cos(yaw), sin(pitch), cos(pitch) * sin(yaw))`
 
-Image
+The camera class also defines and updates the view matrix.
 
-Texture
+Mesh
 
-Light
+There are also some other more minor classes, namely Image which loads images, Texture which creates
+and allows to bind OpenGL textures and a few structures to hold information for a few different types
+of lights: Light, DirectionalLight, PointLight, SpotLight and FlashLight.
 
+Finally there's the maths module of the engine which implements all of the maths structures and functions
+needed for 3D rendering, the main ones being vectors (vec2, vec3, vec4) and matrices (mat4). It implements
+usual mathematical functions such as normalizing a vector, calculating its length or the dot and cross
+products. It also defines all of the basic transformation matrices such as scaling, rotation, translation
+and perspective matrices.
 
 This project also contains the basis for another, in order to test the functionality of application
 classes inheritting from ApplicationBase. This other application is an attempt at an implementation
