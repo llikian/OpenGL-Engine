@@ -126,8 +126,8 @@ void Shader::getUniforms() {
     glGetProgramiv(id, GL_ACTIVE_UNIFORM_MAX_LENGTH, &MAX_CHAR);
 
     int length;
-    unsigned int type;
     int size;
+    unsigned int type;
     char* name = new char[MAX_CHAR];
 
     int count;
