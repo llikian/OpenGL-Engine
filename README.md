@@ -26,7 +26,6 @@ book.
 ```
 
 ### Functionalities
-#### Details
 The engine currently supports a few functionalities, separated in multiple classes. First and most
 important, ApplicationBase is a virtual class that is meant to provide the skeleton for any application
 using this engine. It initializes the window using the Window class which I'll ellaborate on further,
@@ -96,7 +95,7 @@ normal, color and texture coordinates. A vertex's attributes need to be defined 
 since all of the vertex data is stored in one array. You can also use an EBO by defining the indices
 of each triangles (or lines) to avoid repeating data.
 
-Additionally, the Meshes namespace contains the definitions of multiple basic shapes, such as cubes,
+Additionally, the Meshes namespace contains the definitions of multiple basic meshes, such as cubes,
 spheres, grids or planes.
 
 There are also some other more minor classes, namely Image which loads images, Texture which creates
@@ -112,9 +111,6 @@ and perspective matrices.
 This project also contains the basis for another, in order to test the functionality of application
 classes inheritting from ApplicationBase. This other application is an attempt at an implementation
 of 3D cellular automata. It is currently very basic with no optimization whatsoever.
-
-#### Summary
-- Test
 
 ### Controls
 ```
