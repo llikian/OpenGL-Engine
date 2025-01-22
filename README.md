@@ -26,8 +26,6 @@ book.
 ```
 
 ### Functionalities
-#### Summary
-
 #### Details
 The engine currently supports a few functionalities, separated in multiple classes. First and most
 important, ApplicationBase is a virtual class that is meant to provide the skeleton for any application
@@ -74,17 +72,27 @@ View = \begin{pmatrix}
     -\vec{right} \cdot \vec{position} & -\vec{up} \cdot \vec{position} & \vec{front} \cdot \vec{position} & 1
 \end{pmatrix}
 ```
+
 \
 With `position` being the position of the camera and the front, right and up vectors being defined as
 follows:
 ```math
 \vec{front}=\begin{pmatrix} cos(pitch)*cos(yaw) \\ sin(pitch) \\ cos(pitch)*sin(yaw) \end{pmatrix},\space
-\vec{right}=\left| \vec{front} \times \begin{pmatrix} 0 \\ 1 \\ 0 \end{pmatrix} \right|,\space
-\vec{up}=\left| \vec{right} \times \vec{front} \right|
-```
-\
+\vec{right}=\widehat{\vec{front} \times \begin{pmatrix} 0 \\ 1 \\ 0 \end{pmatrix}},\space
+\vec{up}=\widehat{\vec{right} \times \vec{front}},\space
 
-Mesh
+With \space \widehat{v}=\frac{\vec{v}}{\left\| \vec{v} \right\|}
+```
+
+\
+The Mesh class allows to define and draw meshes by defining their vertex attributes. One mesh is defined
+by a primitive (GL_TRIANGLES, GL_LINES, etc...) and by up to 4 of these vertex attributes: position,
+normal, color and texture coordinates. A vertex's attributes need to be defined in that particular order
+since all of the vertex data is stored in one array. You can also use an EBO by defining the indices
+of each triangles (or lines) to avoid repeating data.
+
+Additionally, the Meshes namespace contains the definitions of multiple basic shapes, such as cubes,
+spheres, grids or planes.
 
 There are also some other more minor classes, namely Image which loads images, Texture which creates
 and allows to bind OpenGL textures and a few structures to hold information for a few different types
@@ -99,6 +107,9 @@ and perspective matrices.
 This project also contains the basis for another, in order to test the functionality of application
 classes inheritting from ApplicationBase. This other application is an attempt at an implementation
 of 3D cellular automata. It is currently very basic with no optimization whatsoever.
+
+#### Summary
+- Test
 
 ### Controls
 ```
