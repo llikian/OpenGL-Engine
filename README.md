@@ -62,11 +62,27 @@ method of Shader is called, it looks up its location in the map which is usually
 Movement and looking around is handled by the Camera class, it's a very basic implementation of a
 third-person camera using two angles: yaw and pitch in order to represent the direction its looking
 in. The yaw angle is the "left-right" angle, it represents a rotation around the y axis and the pitch
-angle is the "up-down" angle and represents a rotation around the x axis. The camera's direction vector
-is then calculated using the formula for the unit sphere:\
-`dir = vec3(cos(pitch) * cos(yaw), sin(pitch), cos(pitch) * sin(yaw))`
+angle is the "up-down" angle and represents a rotation around the x axis.
 
-The camera class also defines and updates the view matrix.
+The camera class also defines and updates its associated view matrix. It is defined by the following
+formula:
+```math
+View = \begin{pmatrix}
+    \vec{right}.x & \vec{up}.x & -\vec{front}.x & 0 \\
+    \vec{right}.y & \vec{up}.y & -\vec{front}.y & 0 \\
+    \vec{right}.z & \vec{up}.z & -\vec{front}.z & 0 \\
+    -\vec{right} \cdot \vec{position} & -\vec{up} \cdot \vec{position} & \vec{front} \cdot \vec{position} & 1
+\end{pmatrix}
+```
+\
+With `position` being the position of the camera and the front, right and up vectors being defined as
+follows:
+```math
+\vec{front}=\begin{pmatrix} cos(pitch)*cos(yaw) \\ sin(pitch) \\ cos(pitch)*sin(yaw) \end{pmatrix},\space
+\vec{right}=\left| \vec{front} \times \begin{pmatrix} 0 \\ 1 \\ 0 \end{pmatrix} \right|,\space
+\vec{up}=\left| \vec{right} \times \vec{front} \right|
+```
+\
 
 Mesh
 
