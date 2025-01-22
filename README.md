@@ -64,31 +64,31 @@ angle is the "up-down" angle and represents a rotation around the x axis.
 
 The camera class also defines and updates its associated view matrix. It is defined by the following
 formula:
-$$
+```math
 View = \begin{pmatrix}
     \vec{right}.x & \vec{up}.x & -\vec{front}.x & 0 \\
     \vec{right}.y & \vec{up}.y & -\vec{front}.y & 0 \\
     \vec{right}.z & \vec{up}.z & -\vec{front}.z & 0 \\
     -\vec{right} \cdot \vec{position} & -\vec{up} \cdot \vec{position} & \vec{front} \cdot \vec{position} & 1
 \end{pmatrix}
-$$
+```
 
 \
 With `position` being the position of the camera and the front, right and up vectors being defined as
 follows:
-$$
+```math
 \vec{front}=\begin{pmatrix} \cos(pitch)\times\cos(yaw) \\ \sin(pitch) \\ \cos(pitch)\times\sin(yaw) \end{pmatrix},\space
 \vec{right}=\widehat{\vec{front} \times \vec{worldUp}},\space
-\vec{up}=\widehat{\vec{right} \times \vec{front}},\space
-$$
+\vec{up}=\widehat{\vec{right} \times \vec{front}}
+```
 
 \
 And just to be clear with notations:
-- $\vec{u}\cdot\vec{v}$ is the dot product of $\vec{u}$ and $\vec{v}$
-- $\vec{u}\times\vec{v}$ is the cross product of $\vec{u}$ and $\vec{v}$
-- $\widehat{v}=\frac{\vec{v}}{\left\| \vec{v} \right\|}$, the normalization of $\vec{v}$
-- $\vec{worldUp}$ is the direction of "up" in the world. For now it's just a constant going in the direction
-of the y-axis: $\vec{worldUp}=\begin{pmatrix} 0 \\ 1 \\ 0 \end{pmatrix}$
+- $`\vec{u}`$ $`\cdot`$ $`\vec{v}`$ is the dot product of $`\vec{u}`$ and $`\vec{v}`$
+- $`\vec{u}`$ $`\times`$ $`\vec{v}`$ is the cross product of $`\vec{u}`$ and $`\vec{v}`$
+- $`\widehat{v}=\frac{\vec{v}}{\left\| \vec{v} \right\|}`$, the normalization of $`\vec{v}`$
+- $`\vec{worldUp}`$ is the direction of "up" in the world. For now it's just a constant going in the direction
+of the y-axis: $`\vec{worldUp}=\begin{pmatrix} 0 \\ 1 \\ 0 \end{pmatrix}`$
 
 The Mesh class allows to define and draw meshes by defining their vertex attributes. One mesh is defined
 by a primitive (GL_TRIANGLES, GL_LINES, etc...) and by up to 4 of these vertex attributes: position,
