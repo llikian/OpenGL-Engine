@@ -35,10 +35,40 @@ Shader::Shader(const std::string* paths, unsigned int count, const std::string& 
         char* message = new char[messageLength];
         glGetProgramInfoLog(id, messageLength, nullptr, message);
 
-        std::string errorMessage = "Failed to link shader program '";
-        errorMessage += name;
-        errorMessage += "':\n";
-        errorMessage += message;
+        std::string errorMessage = "Failed to link shader program '" + name + ":\n" + message;
+
+        delete[] message;
+
+        throw std::runtime_error(errorMessage);
+    }
+
+    getUniforms();
+}
+
+Shader::Shader(const unsigned int* shaderIDs, unsigned int count, const std::string& name) :
+    id(glCreateProgram()),
+    name(name) {
+
+    /* ---- Shader Name ---- */
+    if(name.size() == 0) {
+        this->name = "shader" + std::to_string(id);
+    }
+
+    /* ---- Shaders ---- */
+    for(unsigned int i = 0 ; i < count ; ++i) {
+        glAttachShader(id, shaderIDs[i]);
+    }
+
+    /* ---- Shader Program ---- */
+    glLinkProgram(id);
+
+    int messageLength;
+    glGetProgramiv(id, GL_INFO_LOG_LENGTH, &messageLength);
+    if(messageLength > 0) {
+        char* message = new char[messageLength];
+        glGetProgramInfoLog(id, messageLength, nullptr, message);
+
+        std::string errorMessage = "Failed to link shader program '" + name + ":\n" + message;
 
         delete[] message;
 
@@ -83,6 +113,8 @@ unsigned int Shader::compileShader(const std::string& path) {
             shaderTypeName = "geometry";
             shaderType = GL_GEOMETRY_SHADER;
             break;
+        default:
+            throw std::runtime_error("Unknown shader extension: " + extension);
     }
 
     std::ifstream file(path);
@@ -92,27 +124,24 @@ unsigned int Shader::compileShader(const std::string& path) {
 
     std::string rawCode = (std::stringstream() << file.rdbuf()).str();
     const char* code = rawCode.c_str();
-    unsigned int id = glCreateShader(shaderType);
-    glShaderSource(id, 1, &code, nullptr);
-    glCompileShader(id);
+    unsigned int shaderID = glCreateShader(shaderType);
+    glShaderSource(shaderID, 1, &code, nullptr);
+    glCompileShader(shaderID);
 
     int messageLength;
-    glGetShaderiv(id, GL_INFO_LOG_LENGTH, &messageLength);
+    glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &messageLength);
     if(messageLength > 0) {
         char* message = new char[messageLength];
-        glGetShaderInfoLog(id, messageLength, nullptr, message);
+        glGetShaderInfoLog(shaderID, messageLength, nullptr, message);
 
-        std::string errorMessage = "Failed to compile " + shaderTypeName + " shader for shader program '";
-        errorMessage += name;
-        errorMessage += "':\n";
-        errorMessage += message;
+        std::string errorMessage = "Failed to compile " + shaderTypeName + " shader '" + path + "':\n" + message;
 
         delete[] message;
 
         throw std::runtime_error(errorMessage);
     }
 
-    return id;
+    return shaderID;
 }
 
 void Shader::use() {
@@ -128,82 +157,82 @@ void Shader::getUniforms() {
     int length;
     int size;
     unsigned int type;
-    char* name = new char[MAX_CHAR];
+    char* uniformName = new char[MAX_CHAR];
 
     int count;
     glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &count);
 
     for(int i = 0u ; i < count ; ++i) {
-        glGetActiveUniform(id, i, MAX_CHAR, &length, &size, &type, name);
+        glGetActiveUniform(id, i, MAX_CHAR, &length, &size, &type, uniformName);
 
         if(size == 1) {
-            uniforms.emplace(name, glGetUniformLocation(id, name));
+            uniforms.emplace(uniformName, glGetUniformLocation(id, uniformName));
         } else {
             std::string nameIndex;
             for(int j = 0 ; j < size ; ++j) {
-                name[length - 2] = '\0';
-                nameIndex = name;
+                uniformName[length - 2] = '\0';
+                nameIndex = uniformName;
                 nameIndex += std::to_string(j) + ']';
                 uniforms.emplace(nameIndex, glGetUniformLocation(id, nameIndex.c_str()));
             }
         }
     }
 
-    delete[] name;
+    delete[] uniformName;
 }
 
-void Shader::setUniform(int location, int value) const {
+void Shader::setUniform(int location, int value) {
     glUniform1i(location, value);
 }
 
-void Shader::setUniform(int location, int x, int y) const {
+void Shader::setUniform(int location, int x, int y) {
     glUniform2i(location, x, y);
 }
 
-void Shader::setUniform(int location, int x, int y, int z) const {
+void Shader::setUniform(int location, int x, int y, int z) {
     glUniform3i(location, x, y, z);
 }
 
-void Shader::setUniform(int location, int x, int y, int z, int w) const {
+void Shader::setUniform(int location, int x, int y, int z, int w) {
     glUniform4i(location, x, y, z, w);
 }
 
-void Shader::setUniform(int location, unsigned int value) const {
+void Shader::setUniform(int location, unsigned int value) {
     glUniform1ui(location, value);
 }
 
-void Shader::setUniform(int location, bool value) const {
+void Shader::setUniform(int location, bool value) {
     glUniform1i(location, static_cast<int>(value));
 }
 
-void Shader::setUniform(int location, float value) const {
+void Shader::setUniform(int location, float value) {
     glUniform1f(location, value);
 }
 
-void Shader::setUniform(int location, float x, float y) const {
+void Shader::setUniform(int location, float x, float y) {
     glUniform2f(location, x, y);
 }
 
-void Shader::setUniform(int location, float x, float y, float z) const {
+void Shader::setUniform(int location, float x, float y, float z) {
     glUniform3f(location, x, y, z);
 }
 
-void Shader::setUniform(int location, float x, float y, float z, float w) const {
+void Shader::setUniform(int location, float x, float y, float z, float w) {
     glUniform4f(location, x, y, z, w);
 }
 
-void Shader::setUniform(int location, const vec2& vec) const {
+void Shader::setUniform(int location, const vec2& vec) {
     glUniform2fv(location, 1, &vec.x);
 }
 
-void Shader::setUniform(int location, const vec3& vec) const {
+void Shader::setUniform(int location, const vec3& vec) {
     glUniform3fv(location, 1, &vec.x);
 }
 
-void Shader::setUniform(int location, const vec4& vec) const {
+void Shader::setUniform(int location, const vec4& vec) {
     glUniform4fv(location, 1, &vec.x);
 }
 
-void Shader::setUniform(int location, const mat4& matrix) const {
+void Shader::setUniform(int location, const mat4& matrix) {
     glUniformMatrix4fv(location, 1, false, &(matrix[0][0]));
 }
