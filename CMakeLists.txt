@@ -33,6 +33,7 @@ set(SOURCES
         src/maths/vec2.cpp
         src/maths/vec3.cpp
         src/maths/vec4.cpp
+        src/maths/quaternion.cpp
 
         src/mesh/Mesh.cpp
 
