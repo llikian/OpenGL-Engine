@@ -6,6 +6,7 @@
 #pragma once
 
 #include <ostream>
+#include "vec3.hpp"
 
 /**
  * @struct mat4
@@ -63,6 +64,116 @@ public:
      * @return A const reference to the element.
      */
     const float& operator ()(int row, int column) const;
+
+    /**
+     * @brief Applies a transform that scales by the same factor in all 3 directions.
+     * @param factor The scaling factor.
+     * @return A refence to the matrix.
+     */
+    mat4& scale(float factor);
+
+    /**
+     * @brief Applies a transform that scales by a specific factor in each direction.
+     * @param x The scaling factor in the x direction.
+     * @param y The scaling factor in the y direction.
+     * @param z The scaling factor in the z direction.
+     * @return A refence to the matrix.
+     */
+    mat4& scale(float x, float y, float z);
+
+    /**
+     * @brief Applies a transformthat scales by a specific factor in each direction.
+     * @param factors The scaling factors.
+     * @return A reference to the matrix.
+     */
+    mat4& scale(const vec3& factors);
+
+    /**
+     * @brief Applies a transform that only scales in the x direction.
+     * @param factor The scaling factor.
+     * @return A reference to the matrix.
+     */
+    mat4& scaleX(float factor);
+
+    /**
+     * @brief Applies a transform that only scales in the y direction.
+     * @param factor The scaling factor.
+     * @return A reference to the matrix.
+     */
+    mat4& scaleY(float factor);
+
+    /**
+     * @brief Applies a transform that only scales in the z direction.
+     * @param factor The scaling factor.
+     * @return A reference to the matrix.
+     */
+    mat4& scaleZ(float factor);
+
+    /**
+     * @brief Applies a transformthat displaces by a specific vector.
+     * @param factor The scaling factor.
+     * @return A reference to the matrix.
+     */
+    mat4& translate(const Vector& vector);
+
+    /**
+     * @brief Applies a transform that displaces by a specific amount in each direction.
+     * @param x The displacement in the x direction.
+     * @param y The displacement in the y direction.
+     * @param z The displacement in the z direction.
+     * @return A reference to the matrix.
+     */
+    mat4& translate(float x, float y, float z);
+
+    /**
+     * @brief Applies a transform that only displaces in the x direction.
+     * @param scalar The displacement amount.
+     * @return A reference to the matrix.
+     */
+    mat4& translateX(float scalar);
+
+    /**
+     * @brief Applies a transform that only displaces in the y direction.
+     * @param scalar The displacement amount.
+     * @return A reference to the matrix.
+     */
+    mat4& translateY(float scalar);
+
+    /**
+     * @brief Applies a transform that only displaces in the z direction.
+     * @param scalar The displacement amount.
+     * @return A reference to the matrix.
+     */
+    mat4& translateZ(float scalar);
+
+    /**
+     * @brief Applies a transform that rotates around an axis by a certain angle.
+     * @param angle The rotation angle in degrees.
+     * @param axis The rotation axis.
+     * @return A reference to the matrix.
+     */
+    mat4& rotate(float angle, const Vector& axis);
+
+    /**
+     * @brief Applies a transform that rotates around the x axis by a certain angle.
+     * @param angle The rotation angle in degrees.
+     * @return A reference to the matrix.
+     */
+    mat4& rotateX(float angle);
+
+    /**
+     * @brief Applies a transform that rotates around the y axis by a certain angle.
+     * @param angle The rotation angle in degrees.
+     * @return A reference to the matrix.
+     */
+    mat4& rotateY(float angle);
+
+    /**
+     * @brief Applies a transform that rotates around the z axis by a certain angle.
+     * @param angle The rotation angle in degrees.
+     * @return A reference to the matrix.
+     */
+    mat4& rotateZ(float angle);
 
 private:
     float values[4][4]; ///< The values of the matrix.

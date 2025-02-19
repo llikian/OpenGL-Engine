@@ -9,10 +9,10 @@
 
 /**
  * @brief Calculates the scaling matrix that scales by the same factor in all 3 directions.
- * @param scalar The scaling factor.
+ * @param factor The scaling factor.
  * @return The scaling matrix.
  */
-mat4 scale(float scalar);
+mat4 scale(float factor);
 
 /**
  * @brief Calculates the scaling matrix that scales by a specific factor in each direction.
@@ -24,25 +24,32 @@ mat4 scale(float scalar);
 mat4 scale(float x, float y, float z);
 
 /**
- * @brief Calculates the scaling matrix that only scales in the x direction.
- * @param scalar The scaling factor.
+ * @brief Calculates the scaling matrix that scales by a specific factor in each direction.
+ * @param factors The scaling factors.
  * @return The scaling matrix.
  */
-mat4 scaleX(float scalar);
+mat4 scale(const vec3& factors);
+
+/**
+ * @brief Calculates the scaling matrix that only scales in the x direction.
+ * @param factor The scaling factor.
+ * @return The scaling matrix.
+ */
+mat4 scaleX(float factor);
 
 /**
  * @brief Calculates the scaling matrix that only scales in the y direction.
- * @param scalar The scaling factor.
+ * @param factor The scaling factor.
  * @return The scaling matrix.
  */
-mat4 scaleY(float scalar);
+mat4 scaleY(float factor);
 
 /**
  * @brief Calculates the scaling matrix that only scales in the z direction.
- * @param scalar The scaling factor.
+ * @param factor The scaling factor.
  * @return The scaling matrix.
  */
-mat4 scaleZ(float scalar);
+mat4 scaleZ(float factor);
 
 /**
  * @brief Calculates the translation matrix that displaces by a specific vector.
@@ -90,21 +97,21 @@ mat4 translateZ(float scalar);
 mat4 rotate(float angle, const Vector& axis);
 
 /**
- * @brief Calculates the rotation matrix that rotates around the X axis by a certain angle.
+ * @brief Calculates the rotation matrix that rotates around the x axis by a certain angle.
  * @param angle The rotation angle in degrees.
  * @return The rotation matrix.
  */
 mat4 rotateX(float angle);
 
 /**
- * @brief Calculates the rotation matrix that rotates around the Y axis by a certain angle.
+ * @brief Calculates the rotation matrix that rotates around the y axis by a certain angle.
  * @param angle The rotation angle in degrees.
  * @return The rotation matrix.
  */
 mat4 rotateY(float angle);
 
 /**
- * @brief Calculates the rotation matrix that rotates around the Z axis by a certain angle.
+ * @brief Calculates the rotation matrix that rotates around the z axis by a certain angle.
  * @param angle The rotation angle in degrees.
  * @return The rotation matrix.
  */

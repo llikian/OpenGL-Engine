@@ -9,11 +9,11 @@
 #include "maths/geometry.hpp"
 #include "maths/trigonometry.hpp"
 
-mat4 scale(float scalar) {
+mat4 scale(float factor) {
     return mat4(
-        scalar, 0.0f, 0.0f,
-        0.0f, scalar, 0.0f,
-        0.0f, 0.0f, scalar
+        factor, 0.0f, 0.0f,
+        0.0f, factor, 0.0f,
+        0.0f, 0.0f, factor
     );
 }
 
@@ -25,27 +25,36 @@ mat4 scale(float x, float y, float z) {
     );
 }
 
-mat4 scaleX(float scalar) {
+
+mat4 scale(const vec3& factors) {
     return mat4(
-        scalar, 0.0f, 0.0f,
+        factors.x, 0.0f, 0.0f,
+        0.0f, factors.y, 0.0f,
+        0.0f, 0.0f, factors.z
+    );
+}
+
+mat4 scaleX(float factor) {
+    return mat4(
+        factor, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f,
         0.0f, 0.0f, 1.0f
     );
 }
 
-mat4 scaleY(float scalar) {
+mat4 scaleY(float factor) {
     return mat4(
         1.0f, 0.0f, 0.0f,
-        0.0f, scalar, 0.0f,
+        0.0f, factor, 0.0f,
         0.0f, 0.0f, 1.0f
     );
 }
 
-mat4 scaleZ(float scalar) {
+mat4 scaleZ(float factor) {
     return mat4(
         1.0f, 0.0f, 0.0f,
         0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, scalar
+        0.0f, 0.0f, factor
     );
 }
 
@@ -98,17 +107,9 @@ mat4 rotate(float angle, const Vector& axis) {
     Vector temp = (1.0f - cosine) * nAxis;
 
     return mat4(
-        cosine + temp.x * nAxis.x,
-        temp.x * nAxis.y + sine * nAxis.z,
-        temp.x * nAxis.z - sine * nAxis.y,
-
-        temp.y * nAxis.x - sine * nAxis.z,
-        cosine + temp.y * nAxis.y,
-        temp.y * nAxis.z + sine * nAxis.x,
-
-        temp.x * nAxis.x + sine * nAxis.y,
-        temp.x * nAxis.y - sine * nAxis.x,
-        cosine + temp.x * nAxis.z
+        cosine + temp.x * nAxis.x, temp.x * nAxis.y + sine * nAxis.z, temp.x * nAxis.z - sine * nAxis.y,
+        temp.y * nAxis.x - sine * nAxis.z, cosine + temp.y * nAxis.y, temp.y * nAxis.z + sine * nAxis.x,
+        temp.x * nAxis.x + sine * nAxis.y, temp.x * nAxis.y - sine * nAxis.x, cosine + temp.x * nAxis.z
     );
 }
 

@@ -154,7 +154,7 @@ void Application::run() {
         calculateMVP(mat4(1.0f));
         tsphere.draw();
 
-        calculateMVP(translate(0.0f, 1.75f, 0.0f) * scale(0.75f));
+        calculateMVP(translate(0.0f, 1.75f, 0.0f).scale(0.75f));
         sphere.draw();
 
         bindTexture(texContainer);
@@ -175,7 +175,7 @@ void Application::run() {
 
         for(unsigned int i = 0 ; i < pointLights.size() ; ++i) {
             bindTexture(pointLightTextures[i]);
-            calculateMVP(translate(pointLights[i].position) * scale(0.25f));
+            calculateMVP(translate(pointLights[i].position).scale(0.25f));
             pcube.draw();
         }
 
