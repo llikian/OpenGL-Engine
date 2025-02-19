@@ -1,6 +1,6 @@
 /***************************************************************************************************
- * @file  transformations.hpp
- * @brief Declaration of functions for 3D transformations
+ * @file  transforms.hpp
+ * @brief Declaration of functions for 3D transforms
  **************************************************************************************************/
 
 #include "mat4.hpp"

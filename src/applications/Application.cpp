@@ -7,7 +7,7 @@
 
 #include <cmath>
 #include "maths/geometry.hpp"
-#include "maths/transformations.hpp"
+#include "maths/transforms.hpp"
 #include "maths/trigonometry.hpp"
 #include "mesh/Mesh.hpp"
 #include "mesh/meshes.hpp"

@@ -78,7 +78,7 @@ private:
     /**
      * @brief Calculates the MVP (Matrix-View-Projection) Matrix and sends it to the shader.
      * @param model The new value of the model matrix. It is a product of translation, scale
-     * and rotation matrices used to apply transformations on the scene's objects.
+     * and rotation matrices used to apply transforms on the scene's objects.
      */
     void calculateMVP(const mat4& model);
 

@@ -39,7 +39,7 @@ set(SOURCES
 
         # Other Sources
         src/maths/geometry.cpp
-        src/maths/transformations.cpp
+        src/maths/transforms.cpp
         src/maths/trigonometry.cpp
         src/mesh/meshes.cpp
 

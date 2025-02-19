@@ -1,9 +1,9 @@
 /***************************************************************************************************
- * @file  Image.cpp
+ * @file  transforms.cpp
  * @brief Implementation of the Image class
  **************************************************************************************************/
 
-#include "maths/transformations.hpp"
+#include "maths/transforms.hpp"
 
 #include <cmath>
 #include "maths/geometry.hpp"

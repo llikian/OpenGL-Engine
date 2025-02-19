@@ -7,7 +7,7 @@
 
 #include <cmath>
 #include <ctime>
-#include "maths/transformations.hpp"
+#include "maths/transforms.hpp"
 
 CellularAutomataApp::CellularAutomataApp()
     : ApplicationBase("3D Cellular Automata"),
