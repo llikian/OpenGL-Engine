@@ -12,6 +12,7 @@
  * @brief Represents a 4 by 4 matrix.
  */
 struct mat4 {
+public:
     /**
      * @brief Constructs a mat4 with all components equal to 0.
      */
@@ -52,64 +53,16 @@ struct mat4 {
      * @param row The row's index.
      * @return The row with the given index.
      */
-    float* operator [](int row);
+    float& operator ()(int row, int column);
 
     /**
      * @brief Accesses a row in the underlying 2D array of values.
      * @param row The row's index.
      * @return The row with the given index.
      */
-    const float* operator [](int row) const;
+    const float& operator ()(int row, int column) const;
 
-    /**
-     * @brief Adds another mat4's components to the current instance's components.
-     * @param mat The mat4 to add.
-     * @return A reference to this instance.
-     */
-    mat4& operator +=(const mat4& mat);
-
-    /**
-     * @brief Subtracts the current instance's components by another mat4's components.
-     * @param mat The mat4 to subtract by.
-     * @return A reference to this instance.
-     */
-    mat4& operator -=(const mat4& mat);
-
-    /**
-     * @brief Divides the current instance's components by another mat4's components.
-     * @param mat The mat4 to divide by.
-     * @return A reference to this instance.
-     */
-    mat4& operator /=(const mat4& mat);
-
-    /**
-     * @brief Adds a scalar to all of the current instance's components.
-     * @param scalar The scalar to add.
-     * @return A reference to this instance.
-     */
-    mat4& operator +=(float scalar);
-
-    /**
-     * @brief Subtracts all of the current instance's components by a scalar.
-     * @param scalar The scalar to subtract by.
-     * @return A reference to this instance.
-     */
-    mat4& operator -=(float scalar);
-
-    /**
-     * @brief Multiplies all of the current instance's components by a scalar.
-     * @param scalar The scalar to multiply by.
-     * @return A reference to this instance.
-     */
-    mat4& operator *=(float scalar);
-
-    /**
-     * @brief Divides all of the current instance's components by a scalar.
-     * @param scalar The scalar to divide by.
-     * @return A reference to this instance.
-     */
-    mat4& operator /=(float scalar);
-
+private:
     float values[4][4]; ///< The values of the matrix.
 };
 
@@ -124,6 +77,18 @@ struct mat4 {
  * @return A reference to the output stream after writing the mat4.
  */
 std::ostream& operator <<(std::ostream& stream, const mat4& mat);
+
+void operator +=(mat4& left, const mat4& right);
+
+void operator -=(mat4& left, const mat4& right);
+
+void operator +=(mat4& mat, float scalar);
+
+void operator -=(mat4& mat, float scalar);
+
+void operator *=(mat4& mat, float scalar);
+
+void operator /=(mat4& mat, float scalar);
 
 /** @brief Adds a mat4's components to another's.
  *  @param left The left operand.

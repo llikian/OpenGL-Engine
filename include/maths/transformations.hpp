@@ -113,11 +113,11 @@ mat4 rotateZ(float angle);
 /**
  * @brief Calculates the 'look at' matrix. That allows to simulate a camera.
  * @param eye The position of the camera.
- * @param center The target of the camera.
+ * @param target The target of the camera.
  * @param up The up vector of the camera.
  * @return The 'look at' matrix.
  */
-mat4 lookAt(const Point& eye, const Point& center, const Vector& up);
+mat4 lookAt(const Point& eye, const Point& target, const Vector& up);
 
 /**
  * @brief Calculates the perspective matrix.

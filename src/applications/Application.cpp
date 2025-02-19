@@ -186,7 +186,7 @@ void Application::run() {
 void Application::handleWindowSizeCallback(int width, int height) {
     ApplicationBase::handleWindowSizeCallback(width, height);
 
-    projection[0][0] = 1.0f / (tanf(M_PI_4f / 2.0f) * window.getRatio());
+    projection(0, 0) = 1.0f / (tanf(M_PI_4f / 2.0f) * window.getRatio());
 }
 
 void Application::handleCursorPositionCallback(double xPos, double yPos) {

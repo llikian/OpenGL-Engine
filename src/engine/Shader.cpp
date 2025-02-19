@@ -234,5 +234,5 @@ void Shader::setUniform(int location, const vec4& vec) {
 }
 
 void Shader::setUniform(int location, const mat4& matrix) {
-    glUniformMatrix4fv(location, 1, false, &(matrix[0][0]));
+    glUniformMatrix4fv(location, 1, false, &(matrix(0, 0)));
 }
