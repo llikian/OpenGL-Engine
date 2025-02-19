@@ -146,7 +146,6 @@ mat4& mat4::translateZ(float scalar) {
 }
 
 mat4& mat4::rotate(float angle, const Vector& axis) {
-
     angle = radians(angle);
 
     float cosine = cosf(angle);
@@ -190,7 +189,7 @@ mat4& mat4::rotateX(float angle) {
     const float cosine = cosf(angle);
     const float sine = sinf(angle);
 
-    float column[4] {values[1][0], values[1][1], values[1][2], values[1][3]};
+    float column[4]{values[1][0], values[1][1], values[1][2], values[1][3]};
 
     values[1][0] = cosine * column[0] + sine * values[2][0];
     values[1][1] = cosine * column[1] + sine * values[2][1];
@@ -211,7 +210,7 @@ mat4& mat4::rotateY(float angle) {
     const float cosine = cosf(angle);
     const float sine = sinf(angle);
 
-    float column[4] {values[0][0], values[0][1], values[0][2], values[0][3]};
+    float column[4]{values[0][0], values[0][1], values[0][2], values[0][3]};
 
     values[0][0] = cosine * column[0] - sine * values[2][0];
     values[0][1] = cosine * column[1] - sine * values[2][1];
@@ -232,7 +231,7 @@ mat4& mat4::rotateZ(float angle) {
     const float cosine = cosf(angle);
     const float sine = sinf(angle);
 
-    float column[4] {values[0][0], values[0][1], values[0][2], values[0][3]};
+    float column[4]{values[0][0], values[0][1], values[0][2], values[0][3]};
 
     values[0][0] = cosine * column[0] + sine * values[1][0];
     values[0][1] = cosine * column[1] + sine * values[1][1];
