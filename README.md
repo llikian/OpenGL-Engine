@@ -108,10 +108,6 @@ usual mathematical functions such as normalizing a vector, calculating its lengt
 products. It also defines all of the basic transformation matrices such as scaling, rotation, translation
 and perspective matrices.
 
-This project also contains the basis for another, in order to test the functionality of application
-classes inheritting from ApplicationBase. This other application is an attempt at an implementation
-of 3D cellular automata. It is currently very basic with no optimization whatsoever.
-
 ### Controls
 ```
 Close Application: Escape
