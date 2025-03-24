@@ -3,6 +3,8 @@
  * @brief Declaration of functions for 3D transforms
  **************************************************************************************************/
 
+#pragma once
+
 #include "mat4.hpp"
 #include "vec4.hpp"
 #include "vec3.hpp"

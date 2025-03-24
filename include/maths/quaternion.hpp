@@ -41,6 +41,8 @@ quaternion conjugate(const quaternion& q);
 quaternion inverse(const quaternion& q);
 mat4 toMatrix(const quaternion& q);
 
+quaternion slerp(const quaternion& q, const quaternion& r, float t);
+
 std::ostream& operator <<(std::ostream& stream, const quaternion& q);
 std::istream& operator >>(std::istream& stream, quaternion& q);
 

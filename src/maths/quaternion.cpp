@@ -83,10 +83,14 @@ quaternion quaternion::inverse() const {
 }
 
 mat4 quaternion::toMatrix() const {
-    return mat4(x, -y, -z, -w,
-                y, x, -w, z,
-                z, w, x, -y,
-                w, -z, y, x);
+    float n = norm();
+    float s = 2.0f / (n * n);
+
+    return mat4(
+        1.0f - s * (y * y + z * z), s * (x * y - w * z), s * (x * z + w * y),
+        s * (x * y + w * z), 1.0f - s * (x * x + z * z), s * (y * z - w * x),
+        s * (x * z - w * y), s * (y * z + w * x), 1.0f - s * (x * x + y * y)
+    );
 }
 
 float norm(const quaternion& q) {
@@ -103,6 +107,13 @@ quaternion inverse(const quaternion& q) {
 
 mat4 toMatrix(const quaternion& q) {
     return q.toMatrix();
+}
+
+quaternion slerp(const quaternion& q, const quaternion& r, float t) {
+    float theta = acos(q.x * r.x + q.y * r.y + q.z * r.z + q.w * r.w);
+    float s = sin(theta);
+
+    return (sin(theta * (1.0f - t)) / s) * q + (sin(theta * t) / s) * r;
 }
 
 std::ostream& operator <<(std::ostream& stream, const quaternion& q) {
