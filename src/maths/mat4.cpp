@@ -100,7 +100,7 @@ mat4& mat4::scaleZ(float factor) {
     return *this;
 }
 
-mat4& mat4::translate(const Vector& vector) {
+mat4& mat4::translate(const vec3& vector) {
     values[3][0] += values[0][0] * vector.x + values[1][0] * vector.y + values[2][0] * vector.z;
     values[3][1] += values[0][1] * vector.x + values[1][1] * vector.y + values[2][1] * vector.z;
     values[3][2] += values[0][2] * vector.x + values[1][2] * vector.y + values[2][2] * vector.z;
@@ -145,18 +145,18 @@ mat4& mat4::translateZ(float scalar) {
     return *this;
 }
 
-mat4& mat4::rotate(float angle, const Vector& axis) {
+mat4& mat4::rotate(float angle, const vec3& axis) {
     angle = radians(angle);
 
     float cosine = cosf(angle);
     float sine = sinf(angle);
 
-    Vector nAxis = axis;
-    if(nAxis != Vector(0.0f, 0.0f, 0.0f)) {
+    vec3 nAxis = axis;
+    if(nAxis != vec3(0.0f, 0.0f, 0.0f)) {
         nAxis = normalize(axis);
     }
 
-    Vector temp = (1.0f - cosine) * nAxis;
+    vec3 temp = (1.0f - cosine) * nAxis;
 
     float upperLeft3x3[3][3]{
         {values[0][0], values[0][1], values[0][2]},

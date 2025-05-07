@@ -58,7 +58,7 @@ mat4 scaleZ(float factor) {
     );
 }
 
-mat4 translate(const Vector& vector) {
+mat4 translate(const vec3& vector) {
     return mat4(1.0f, 0.0f, 0.0f, vector.x,
                 0.0f, 1.0f, 0.0f, vector.y,
                 0.0f, 0.0f, 1.0f, vector.z,
@@ -93,18 +93,18 @@ mat4 translateZ(float scalar) {
                 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-mat4 rotate(float angle, const Vector& axis) {
+mat4 rotate(float angle, const vec3& axis) {
     angle = radians(angle);
 
     float cosine = cosf(angle);
     float sine = sinf(angle);
 
-    Vector nAxis = axis;
-    if(nAxis != Vector(0.0f, 0.0f, 0.0f)) {
+    vec3 nAxis = axis;
+    if(nAxis != vec3(0.0f, 0.0f, 0.0f)) {
         nAxis = normalize(axis);
     }
 
-    Vector temp = (1.0f - cosine) * nAxis;
+    vec3 temp = (1.0f - cosine) * nAxis;
 
     return mat4(
         cosine + temp.x * nAxis.x, temp.x * nAxis.y + sine * nAxis.z, temp.x * nAxis.z - sine * nAxis.y,
@@ -152,10 +152,10 @@ mat4 rotateZ(float angle) {
     );
 }
 
-mat4 lookAt(const Point& eye, const Point& target, const Vector& up) {
-    const Vector FRONT = normalize(eye - target); // Vector from the target to the camera
-    const Vector RIGHT = normalize(cross(up, FRONT));
-    const Vector UP = cross(FRONT, RIGHT);
+mat4 lookAt(const vec3& eye, const vec3& target, const vec3& up) {
+    const vec3 FRONT = normalize(eye - target); // vec3 from the target to the camera
+    const vec3 RIGHT = normalize(cross(up, FRONT));
+    const vec3 UP = cross(FRONT, RIGHT);
 
     return mat4(
         RIGHT.x, RIGHT.y, RIGHT.z, -dot(eye, RIGHT),

@@ -29,7 +29,7 @@ struct vec3 {
      * @brief Constructs a vec3 with the same value for each component.
      * @param scalar The value of each component.
      */
-    vec3(float scalar);
+    explicit vec3(float scalar);
 
     /**
      * @brief Adds another vec3's components to the current instance's components.
@@ -91,10 +91,6 @@ struct vec3 {
     float y; ///< The y component of the vec3.
     float z; ///< The z component of the vec3.
 };
-
-using Color = vec3;
-using Point = vec3;
-using Vector = vec3;
 
 /**
  * @brief Writes the components of the given vec3 to the output stream in the format

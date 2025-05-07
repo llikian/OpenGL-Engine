@@ -34,7 +34,7 @@ void Texture::bind(unsigned int texUnit) const {
     glBindTexture(GL_TEXTURE_2D, id);
 }
 
-Texture::Texture(const Color& color) {
+Texture::Texture(const vec3& color) {
     unsigned char c[3]{
         static_cast<unsigned char>(color.x * 255.0f),
         static_cast<unsigned char>(color.y * 255.0f),

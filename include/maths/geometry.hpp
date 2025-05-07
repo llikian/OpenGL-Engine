@@ -81,4 +81,4 @@ vec4 normalize(const vec4& vec);
  * @param right The right operand.
  * @return The cross product of the two Vector.
  */
-Vector cross(const Vector& left, const Vector& right);
+vec3 cross(const vec3& left, const vec3& right);

@@ -30,7 +30,7 @@ struct vec4 {
      * @brief Constructs a vec4 with the same value for each component.
      * @param scalar The value of each component.
      */
-    vec4(float scalar);
+    explicit vec4(float scalar);
 
     /**
      * @brief Adds another vec4's components to the current instance's components.

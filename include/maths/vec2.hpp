@@ -28,7 +28,7 @@ struct vec2 {
      * @brief Constructs a vec2 with the same value for each component.
      * @param scalar The value of each component.
      */
-    vec2(float scalar);
+    explicit vec2(float scalar);
 
     /**
      * @brief Adds another vec2's components to the current instance's components.
@@ -89,8 +89,6 @@ struct vec2 {
     float x; ///< The x component of the vec2.
     float y; ///< The y component of the vec2.
 };
-
-using TexCoord = vec2;
 
 /**
  * @brief Writes the components of the given vec2 to the output stream in the format "( x ; y )".

@@ -114,7 +114,7 @@ public:
      * @param factor The scaling factor.
      * @return A reference to the matrix.
      */
-    mat4& translate(const Vector& vector);
+    mat4& translate(const vec3& vector);
 
     /**
      * @brief Applies a transform that displaces by a specific amount in each direction.
@@ -152,7 +152,7 @@ public:
      * @param axis The rotation axis.
      * @return A reference to the matrix.
      */
-    mat4& rotate(float angle, const Vector& axis);
+    mat4& rotate(float angle, const vec3& axis);
 
     /**
      * @brief Applies a transform that rotates around the x axis by a certain angle.

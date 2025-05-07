@@ -58,7 +58,7 @@ mat4 scaleZ(float factor);
  * @param vector The translation vector.
  * @return The translation matrix.
  */
-mat4 translate(const Vector& vector);
+mat4 translate(const vec3& vector);
 
 /**
  * @brief Calculates the translation matrix that displaces by a specific amount in each direction.
@@ -96,7 +96,7 @@ mat4 translateZ(float scalar);
  * @param axis The rotation axis.
  * @return The rotation matrix.
  */
-mat4 rotate(float angle, const Vector& axis);
+mat4 rotate(float angle, const vec3& axis);
 
 /**
  * @brief Calculates the rotation matrix that rotates around the x axis by a certain angle.
@@ -126,7 +126,7 @@ mat4 rotateZ(float angle);
  * @param up The up vector of the camera.
  * @return The 'look at' matrix.
  */
-mat4 lookAt(const Point& eye, const Point& target, const Vector& up);
+mat4 lookAt(const vec3& eye, const vec3& target, const vec3& up);
 
 /**
  * @brief Calculates the perspective matrix.
