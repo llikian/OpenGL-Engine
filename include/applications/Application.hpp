@@ -8,7 +8,6 @@
 #include "engine/ApplicationBase.hpp"
 
 #include "engine/Camera.hpp"
-#include "engine/Light.hpp"
 #include "engine/Shader.hpp"
 #include "engine/Texture.hpp"
 #include "maths/mat4.hpp"
@@ -29,7 +28,7 @@ public:
     /**
      * @brief Frees all allocated memory.
      */
-    ~Application();
+    ~Application() override;
 
     /* ---- Public Methods ---- */
 
@@ -46,7 +45,7 @@ public:
      * @param width The new width.
      * @param height The new height.
      */
-    void handleWindowSizeCallback(int width, int height);
+    void handleWindowSizeCallback(int width, int height) override;
 
     /**
      * @brief Handles what happens when the cursor is moved. Handles the camera's movement and updates the
@@ -54,7 +53,7 @@ public:
      * @param xPos The horizontal position of the mouse.
      * @param yPos The vertical position of the mouse.
      */
-    void handleCursorPositionCallback(double xPos, double yPos);
+    void handleCursorPositionCallback(double xPos, double yPos) override;
 
 private:
     /* ---- Private Methods ---- */
@@ -63,7 +62,7 @@ private:
      * @brief Handles what happends when a specific key is pressed.
      * @param key The key.
      */
-    void handleKeyEvent(int key);
+    void handleKeyEvent(int key) override;
 
     /**
      * @brief Initializes all the uniforms to their correct default values.
@@ -80,33 +79,33 @@ private:
      * @param model The new value of the model matrix. It is a product of translation, scale
      * and rotation matrices used to apply transforms on the scene's objects.
      */
-    void calculateMVP(const mat4& model);
+    void calculateMVP(const mat4& model) const;
 
     /**
      * @brief Binds a texture to a specific texture unit.
      * @param texture The texture to bind.
      * @param texUnit The texture unit to bind to.
      */
-    void bindTexture(const Texture& texture, unsigned int texUnit);
+    static void bindTexture(const Texture& texture, unsigned int texUnit);
 
     /**
      * @brief Binds a texture class to a specific texture unit.
      * @param textureID The texture's id.
      * @param texUnit The texture unit to bind to.
      */
-    void bindTexture(unsigned int textureID, unsigned int texUnit);
+    static void bindTexture(unsigned int textureID, unsigned int texUnit);
 
     /**
      * @brief Binds a texture to the active texture unit.
      * @param texture The texture to bind.
      */
-    void bindTexture(const Texture& texture);
+    static void bindTexture(const Texture& texture);
 
     /**
      * @brief Binds a texture to the active texture unit.
      * @param textureID The texture's id.
      */
-    void bindTexture(unsigned int textureID);
+    static void bindTexture(unsigned int textureID);
 
     /* ---- Variables & Constants ---- */
     bool wireframe;         ///< Whether to display in wireframe mode.
@@ -122,8 +121,4 @@ private:
     mat4 projection; ///< The projection matrix.
 
     Camera camera; ///< A first person camera to move around the scene.
-
-    DirectionalLight directionalLight;   ///< Light used for global illumination.
-    FlashLight flashlight;               ///< A flashlight.
-    std::vector<PointLight> pointLights; ///< Point lights used to light up smaller areas.
 };
