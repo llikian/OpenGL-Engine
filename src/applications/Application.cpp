@@ -6,6 +6,7 @@
 #include "applications/Application.hpp"
 
 #include <cmath>
+#include <memory>
 #include "maths/geometry.hpp"
 #include "maths/mat3.hpp"
 #include "maths/transforms.hpp"
@@ -43,9 +44,19 @@ Application::~Application() {
 }
 
 void Application::run() {
-    LineMesh grid = Meshes::grid(10.0f, 10);
-    LineMesh axes = Meshes::axes(1.0f);
-    Mesh sphere = Meshes::sphere(16, 32);
+    auto grid = std::make_shared<LineMesh>(Meshes::grid(10.0f, 10));
+    auto axes = std::make_shared<LineMesh>(Meshes::axes(1.0f));
+    auto sphere = std::make_shared<TriangleMesh>(Meshes::sphere(16, 32));
+
+    Scene scene(camera, projection);
+    std::string paths[2]{ "shaders/application/default.vert", "shaders/application/default.frag" };
+    scene.shaders.emplace_back(paths, 2, "default");
+
+    scene.add(scene.shaders[0], grid, mat4(1.0f));
+    for(int i = -4 ; i <= 4 ; ++i) {
+        scene.add(scene.shaders[0], sphere, translate(i, std::abs(i), 0).scale(0.5f));
+        scene.add(scene.shaders[0], sphere, translate(i, 9 - std::abs(i), 0).scale(0.5f));
+    }
 
     /* ---- Main Loop ---- */
     while(!glfwWindowShouldClose(window)) {
@@ -54,20 +65,22 @@ void Application::run() {
         glClearColor(0.1, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        shader->use();
-        updateUniforms();
-        calculateMVP(mat4(1.0f));
-        bindTexture(0);
+        // shader->use();
+        // updateUniforms();
+        // calculateMVP(mat4(1.0f));
+        // bindTexture(0);
+        //
+        // if(isGridDrawn) { grid.draw(); }
+        //
+        // if(areAxesDrawn) {
+        //     calculateMVP(translate(camera.getPosition() + 2.0f * camera.getDirection()) * scale(0.5f));
+        //     axes.draw();
+        // }
+        //
+        // calculateMVP(mat4(1.0f));
+        // sphere.draw();
 
-        if(isGridDrawn) { grid.draw(); }
-
-        if(areAxesDrawn) {
-            calculateMVP(translate(camera.getPosition() + 2.0f * camera.getDirection()) * scale(0.5f));
-            axes.draw();
-        }
-
-        calculateMVP(mat4(1.0f));
-        sphere.draw();
+        scene.draw();
 
         glfwSwapBuffers(window);
     }

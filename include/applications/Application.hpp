@@ -8,6 +8,7 @@
 #include "engine/ApplicationBase.hpp"
 
 #include "engine/Camera.hpp"
+#include "engine/Scene.hpp"
 #include "engine/Shader.hpp"
 #include "engine/Texture.hpp"
 #include "maths/mat4.hpp"

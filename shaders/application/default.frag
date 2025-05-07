@@ -14,7 +14,7 @@ out vec4 fragColor;
 //uniform vec3 cameraPos;
 
 const vec3 LIGHT_POS = vec3(10.0f);
-const vec3 LIGHT_COLOR = vec3(1.0f, 0.0, 0.0);
+const vec3 LIGHT_COLOR = vec3(1.0f);
 
 void main() {
     float ambient = 0.2f;
