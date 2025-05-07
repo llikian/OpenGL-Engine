@@ -1,40 +1,38 @@
 /***************************************************************************************************
- * @file  Mesh.hpp
- * @brief Declaration of the Mesh class
+ * @file  LineMesh.hpp
+ * @brief Declaration of the LineMesh class
  **************************************************************************************************/
 
 #pragma once
 
 #include <vector>
 #include "engine/Shader.hpp"
-#include "maths/vec2.hpp"
 #include "maths/vec3.hpp"
 
 /**
- * @class Mesh
- * @brief Represents a triangular 3D mesh that can be created and rendererd.
+ * @class LineMesh
+ * @brief Represents a 3D mesh made out of lines that can be created and rendererd.
  */
-class Mesh {
+class LineMesh {
 public:
     struct Vertex {
         vec3 position;
-        vec3 normal;
-        vec2 texCoords;
+        vec3 color;
+        float thickness;
     };
 
-    Mesh();
-    Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices);
-    explicit Mesh(const std::vector<Vertex>& vertices);
-    ~Mesh();
+    LineMesh();
+    LineMesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices);
+    explicit LineMesh(const std::vector<Vertex>& vertices);
+    ~LineMesh();
 
     void draw();
 
     void addVertex(const Vertex& vertex);
-    void addVertex(const vec3& position, const vec3& normal, const vec2& texCoords);
+    void addVertex(const vec3& position, const vec3& color = vec3(1.0f), float thickness = 1.0f);
 
     void addIndex(uint index);
-    void addTriangle(uint top, uint left, uint right);
-    void addFace(uint topL, uint bottomL, uint bottomR, uint topR);
+    void addLine(uint start, uint end);
 
 private:
     void bindBuffers();
@@ -48,3 +46,4 @@ private:
     uint VBO;
     uint EBO;
 };
+

@@ -6,10 +6,9 @@
 #include "mesh/meshes.hpp"
 
 #include <cmath>
-#include <glad/glad.h>
 
 Mesh Meshes::cube() {
-    Mesh mesh(GL_TRIANGLES);
+    Mesh mesh;
 
     /* Vertices' index
      *  0───1
@@ -33,59 +32,48 @@ Mesh Meshes::cube() {
      */
 
     unsigned int faces[6][4]{
-        {0, 3, 2, 1},
-        {0, 4, 7, 3},
-        {3, 7, 6, 2},
-        {2, 6, 5, 1},
-        {1, 5, 4, 0},
-        {7, 4, 5, 6}
+        { 0, 3, 2, 1 },
+        { 0, 4, 7, 3 },
+        { 3, 7, 6, 2 },
+        { 2, 6, 5, 1 },
+        { 1, 5, 4, 0 },
+        { 7, 4, 5, 6 }
     };
 
-    Point positions[8]{
-        {-0.5f, 0.5f,  -0.5f},
-        {0.5f,  0.5f,  -0.5f},
-        {0.5f,  0.5f,  0.5f},
-        {-0.5f, 0.5f,  0.5f},
-        {-0.5f, -0.5f, -0.5f},
-        {0.5f,  -0.5f, -0.5f},
-        {0.5f,  -0.5f, 0.5f},
-        {-0.5f, -0.5f, 0.5f}
+    vec3 positions[8]{
+        vec3(-0.5f, 0.5f, -0.5f),
+        vec3(0.5f, 0.5f, -0.5f),
+        vec3(0.5f, 0.5f, 0.5f),
+        vec3(-0.5f, 0.5f, 0.5f),
+        vec3(-0.5f, -0.5f, -0.5f),
+        vec3(0.5f, -0.5f, -0.5f),
+        vec3(0.5f, -0.5f, 0.5f),
+        vec3(-0.5f, -0.5f, 0.5f)
     };
 
-    Vector normals[6]{
-        {0.0f,  1.0f,  0.0f},
-        {-1.0f, 0.0f,  0.0f},
-        {0.0f,  0.0f,  1.0f},
-        {1.0f,  0.0f,  0.0f},
-        {0.0f,  0.0f,  -1.0f},
-        {0.0f,  -1.0f, 0.0f}
+    vec3 normals[6]{
+        vec3(0.0f, 1.0f, 0.0f),
+        vec3(-1.0f, 0.0f, 0.0f),
+        vec3(0.0f, 0.0f, 1.0f),
+        vec3(1.0f, 0.0f, 0.0f),
+        vec3(0.0f, 0.0f, -1.0f),
+        vec3(0.0f, -1.0f, 0.0f)
     };
 
     for(int i = 0 ; i < 6 ; ++i) {
-        mesh.addPosition(positions[faces[i][0]]);
-        mesh.addNormal(normals[i]);
-        mesh.addTexCoord(0.0f, 1.0f);
+        mesh.addVertex(positions[faces[i][0]], normals[i], vec2(0.0f, 1.0f));
+        mesh.addVertex(positions[faces[i][1]], normals[i], vec2(0.0f, 0.0f));
+        mesh.addVertex(positions[faces[i][2]], normals[i], vec2(1.0f, 0.0f));
+        mesh.addVertex(positions[faces[i][3]], normals[i], vec2(1.0f, 1.0f));
 
-        mesh.addPosition(positions[faces[i][1]]);
-        mesh.addNormal(normals[i]);
-        mesh.addTexCoord(0.0f, 0.0f);
-
-        mesh.addPosition(positions[faces[i][2]]);
-        mesh.addNormal(normals[i]);
-        mesh.addTexCoord(1.0f, 0.0f);
-
-        mesh.addPosition(positions[faces[i][3]]);
-        mesh.addNormal(normals[i]);
-        mesh.addTexCoord(1.0f, 1.0f);
-
-        mesh.addFace((i * 4), (i * 4) + 1, (i * 4) + 2, (i * 4) + 3);
+        mesh.addFace(i * 4, i * 4 + 1, i * 4 + 2, i * 4 + 3);
     }
 
     return mesh;
 }
 
 Mesh Meshes::texturedCube() {
-    Mesh mesh(GL_TRIANGLES);
+    Mesh mesh;
 
     /* Vertices' index
      *  0───1
@@ -109,80 +97,67 @@ Mesh Meshes::texturedCube() {
      */
 
     unsigned int faces[6][4]{
-        {0, 3, 2, 1},
-        {0, 4, 7, 3},
-        {3, 7, 6, 2},
-        {2, 6, 5, 1},
-        {1, 5, 4, 0},
-        {7, 4, 5, 6}
+        { 0, 3, 2, 1 },
+        { 0, 4, 7, 3 },
+        { 3, 7, 6, 2 },
+        { 2, 6, 5, 1 },
+        { 1, 5, 4, 0 },
+        { 7, 4, 5, 6 }
     };
 
-    Point positions[8]{
-        {-0.5f, 0.5f,  -0.5f},
-        {0.5f,  0.5f,  -0.5f},
-        {0.5f,  0.5f,  0.5f},
-        {-0.5f, 0.5f,  0.5f},
-        {-0.5f, -0.5f, -0.5f},
-        {0.5f,  -0.5f, -0.5f},
-        {0.5f,  -0.5f, 0.5f},
-        {-0.5f, -0.5f, 0.5f}
+    vec3 positions[8]{
+        vec3(-0.5f, 0.5f, -0.5f),
+        vec3(0.5f, 0.5f, -0.5f),
+        vec3(0.5f, 0.5f, 0.5f),
+        vec3(-0.5f, 0.5f, 0.5f),
+        vec3(-0.5f, -0.5f, -0.5f),
+        vec3(0.5f, -0.5f, -0.5f),
+        vec3(0.5f, -0.5f, 0.5f),
+        vec3(-0.5f, -0.5f, 0.5f)
     };
 
-    Vector normals[6]{
-        {0.0f,  1.0f,  0.0f},
-        {-1.0f, 0.0f,  0.0f},
-        {0.0f,  0.0f,  1.0f},
-        {1.0f,  0.0f,  0.0f},
-        {0.0f,  0.0f,  -1.0f},
-        {0.0f,  -1.0f, 0.0f}
+    vec3 normals[6]{
+        vec3(0.0f, 1.0f, 0.0f),
+        vec3(-1.0f, 0.0f, 0.0f),
+        vec3(0.0f, 0.0f, 1.0f),
+        vec3(1.0f, 0.0f, 0.0f),
+        vec3(0.0f, 0.0f, -1.0f),
+        vec3(0.0f, -1.0f, 0.0f)
     };
 
-    constexpr float n1_3 = 1.0f / 3.0f;
-    constexpr float n2_3 = 2.0f / 3.0f;
-
-    TexCoord texCoords[6]{
-        {0.25f, 1.0f},
-        {0.00f, n2_3},
-        {0.25f, n2_3},
-        {0.50f, n2_3},
-        {0.75f, n2_3},
-        {0.25f, n1_3}
+    vec2 texCoords[6]{
+        vec2(0.25f, 1.0f),
+        vec2(0.00f, (2.0f / 3.0f)),
+        vec2(0.25f, (2.0f / 3.0f)),
+        vec2(0.50f, (2.0f / 3.0f)),
+        vec2(0.75f, (2.0f / 3.0f)),
+        vec2(0.25f, (1.0f / 3.0f))
     };
 
     for(int i = 0 ; i < 6 ; ++i) {
-        mesh.addPosition(positions[faces[i][0]]);
-        mesh.addNormal(normals[i]);
-        mesh.addTexCoord(texCoords[i]);
 
-        mesh.addPosition(positions[faces[i][1]]);
-        mesh.addNormal(normals[i]);
-        mesh.addTexCoord(texCoords[i].x, texCoords[i].y - n1_3);
+        mesh.addVertex(positions[faces[i][0]], normals[i], texCoords[i]);
+        mesh.addVertex(positions[faces[i][1]], normals[i], vec2(texCoords[i].x, texCoords[i].y - 1.0f / 3.0f));
+        mesh.addVertex(positions[faces[i][2]], normals[i], vec2(texCoords[i].x + 0.25f, texCoords[i].y - 1.0f / 3.0f));
+        mesh.addVertex(positions[faces[i][3]], normals[i], vec2(texCoords[i].x + 0.25f, texCoords[i].y));
 
-        mesh.addPosition(positions[faces[i][2]]);
-        mesh.addNormal(normals[i]);
-        mesh.addTexCoord(texCoords[i].x + 0.25f, texCoords[i].y - n1_3);
-
-        mesh.addPosition(positions[faces[i][3]]);
-        mesh.addNormal(normals[i]);
-        mesh.addTexCoord(texCoords[i].x + 0.25f, texCoords[i].y);
-
-        mesh.addFace((i * 4), (i * 4) + 1, (i * 4) + 2, (i * 4) + 3);
+        mesh.addFace(i * 4, i * 4 + 1, i * 4 + 2, i * 4 + 3);
     }
 
     return mesh;
 }
 
-Mesh Meshes::wireframeCube() {
-    Mesh mesh(GL_LINES);
+LineMesh Meshes::wireframeCube() {
+    LineMesh mesh;
 
-    mesh.addPosition(-0.5f, 0.5f, -0.5f);
-    mesh.addPosition(0.5f, 0.5f, -0.5f);
-    mesh.addPosition(0.5f, 0.5f, 0.5f);
-    mesh.addPosition(-0.5f, 0.5f, 0.5f);
-    mesh.addPosition(-0.5f, -0.5f, -0.5f);
-    mesh.addPosition(0.5f, -0.5f, -0.5f);
-    mesh.addPosition(0.5f, -0.5f, 0.5f);
-    mesh.addPosition(-0.5f, -0.5f, 0.5f);
+    mesh.addVertex(vec3(-0.5f, 0.5f, -0.5f), vec3());
+    mesh.addVertex(vec3(0.5f, 0.5f, -0.5f), vec3());
+    mesh.addVertex(vec3(0.5f, 0.5f, 0.5f), vec3());
+    mesh.addVertex(vec3(-0.5f, 0.5f, 0.5f), vec3());
+    mesh.addVertex(vec3(-0.5f, -0.5f, -0.5f), vec3());
+    mesh.addVertex(vec3(0.5f, -0.5f, -0.5f), vec3());
+    mesh.addVertex(vec3(0.5f, -0.5f, 0.5f), vec3());
+    mesh.addVertex(vec3(-0.5f, -0.5f, 0.5f), vec3());
 
     /* Vertices' index
      *  0───1
@@ -193,104 +168,34 @@ Mesh Meshes::wireframeCube() {
      *    7───6
      */
 
-    unsigned int lines[12][2]{
-        {0, 1},
-        {0, 3},
-        {0, 4},
-        {1, 2},
-        {1, 5},
-        {2, 3},
-        {2, 6},
-        {3, 7},
-        {4, 5},
-        {4, 7},
-        {5, 6},
-        {6, 7}
-    };
-
-    for(int i = 0 ; i < 12 ; ++i) {
-        mesh.addIndex(lines[i][0]);
-        mesh.addIndex(lines[i][1]);
-    }
+    mesh.addLine(0, 1);
+    mesh.addLine(0, 3);
+    mesh.addLine(0, 4);
+    mesh.addLine(1, 2);
+    mesh.addLine(1, 5);
+    mesh.addLine(2, 3);
+    mesh.addLine(2, 6);
+    mesh.addLine(3, 7);
+    mesh.addLine(4, 5);
+    mesh.addLine(4, 7);
+    mesh.addLine(5, 6);
+    mesh.addLine(6, 7);
 
     return mesh;
 }
 
-Mesh Meshes::plainCube() {
-    Mesh mesh(GL_TRIANGLES);
-
-    /* Vertices' index
-     *  0───1
-     *  │╲  │╲
-     *  │ 3───2
-     *  4─│─5 │
-     *   ╲│  ╲│
-     *    7───6
-     *
-     * Faces & Template
-     *      0┌─────┐1
-     *       │  0  │
-     * 0    3│ TOP │2    1     0
-     * ┌─────┼─────┼─────┬─────┐
-     * │  1  │  2  │  3  │  4  │
-     * │ LEF │ FRO │ RIG │ BAC │
-     * └─────┼─────┼─────┴─────┘
-     * 4    7│  5  │6    5     4
-     *       │ BOT │
-     *      4└─────┘5
-     */
-
-    unsigned int faces[6][4]{
-        {0, 3, 2, 1},
-        {0, 4, 7, 3},
-        {3, 7, 6, 2},
-        {2, 6, 5, 1},
-        {1, 5, 4, 0},
-        {7, 4, 5, 6}
-    };
-
-    Point positions[8]{
-        {-0.5f, 0.5f,  -0.5f},
-        {0.5f,  0.5f,  -0.5f},
-        {0.5f,  0.5f,  0.5f},
-        {-0.5f, 0.5f,  0.5f},
-        {-0.5f, -0.5f, -0.5f},
-        {0.5f,  -0.5f, -0.5f},
-        {0.5f,  -0.5f, 0.5f},
-        {-0.5f, -0.5f, 0.5f}
-    };
-
-    for(int i = 0 ; i < 6 ; ++i) {
-        mesh.addPosition(positions[faces[i][0]]);
-        mesh.addTexCoord(0.0f, 1.0f);
-
-        mesh.addPosition(positions[faces[i][1]]);
-        mesh.addTexCoord(0.0f, 0.0f);
-
-        mesh.addPosition(positions[faces[i][2]]);
-        mesh.addTexCoord(1.0f, 0.0f);
-
-        mesh.addPosition(positions[faces[i][3]]);
-        mesh.addTexCoord(1.0f, 1.0f);
-
-        mesh.addFace((i * 4), (i * 4) + 1, (i * 4) + 2, (i * 4) + 3);
-    }
-
-    return mesh;
-}
-
-Mesh Meshes::grid(float size, int divisions) {
-    Mesh mesh(GL_LINES);
+LineMesh Meshes::grid(float size, int divisions) {
+    LineMesh mesh;
 
     float square = -size / 2.0f;
     const float squareSize = size / divisions;
 
     for(int i = 0 ; i <= divisions ; ++i) {
-        mesh.addPosition(square, 0.0f, -size / 2.0f);
-        mesh.addPosition(square, 0.0f, size / 2.0f);
+        mesh.addVertex(vec3(square, 0.0f, -size / 2.0f));
+        mesh.addVertex(vec3(square, 0.0f, size / 2.0f));
 
-        mesh.addPosition(-size / 2.0f, 0.0f, square);
-        mesh.addPosition(size / 2.0f, 0.0f, square);
+        mesh.addVertex(vec3(-size / 2.0f, 0.0f, square));
+        mesh.addVertex(vec3(size / 2.0f, 0.0f, square));
 
         square += squareSize;
     }
@@ -298,93 +203,25 @@ Mesh Meshes::grid(float size, int divisions) {
     return mesh;
 }
 
-Mesh Meshes::axes(float size) {
-    Mesh mesh(GL_LINES);
+LineMesh Meshes::axes(float size) {
+    LineMesh mesh;
 
-    const Point axes[3]{
-        {1.0f, 0.0f, 0.0f},
-        {0.0f, 1.0f, 0.0f},
-        {0.0f, 0.0f, 1.0f}
+    const vec3 axes[3]{
+        vec3(1.0f, 0.0f, 0.0f),
+        vec3(0.0f, 1.0f, 0.0f),
+        vec3(0.0f, 0.0f, 1.0f)
     };
 
-    for(const Point& p: axes) {
-        mesh.addPosition(0.0f, 0.0f, 0.0f);
-        mesh.addColor(p);
-
-        mesh.addPosition(size * p);
-        mesh.addColor(p);
+    for(const vec3& point : axes) {
+        mesh.addVertex(vec3(0.0f, 0.0f, 0.0f), point);
+        mesh.addVertex(size * point, point);
     }
 
     return mesh;
 }
 
 Mesh Meshes::sphere(int divTheta, int divPhi) {
-    Mesh mesh(GL_TRIANGLES);
-
-    const double thetaStep = M_PI / divTheta;
-    const double phiStep = 2.0f * M_PI / divPhi;
-
-    double theta = -M_PI_2 + thetaStep;
-    double phi = 0.0f;
-
-    vec3 point;
-    for(int i = 0 ; i < divTheta - 1 ; ++i) {
-        phi = 0.0;
-
-        for(int j = 0 ; j < divPhi ; ++j) {
-            point.x = cos(theta) * cos(phi);
-            point.y = sin(theta);
-            point.z = cos(theta) * sin(phi);
-
-            mesh.addPosition(point);
-            mesh.addNormal(point);
-
-            phi += phiStep;
-        }
-
-        theta += thetaStep;
-    }
-
-    auto index = [&](int column, int row) -> int {
-        return row + column * divPhi;
-    };
-
-    for(int i = 0 ; i < divTheta - 2 ; ++i) {
-        for(int j = 0 ; j < divPhi ; ++j) {
-            mesh.addFace(
-                index(i, j),
-                index(i + 1, j),
-                index(i + 1, (j + 1) % divPhi),
-                index(i, (j + 1) % divPhi)
-            );
-        }
-    }
-
-    mesh.addPosition(0.0f, -1.0f, 0.0f);
-    mesh.addNormal(0.0f, -1.0f, 0.0f);
-
-    mesh.addPosition(0.0f, 1.0f, 0.0f);
-    mesh.addNormal(0.0f, 1.0f, 0.0f);
-
-    for(int i = 0 ; i < divPhi ; ++i) {
-        mesh.addTriangle(
-            index(divTheta - 1, 0),
-            index(0, i),
-            index(0, (i + 1) % divPhi)
-        );
-
-        mesh.addTriangle(
-            index(divTheta - 2, i),
-            index(divTheta - 1, 0) + 1,
-            index(divTheta - 2, (i + 1) % divPhi)
-        );
-    }
-
-    return mesh;
-}
-
-Mesh Meshes::texturedSphere(int divTheta, int divPhi) {
-    Mesh mesh(GL_TRIANGLES);
+    Mesh mesh;
 
     const double thetaStep = M_PI / divTheta;
     const double phiStep = 2.0 * M_PI / divPhi;
@@ -392,18 +229,12 @@ Mesh Meshes::texturedSphere(int divTheta, int divPhi) {
     double theta = -M_PI_2 + thetaStep;
     double phi = 0.0;
 
-    vec3 point;
     for(int i = 0 ; i < divTheta ; ++i) {
         phi = 0.0;
 
         for(int j = 0 ; j <= divPhi ; ++j) {
-            point.x = cos(theta) * cos(phi);
-            point.y = sin(theta);
-            point.z = cos(theta) * sin(phi);
-
-            mesh.addPosition(point);
-            mesh.addNormal(point);
-            mesh.addTexCoord(static_cast<float>(j) / divPhi, 0.5 + point.y / 2.0);
+            vec3 point(std::cos(theta) * std::cos(phi), std::sin(theta), std::cos(theta) * std::sin(phi));
+            mesh.addVertex(point, point, vec2(static_cast<float>(j) / divPhi, 0.5 + point.y / 2.0));
 
             phi += phiStep;
         }
@@ -430,47 +261,14 @@ Mesh Meshes::texturedSphere(int divTheta, int divPhi) {
 }
 
 Mesh Meshes::plane(float size) {
-    Mesh mesh(GL_TRIANGLES);
+    Mesh mesh;
 
     size /= 2;
 
-    mesh.addPosition(-size, 0.0f, size);
-    mesh.addTexCoord(0.0f, size);
-
-    mesh.addPosition(size, 0.0f, size);
-    mesh.addTexCoord(size, size);
-
-    mesh.addPosition(size, 0.0f, -size);
-    mesh.addTexCoord(size, 0.0f);
-
-    mesh.addPosition(-size, 0.0f, -size);
-    mesh.addTexCoord(0.0f, 0.0f);
-
-    mesh.addFace(0, 1, 2, 3);
-
-    return mesh;
-}
-
-Mesh Meshes::nplane(float size) {
-    Mesh mesh(GL_TRIANGLES);
-
-    size /= 2;
-
-    mesh.addPosition(-size, 0.0f, size);
-    mesh.addNormal(0.0f, 1.0f, 0.0f);
-    mesh.addTexCoord(0.0f, size);
-
-    mesh.addPosition(size, 0.0f, size);
-    mesh.addNormal(0.0f, 1.0f, 0.0f);
-    mesh.addTexCoord(size, size);
-
-    mesh.addPosition(size, 0.0f, -size);
-    mesh.addNormal(0.0f, 1.0f, 0.0f);
-    mesh.addTexCoord(size, 0.0f);
-
-    mesh.addPosition(-size, 0.0f, -size);
-    mesh.addNormal(0.0f, 1.0f, 0.0f);
-    mesh.addTexCoord(0.0f, 0.0f);
+    mesh.addVertex(vec3(-size, 0.0f, size), vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, size));
+    mesh.addVertex(vec3(size, 0.0f, size), vec3(0.0f, 1.0f, 0.0f), vec2(size, size));
+    mesh.addVertex(vec3(size, 0.0f, -size), vec3(0.0f, 1.0f, 0.0f), vec2(size, 0.0f));
+    mesh.addVertex(vec3(-size, 0.0f, -size), vec3(0.0f, 1.0f, 0.0f), vec2(0.0f, 0.0f));
 
     mesh.addFace(0, 1, 2, 3);
 
@@ -478,12 +276,12 @@ Mesh Meshes::nplane(float size) {
 }
 
 Mesh Meshes::screen() {
-    Mesh mesh(GL_TRIANGLES);
+    Mesh mesh;
 
-    mesh.addPosition(-1.0f, 1.0f, 0.0f);
-    mesh.addPosition(-1.0f, -1.0f, 0.0f);
-    mesh.addPosition(1.0f, -1.0f, 0.0f);
-    mesh.addPosition(1.0f, 1.0f, 0.0f);
+    mesh.addVertex(vec3(-1.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f), vec2(-1.0f, 1.0f));
+    mesh.addVertex(vec3(-1.0f, -1.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f), vec2(-1.0f, -1.0f));
+    mesh.addVertex(vec3(1.0f, -1.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f), vec2(1.0f, -1.0f));
+    mesh.addVertex(vec3(1.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f), vec2(1.0f, 1.0f));
 
     mesh.addFace(0, 1, 2, 3);
 

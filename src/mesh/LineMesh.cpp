@@ -1,71 +1,60 @@
 /***************************************************************************************************
- * @file  Mesh.cpp
- * @brief Implementation of the Mesh class
+ * @file  LineMesh.cpp
+ * @brief Implementation of the LineMesh class
  **************************************************************************************************/
 
-#include "mesh/Mesh.hpp"
+#include "mesh/LineMesh.hpp"
 
 #include <glad/glad.h>
 
-Mesh::Mesh() : bound(false), VAO(0), VBO(0), EBO(0) { }
+LineMesh::LineMesh() : bound(false), VAO(0), VBO(0), EBO(0) { }
 
-Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices)
+LineMesh::LineMesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices)
     : bound(false), vertices(vertices), indices(indices), VAO(0), VBO(0), EBO(0) {
     bindBuffers();
 }
 
-Mesh::Mesh(const std::vector<Vertex>& vertices)
+LineMesh::LineMesh(const std::vector<Vertex>& vertices)
     : bound(false), vertices(vertices), VAO(0), VBO(0), EBO(0) {
     bindBuffers();
 }
 
-Mesh::~Mesh() {
+LineMesh::~LineMesh() {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     if(!indices.empty()) { glDeleteBuffers(1, &EBO); }
 }
 
-void Mesh::draw() {
+void LineMesh::draw() {
     if(!bound) { bindBuffers(); }
 
     glBindVertexArray(VAO);
 
     if(indices.empty()) {
-        glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+        glDrawArrays(GL_LINES, 0, vertices.size());
     } else {
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
+        glDrawElements(GL_LINES, indices.size(), GL_UNSIGNED_INT, nullptr);
     }
 }
 
-void Mesh::addVertex(const Vertex& vertex) {
+void LineMesh::addVertex(const Vertex& vertex) {
     vertices.push_back(vertex);
 }
 
-void Mesh::addVertex(const vec3& position, const vec3& normal, const vec2& texCoords) {
-    vertices.emplace_back(position, normal, texCoords);
+void LineMesh::addVertex(const vec3& position, const vec3& color, float thickness) {
+    vertices.emplace_back(position, color, thickness);
 }
 
-void Mesh::addIndex(uint index) {
+void LineMesh::addIndex(uint index) {
     indices.push_back(index);
 }
 
-void Mesh::addTriangle(uint top, uint left, uint right) {
-    indices.push_back(top);
-    indices.push_back(left);
-    indices.push_back(right);
+void LineMesh::addLine(uint start, uint end) {
+    indices.push_back(start);
+    indices.push_back(end);
 }
 
-void Mesh::addFace(uint topL, uint bottomL, uint bottomR, uint topR) {
-    indices.push_back(topL);
-    indices.push_back(bottomL);
-    indices.push_back(bottomR);
-
-    indices.push_back(topL);
-    indices.push_back(bottomR);
-    indices.push_back(topR);
-}
-
-void Mesh::bindBuffers() {
+void LineMesh::bindBuffers() {
     /* VAO */
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -79,12 +68,12 @@ void Mesh::bindBuffers() {
     glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(0);
 
-    /* Normals */
+    /* Colors */
     glVertexAttribPointer(1, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<void*>(sizeof(vec3)));
     glEnableVertexAttribArray(1);
 
-    /* Texture Coordinates */
-    glVertexAttribPointer(2, 2, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<void*>(2 * sizeof(vec3)));
+    /* Thickness */
+    glVertexAttribPointer(2, 1, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<void*>(2 * sizeof(vec3)));
     glEnableVertexAttribArray(2);
 
     /* Indices & EBO */
