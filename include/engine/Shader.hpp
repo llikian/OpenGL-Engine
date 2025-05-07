@@ -9,10 +9,11 @@
 #include <string>
 #include <unordered_map>
 
+#include "maths/mat3.hpp"
+#include "maths/mat4.hpp"
 #include "maths/vec2.hpp"
 #include "maths/vec3.hpp"
 #include "maths/vec4.hpp"
-#include "maths/mat4.hpp"
 
 /**
  * @class Shader
@@ -173,6 +174,13 @@ private:
      * @param vec The new value of the uniform.
      */
     static void setUniform(int location, const vec4& vec);
+
+    /**
+     * @brief Sets the value of a uniform of type mat3.
+     * @param location The uniform's location.
+     * @param matrix The new value of the uniform.
+     */
+    static void setUniform(int location, const mat3& matrix);
 
     /**
      * @brief Sets the value of a uniform of type mat4.

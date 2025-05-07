@@ -7,6 +7,7 @@
 
 #include <cmath>
 #include "maths/geometry.hpp"
+#include "maths/mat3.hpp"
 #include "maths/transforms.hpp"
 #include "maths/trigonometry.hpp"
 #include "mesh/Mesh.hpp"
@@ -20,7 +21,6 @@ Application::Application()
       shader(nullptr),
       projection(perspective(M_PI_4f, window.getRatio(), 0.1f, 100.0f)),
       camera(vec3(0.0f, 2.0f, 5.0f)) {
-
     /* ---- Repeatable Keys ---- */
     repeatableKeys.emplace(GLFW_KEY_W, false);
     repeatableKeys.emplace(GLFW_KEY_S, false);
@@ -33,7 +33,7 @@ Application::Application()
     setCallbacks<Application>(window, true, true, true, false, true, false);
 
     /* ---- Shaders ---- */
-    std::string paths[2]{"shaders/application/default.vert", "shaders/application/default.frag"};
+    std::string paths[2]{ "shaders/application/default.vert", "shaders/application/default.frag" };
     shader = new Shader(paths, 2, "Default");
     initUniforms();
 }
@@ -45,7 +45,7 @@ Application::~Application() {
 void Application::run() {
     LineMesh grid = Meshes::grid(10.0f, 10);
     LineMesh axes = Meshes::axes(1.0f);
-    Mesh sphere = Meshes::sphere(32, 16);
+    Mesh sphere = Meshes::sphere(16, 32);
 
     /* ---- Main Loop ---- */
     while(!glfwWindowShouldClose(window)) {
@@ -66,6 +66,7 @@ void Application::run() {
             axes.draw();
         }
 
+        calculateMVP(mat4(1.0f));
         sphere.draw();
 
         glfwSwapBuffers(window);
@@ -138,8 +139,6 @@ void Application::handleKeyEvent(int key) {
 
 void Application::initUniforms() {
     shader->use();
-
-    calculateMVP(mat4(1.0f));
 }
 
 void Application::updateUniforms() {
@@ -149,6 +148,7 @@ void Application::updateUniforms() {
 void Application::calculateMVP(const mat4& model) const {
     shader->setUniform("mvp", camera.getVPmatrix(projection) * model);
     shader->setUniform("model", model);
+    shader->setUniform("normalModel", transposeInverse(model));
 }
 
 void Application::bindTexture(const Texture& texture, unsigned int texUnit) {

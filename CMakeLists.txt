@@ -28,6 +28,7 @@ set(SOURCES
         src/engine/Texture.cpp
         src/engine/Window.cpp
 
+        src/maths/mat3.cpp
         src/maths/mat4.cpp
         src/maths/vec2.cpp
         src/maths/vec3.cpp

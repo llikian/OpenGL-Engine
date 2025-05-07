@@ -47,7 +47,7 @@ public:
      * Each value of the diagonal is equal to the scalar and the rest is zeros.
      * @param scalar The value for the components on the diagonal.
      */
-    mat4(float scalar);
+    explicit mat4(float scalar);
 
     /**
      * @brief Accesses an element of the matrix.
@@ -110,8 +110,8 @@ public:
     mat4& scaleZ(float factor);
 
     /**
-     * @brief Applies a transformthat displaces by a specific vector.
-     * @param factor The scaling factor.
+     * @brief Applies a transform that displaces by a specific vector.
+     * @param vector The displacement vector.
      * @return A reference to the matrix.
      */
     mat4& translate(const vec3& vector);

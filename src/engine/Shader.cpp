@@ -233,6 +233,9 @@ void Shader::setUniform(int location, const vec4& vec) {
     glUniform4fv(location, 1, &vec.x);
 }
 
+void Shader::setUniform(int location, const mat3& matrix) {
+    glUniformMatrix3fv(location, 1, false, &(matrix(0, 0)));}
+
 void Shader::setUniform(int location, const mat4& matrix) {
     glUniformMatrix4fv(location, 1, false, &(matrix(0, 0)));
 }
