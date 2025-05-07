@@ -7,21 +7,19 @@
 
 #include <glad/glad.h>
 
-LineMesh::LineMesh() : bound(false), VAO(0), VBO(0), EBO(0) { }
+LineMesh::LineMesh() : EBO(0) { }
 
 LineMesh::LineMesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices)
-    : bound(false), vertices(vertices), indices(indices), VAO(0), VBO(0), EBO(0) {
-    bindBuffers();
+    : EBO(0), vertices(vertices), indices(indices) {
+    LineMesh::bindBuffers();
 }
 
 LineMesh::LineMesh(const std::vector<Vertex>& vertices)
-    : bound(false), vertices(vertices), VAO(0), VBO(0), EBO(0) {
-    bindBuffers();
+    : EBO(0), vertices(vertices) {
+    LineMesh::bindBuffers();
 }
 
 LineMesh::~LineMesh() {
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
     if(!indices.empty()) { glDeleteBuffers(1, &EBO); }
 }
 
@@ -43,10 +41,6 @@ void LineMesh::addVertex(const Vertex& vertex) {
 
 void LineMesh::addVertex(const vec3& position, const vec3& color, float thickness) {
     vertices.emplace_back(position, color, thickness);
-}
-
-void LineMesh::addIndex(uint index) {
-    indices.push_back(index);
 }
 
 void LineMesh::addLine(uint start, uint end) {

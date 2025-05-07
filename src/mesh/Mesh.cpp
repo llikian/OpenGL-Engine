@@ -7,92 +7,9 @@
 
 #include <glad/glad.h>
 
-Mesh::Mesh() : bound(false), VAO(0), VBO(0), EBO(0) { }
-
-Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices)
-    : bound(false), vertices(vertices), indices(indices), VAO(0), VBO(0), EBO(0) {
-    bindBuffers();
-}
-
-Mesh::Mesh(const std::vector<Vertex>& vertices)
-    : bound(false), vertices(vertices), VAO(0), VBO(0), EBO(0) {
-    bindBuffers();
-}
+Mesh::Mesh() : bound(false), VAO(0), VBO(0) { }
 
 Mesh::~Mesh() {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    if(!indices.empty()) { glDeleteBuffers(1, &EBO); }
-}
-
-void Mesh::draw() {
-    if(!bound) { bindBuffers(); }
-
-    glBindVertexArray(VAO);
-
-    if(indices.empty()) {
-        glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-    } else {
-        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
-    }
-}
-
-void Mesh::addVertex(const Vertex& vertex) {
-    vertices.push_back(vertex);
-}
-
-void Mesh::addVertex(const vec3& position, const vec3& normal, const vec2& texCoords) {
-    vertices.emplace_back(position, normal, texCoords);
-}
-
-void Mesh::addIndex(uint index) {
-    indices.push_back(index);
-}
-
-void Mesh::addTriangle(uint top, uint left, uint right) {
-    indices.push_back(top);
-    indices.push_back(left);
-    indices.push_back(right);
-}
-
-void Mesh::addFace(uint topL, uint bottomL, uint bottomR, uint topR) {
-    indices.push_back(topL);
-    indices.push_back(bottomL);
-    indices.push_back(bottomR);
-
-    indices.push_back(topL);
-    indices.push_back(bottomR);
-    indices.push_back(topR);
-}
-
-void Mesh::bindBuffers() {
-    /* VAO */
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    /* VBO */
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
-
-    /* Positions */
-    glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<void*>(0));
-    glEnableVertexAttribArray(0);
-
-    /* Normals */
-    glVertexAttribPointer(1, 3, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<void*>(sizeof(vec3)));
-    glEnableVertexAttribArray(1);
-
-    /* Texture Coordinates */
-    glVertexAttribPointer(2, 2, GL_FLOAT, false, sizeof(Vertex), reinterpret_cast<void*>(2 * sizeof(vec3)));
-    glEnableVertexAttribArray(2);
-
-    /* Indices & EBO */
-    if(!indices.empty()) {
-        glGenBuffers(1, &EBO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(uint), indices.data(), GL_STATIC_DRAW);
-    }
-
-    bound = true;
 }

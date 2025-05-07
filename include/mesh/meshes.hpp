@@ -6,21 +6,21 @@
 #pragma once
 
 #include "LineMesh.hpp"
-#include "Mesh.hpp"
 #include "PointMesh.hpp"
+#include "TriangleMesh.hpp"
 
 namespace Meshes {
     /**
      * @brief Creates the mesh for a cube with side of size 1 where all the faces will have the
      * same texture.
      */
-    Mesh cube();
+    TriangleMesh cube();
 
     /**
      * @brief Creates the mesh for a cube with sides of size 1 that can have different textures
      * for each face.
      */
-    Mesh texturedCube();
+    TriangleMesh texturedCube();
 
     /**
      * @brief Creates the mesh for a wireframe cube. The cube will have a side of size 1.
@@ -46,18 +46,18 @@ namespace Meshes {
      * @param divTheta
      * @param divPhi
      */
-    Mesh sphere(int divTheta, int divPhi);
+    TriangleMesh sphere(int divTheta, int divPhi);
 
     /**
      * @brief Creates the mesh for a plane with a certain size. The plane will be a cut of the XZ
      * plane and will be centered at the origin.
      * @param size The size of the plane, its dimensions will be (size ; 0 ; size).
      */
-    Mesh plane(float size);
+    TriangleMesh plane(float size);
 
     /**
      * @brief Creates the mesh for the screen. It's just a plane from (1 ; 1 ; 0) to (-1 ; -1 ; 0)
      * that can be used to render things directly on the screen.
      */
-    Mesh screen();
+    TriangleMesh screen();
 }

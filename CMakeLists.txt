@@ -24,6 +24,7 @@ set(SOURCES
         src/engine/ApplicationBase.cpp
         src/engine/Camera.cpp
         src/engine/Image.cpp
+        src/engine/Scene.cpp
         src/engine/Shader.cpp
         src/engine/Texture.cpp
         src/engine/Window.cpp
@@ -38,6 +39,7 @@ set(SOURCES
         src/mesh/LineMesh.cpp
         src/mesh/Mesh.cpp
         src/mesh/PointMesh.cpp
+        src/mesh/TriangleMesh.cpp
 
         # Other Sources
         src/maths/geometry.cpp

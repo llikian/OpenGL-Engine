@@ -7,21 +7,19 @@
 
 #include <glad/glad.h>
 
-PointMesh::PointMesh() : bound(false), VAO(0), VBO(0) { }
+PointMesh::PointMesh() { }
 
 PointMesh::PointMesh(const std::vector<Vertex>& vertices)
-    : bound(false), vertices(vertices), VAO(0), VBO(0) {
-    bindBuffers();
+    : vertices(vertices) {
+    PointMesh::bindBuffers();
 }
 
-PointMesh::~PointMesh() {
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
+void PointMesh::addVertex(const vec3& position, const vec3& color, float size) {
+    vertices.emplace_back(position, color, size);
 }
 
 void PointMesh::draw() {
     if(!bound) { bindBuffers(); }
-
     glBindVertexArray(VAO);
     glDrawArrays(GL_POINTS, 0, vertices.size());
 }
@@ -29,11 +27,6 @@ void PointMesh::draw() {
 void PointMesh::addVertex(const Vertex& vertex) {
     vertices.push_back(vertex);
 }
-
-void PointMesh::addVertex(const vec3& position, const vec3& color, float size) {
-    vertices.emplace_back(position, color, size);
-}
-
 
 void PointMesh::bindBuffers() {
     glGenVertexArrays(1, &VAO);

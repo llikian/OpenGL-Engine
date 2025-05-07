@@ -5,46 +5,24 @@
 
 #pragma once
 
-#include <vector>
-#include "engine/Shader.hpp"
-#include "maths/vec2.hpp"
-#include "maths/vec3.hpp"
+#include <sys/types.h>
 
 /**
  * @class Mesh
- * @brief Represents a triangular 3D mesh that can be created and rendererd.
+ * @brief Mother class for representing a 3D mesh that can be created and rendererd.
  */
 class Mesh {
 public:
-    struct Vertex {
-        vec3 position;
-        vec3 normal;
-        vec2 texCoords;
-    };
-
     Mesh();
-    Mesh(const std::vector<Vertex>& vertices, const std::vector<uint>& indices);
-    explicit Mesh(const std::vector<Vertex>& vertices);
-    ~Mesh();
+    virtual ~Mesh();
 
-    void draw();
+    virtual void draw() = 0;
 
-    void addVertex(const Vertex& vertex);
-    void addVertex(const vec3& position, const vec3& normal, const vec2& texCoords);
-
-    void addIndex(uint index);
-    void addTriangle(uint top, uint left, uint right);
-    void addFace(uint topL, uint bottomL, uint bottomR, uint topR);
-
-private:
-    void bindBuffers();
+protected:
+    virtual void bindBuffers() = 0;
 
     bool bound;
 
-    std::vector<Vertex> vertices;
-    std::vector<uint> indices;
-
     uint VAO;
     uint VBO;
-    uint EBO;
 };

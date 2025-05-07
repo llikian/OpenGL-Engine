@@ -7,8 +7,8 @@
 
 #include <cmath>
 
-Mesh Meshes::cube() {
-    Mesh mesh;
+TriangleMesh Meshes::cube() {
+    TriangleMesh mesh;
 
     /* Vertices' index
      *  0───1
@@ -72,8 +72,8 @@ Mesh Meshes::cube() {
     return mesh;
 }
 
-Mesh Meshes::texturedCube() {
-    Mesh mesh;
+TriangleMesh Meshes::texturedCube() {
+    TriangleMesh mesh;
 
     /* Vertices' index
      *  0───1
@@ -220,8 +220,8 @@ LineMesh Meshes::axes(float size) {
     return mesh;
 }
 
-Mesh Meshes::sphere(int divTheta, int divPhi) {
-    Mesh mesh;
+TriangleMesh Meshes::sphere(int divTheta, int divPhi) {
+    TriangleMesh mesh;
 
     const double thetaStep = M_PI / divTheta;
     const double phiStep = 2.0 * M_PI / divPhi;
@@ -260,8 +260,8 @@ Mesh Meshes::sphere(int divTheta, int divPhi) {
     return mesh;
 }
 
-Mesh Meshes::plane(float size) {
-    Mesh mesh;
+TriangleMesh Meshes::plane(float size) {
+    TriangleMesh mesh;
 
     size /= 2;
 
@@ -275,8 +275,8 @@ Mesh Meshes::plane(float size) {
     return mesh;
 }
 
-Mesh Meshes::screen() {
-    Mesh mesh;
+TriangleMesh Meshes::screen() {
+    TriangleMesh mesh;
 
     mesh.addVertex(vec3(-1.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f), vec2(-1.0f, 1.0f));
     mesh.addVertex(vec3(-1.0f, -1.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f), vec2(-1.0f, -1.0f));
