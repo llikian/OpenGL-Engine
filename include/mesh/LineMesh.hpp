@@ -18,7 +18,6 @@ public:
     struct Vertex {
         vec3 position;
         vec3 color;
-        float thickness;
     };
 
     LineMesh();
@@ -28,8 +27,10 @@ public:
 
     void draw() override;
 
+    uint getPrimitive() override;
+
     void addVertex(const Vertex& vertex);
-    void addVertex(const vec3& position, const vec3& color = vec3(1.0f), float thickness = 1.0f);
+    void addVertex(const vec3& position, const vec3& color = vec3(1.0f));
 
     void addIndex(uint index);
     void addLine(uint start, uint end);

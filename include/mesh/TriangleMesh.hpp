@@ -29,6 +29,8 @@ public:
 
     void draw() override;
 
+    uint getPrimitive() override;
+
     void addVertex(const Vertex& vertex);
     void addVertex(const vec3& position, const vec3& normal, const vec2& texCoords);
 

@@ -24,6 +24,10 @@ void PointMesh::draw() {
     glDrawArrays(GL_POINTS, 0, vertices.size());
 }
 
+uint PointMesh::getPrimitive() {
+    return GL_POINTS;
+}
+
 void PointMesh::addVertex(const Vertex& vertex) {
     vertices.push_back(vertex);
 }

@@ -17,6 +17,7 @@ public:
     virtual ~Mesh();
 
     virtual void draw() = 0;
+    virtual uint getPrimitive() = 0;
 
 protected:
     virtual void bindBuffers() = 0;

@@ -35,6 +35,10 @@ void TriangleMesh::draw() {
     }
 }
 
+uint TriangleMesh::getPrimitive() {
+    return GL_TRIANGLES;
+}
+
 void TriangleMesh::addVertex(const Vertex& vertex) {
     vertices.push_back(vertex);
 }

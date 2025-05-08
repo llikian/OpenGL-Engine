@@ -35,12 +35,16 @@ void LineMesh::draw() {
     }
 }
 
+uint LineMesh::getPrimitive() {
+    return GL_LINES;
+}
+
 void LineMesh::addVertex(const Vertex& vertex) {
     vertices.push_back(vertex);
 }
 
-void LineMesh::addVertex(const vec3& position, const vec3& color, float thickness) {
-    vertices.emplace_back(position, color, thickness);
+void LineMesh::addVertex(const vec3& position, const vec3& color) {
+    vertices.emplace_back(position, color);
 }
 
 void LineMesh::addLine(uint start, uint end) {
