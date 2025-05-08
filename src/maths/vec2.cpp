@@ -69,22 +69,6 @@ vec2& vec2::operator /=(float scalar) {
     return *this;
 }
 
-vec2 vec2::random(float min, float max) {
-    static std::random_device seed;
-    static std::default_random_engine generator(seed());
-
-    return vec2(std::uniform_real_distribution<float>(min, max)(generator),
-                std::uniform_real_distribution<float>(min, max)(generator));
-}
-
-vec2 vec2::random(const vec2& min, const vec2& max) {
-    static std::random_device seed;
-    static std::default_random_engine generator(seed());
-
-    return vec2(std::uniform_real_distribution<float>(min.x, max.x)(generator),
-                std::uniform_real_distribution<float>(min.y, max.y)(generator));
-}
-
 std::ostream& operator <<(std::ostream& stream, const vec2& vec) {
     stream << "( " << vec.x << " ; " << vec.y << " )";
     return stream;

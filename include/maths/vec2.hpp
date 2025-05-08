@@ -86,22 +86,6 @@ struct vec2 {
      */
     vec2& operator /=(float scalar);
 
-    /**
-     * @brief Creates a random vec2 with all components in the same bounds.
-     * @param min The minimum value a component can have.
-     * @param max The minimum value a component can have.
-     * @return A random vec2.
-     */
-    static vec2 random(float min, float max);
-
-    /**
-     * @brief Creates a random vec3 with specific bounds for each component.
-     * @param min The minimum value for each component.
-     * @param max The minimum value for each component.
-     * @return A random vec2.
-     */
-    static vec2 random(const vec2& min, const vec2& max);
-
     float x; ///< The x component of the vec2.
     float y; ///< The y component of the vec2.
 };
