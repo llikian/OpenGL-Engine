@@ -181,6 +181,10 @@ void Shader::getUniforms() {
     delete[] uniformName;
 }
 
+std::string Shader::getName() {
+    return name;
+}
+
 void Shader::setUniform(int location, int value) {
     glUniform1i(location, value);
 }

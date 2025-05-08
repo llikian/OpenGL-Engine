@@ -63,6 +63,12 @@ public:
     void getUniforms();
 
     /**
+     * @brief Getter for the name of the shader.
+     * @return The name of the shader.
+     */
+    std::string getName();
+
+    /**
      * @brief Sets the value of a uniform of any of the available types.
      * @param uniform The uniform's name.
      * @param value The new value of the uniform.
