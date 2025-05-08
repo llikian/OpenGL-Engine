@@ -25,13 +25,13 @@ void Scene::draw() {
     }
 }
 
-Element& Scene::add(const std::string& shaderName, const std::string& meshName, const mat4& model) {
+uint Scene::add(const std::string& shaderName, const std::string& meshName, const mat4& model) {
     elements.emplace_back(shaders.at(shaderName), meshes.at(meshName), model, true);
-    return elements.back();
+    return elements.size() - 1;
 }
 
-void Scene::add(const std::string& name, std::shared_ptr<Shader> shader) {
-    shaders.emplace(name, shader);
+void Scene::add(std::shared_ptr<Shader> shader) {
+    shaders.emplace(shader->getName(), shader);
 }
 
 void Scene::add(const std::string& name, std::shared_ptr<Mesh> mesh) {
@@ -44,4 +44,8 @@ std::shared_ptr<Shader> Scene::getShader(const std::string& name) {
 
 std::shared_ptr<Mesh> Scene::getMesh(const std::string& name) {
     return meshes.at(std::string(name));
+}
+
+Element& Scene::getElement(uint index) {
+    return elements.at(index);
 }

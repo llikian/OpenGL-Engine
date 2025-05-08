@@ -25,12 +25,13 @@ public:
 
     void draw();
 
-    Element& add(const std::string& shaderName, const std::string& meshName, const mat4& model);
-    void add(const std::string& name, std::shared_ptr<Shader> shader);
+    uint add(const std::string& shaderName, const std::string& meshName, const mat4& model);
+    void add(std::shared_ptr<Shader> shader);
     void add(const std::string& name, std::shared_ptr<Mesh> mesh);
 
     std::shared_ptr<Shader> getShader(const std::string& name);
     std::shared_ptr<Mesh> getMesh(const std::string& name);
+    Element& getElement(uint index);
 
 private:
     const Camera& camera;
