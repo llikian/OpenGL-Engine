@@ -44,6 +44,7 @@ Window::Window(const std::string& name, void* windowUserPointer)
     glViewport(0, 0, width, height);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
+    glEnable(GL_PROGRAM_POINT_SIZE);
     glActiveTexture(GL_TEXTURE0);
 
     // Sets the default texture to a plain white color
