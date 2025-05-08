@@ -41,6 +41,8 @@ set(SOURCES
         src/mesh/PointMesh.cpp
         src/mesh/TriangleMesh.cpp
 
+        src/utility/Random.cpp
+
         # Other Sources
         src/maths/geometry.cpp
         src/maths/transforms.cpp

@@ -13,6 +13,7 @@
 #include "maths/trigonometry.hpp"
 #include "mesh/Mesh.hpp"
 #include "mesh/meshes.hpp"
+#include "utility/Random.hpp"
 
 Application::Application()
     : ApplicationBase("OpenGL Engine"),
@@ -36,11 +37,18 @@ Application::~Application() { }
 void Application::run() {
     Scene scene(camera, projection);
 
-    std::string paths[2]{ "shaders/default.vert", "shaders/default.frag" };
-    scene.add("default", std::make_shared<Shader>(paths, 2, "default"));
-    paths[0] = "shaders/line_mesh.vert";
-    paths[1] = "shaders/line_mesh.frag";
-    scene.add("line mesh", std::make_shared<Shader>(paths, 2, "line mesh"));
+    /* Shaders */ {
+        std::string paths[2]{ "shaders/default.vert", "shaders/default.frag" };
+        scene.add(std::make_shared<Shader>(paths, 2, "default"));
+
+        paths[0] = "shaders/line_mesh.vert";
+        paths[1] = "shaders/line_mesh.frag";
+        scene.add(std::make_shared<Shader>(paths, 2, "line mesh"));
+
+        paths[0] = "shaders/point_mesh.vert";
+        paths[1] = "shaders/point_mesh.frag";
+        scene.add(std::make_shared<Shader>(paths, 2, "point mesh"));
+    }
 
     scene.add("grid", std::make_shared<LineMesh>(Meshes::grid(10.0f, 10)));
     scene.add("sphere", std::make_shared<TriangleMesh>(Meshes::sphere(16, 32)));
@@ -48,7 +56,19 @@ void Application::run() {
 
     scene.add("default", "grid", mat4(1.0f));
     scene.add("default", "sphere", mat4(1.0f));
-    Element& axes = scene.add("line mesh", "axes", mat4(1.0f));
+    uint axesIndex = scene.add("line mesh", "axes", mat4(1.0f));
+
+    /* Point Cloud */ {
+        std::shared_ptr<PointMesh> pointCloud = std::make_shared<PointMesh>();
+        for(uint i = 0 ; i < 100 ; ++i) {
+            pointCloud->addVertex(Random::Vec3(-10.0f, 10.0f), Random::Vec3(0.0f, 1.0f), Random::Float(1.0f, 10.0f));
+        }
+
+        scene.add("point cloud", pointCloud);
+        scene.add("point mesh", "point cloud", mat4(1.0f));
+    }
+
+    Element& axes = scene.getElement(axesIndex);
 
     /* ---- Main Loop ---- */
     while(!glfwWindowShouldClose(window)) {
@@ -58,9 +78,7 @@ void Application::run() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         axes.isActive = areAxesDrawn;
-        if(areAxesDrawn) {
-            axes.model = translate(camera.getPosition() + 2.0f * camera.getDirection()).scale(0.5f);
-        }
+        if(areAxesDrawn) { axes.model = translate(camera.getPosition() + 2.0f * camera.getDirection()).scale(0.5f); }
 
         scene.draw();
 
