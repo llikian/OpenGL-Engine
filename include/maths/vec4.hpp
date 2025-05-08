@@ -88,6 +88,22 @@ struct vec4 {
      */
     vec4& operator /=(float scalar);
 
+    /**
+     * @brief Creates a random vec4 with all components in the same bounds.
+     * @param min The minimum value a component can have.
+     * @param max The minimum value a component can have.
+     * @return A random vec4.
+     */
+    static vec4 random(float min, float max);
+
+    /**
+     * @brief Creates a random vec3 with specific bounds for each component.
+     * @param min The minimum value for each component.
+     * @param max The minimum value for each component.
+     * @return A random vec4.
+     */
+    static vec4 random(const vec4& min, const vec4& max);
+
     float x; ///< The x component of the vec4.
     float y; ///< The y component of the vec4.
     float z; ///< The z component of the vec4.

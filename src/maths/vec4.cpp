@@ -5,6 +5,8 @@
 
 #include "maths/vec4.hpp"
 
+#include <random>
+
 vec4::vec4() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) { }
 
 vec4::vec4(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) { }
@@ -81,6 +83,26 @@ vec4& vec4::operator /=(float scalar) {
     w /= scalar;
 
     return *this;
+}
+
+vec4 vec4::random(float min, float max) {
+    static std::random_device seed;
+    static std::default_random_engine generator(seed());
+
+    return vec4(std::uniform_real_distribution<float>(min, max)(generator),
+                std::uniform_real_distribution<float>(min, max)(generator),
+                std::uniform_real_distribution<float>(min, max)(generator),
+                std::uniform_real_distribution<float>(min, max)(generator));
+}
+
+vec4 vec4::random(const vec4& min, const vec4& max) {
+    static std::random_device seed;
+    static std::default_random_engine generator(seed());
+
+    return vec4(std::uniform_real_distribution<float>(min.x, max.x)(generator),
+                std::uniform_real_distribution<float>(min.y, max.y)(generator),
+                std::uniform_real_distribution<float>(min.z, max.z)(generator),
+                std::uniform_real_distribution<float>(min.w, max.w)(generator));
 }
 
 std::ostream& operator <<(std::ostream& stream, const vec4& vec) {
