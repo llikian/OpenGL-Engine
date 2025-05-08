@@ -36,7 +36,7 @@ public:
     /**
      * @brief Contains the main loop.
      */
-    void run();
+    void run() override;
 
     /* ---- Callbacks ----*/
 
@@ -65,59 +65,11 @@ private:
      */
     void handleKeyEvent(int key) override;
 
-    /**
-     * @brief Initializes all the uniforms to their correct default values.
-     */
-    void initUniforms();
-
-    /**
-     * @brief Updates all the uniforms.
-     */
-    void updateUniforms();
-
-    /**
-     * @brief Calculates the MVP (Matrix-View-Projection) Matrix and sends it to the shader.
-     * @param model The new value of the model matrix. It is a product of translation, scale
-     * and rotation matrices used to apply transforms on the scene's objects.
-     */
-    void calculateMVP(const mat4& model) const;
-
-    /**
-     * @brief Binds a texture to a specific texture unit.
-     * @param texture The texture to bind.
-     * @param texUnit The texture unit to bind to.
-     */
-    static void bindTexture(const Texture& texture, unsigned int texUnit);
-
-    /**
-     * @brief Binds a texture class to a specific texture unit.
-     * @param textureID The texture's id.
-     * @param texUnit The texture unit to bind to.
-     */
-    static void bindTexture(unsigned int textureID, unsigned int texUnit);
-
-    /**
-     * @brief Binds a texture to the active texture unit.
-     * @param texture The texture to bind.
-     */
-    static void bindTexture(const Texture& texture);
-
-    /**
-     * @brief Binds a texture to the active texture unit.
-     * @param textureID The texture's id.
-     */
-    static void bindTexture(unsigned int textureID);
-
     /* ---- Variables & Constants ---- */
-    bool wireframe;         ///< Whether to display in wireframe mode.
-    bool cullface;          ///< Whether face culling is activated.
-    bool cursorVisible;     ///< Whether the cursor is currently visible.
-    bool areAxesDrawn;      ///< Whether the axes are drawn.
-    bool isGridDrawn;       ///< Whether the grid is drawn.
-    bool isGroundDrawn;     ///< Whether the ground is drawn.
-    bool hasGlobalLighting; ///< Whether the scene has global lighting.
-
-    Shader* shader; ///< The default shader program.
+    bool wireframe;     ///< Whether to display in wireframe mode.
+    bool cullface;      ///< Whether face culling is activated.
+    bool cursorVisible; ///< Whether the cursor is currently visible.
+    bool areAxesDrawn;  ///< Whether the axes are drawn.
 
     mat4 projection; ///< The projection matrix.
 

@@ -16,10 +16,7 @@
 
 Application::Application()
     : ApplicationBase("OpenGL Engine"),
-      wireframe(false), cullface(true), cursorVisible(false),
-      areAxesDrawn(false), isGridDrawn(false), isGroundDrawn(true),
-      hasGlobalLighting(false),
-      shader(nullptr),
+      wireframe(false), cullface(true), cursorVisible(false), areAxesDrawn(false),
       projection(perspective(M_PI_4f, window.getRatio(), 0.1f, 100.0f)),
       camera(vec3(0.0f, 2.0f, 5.0f)) {
     /* ---- Repeatable Keys ---- */
@@ -32,31 +29,26 @@ Application::Application()
 
     /* ---- GLFW Callbacks ---- */
     setCallbacks<Application>(window, true, true, true, false, true, false);
-
-    /* ---- Shaders ---- */
-    std::string paths[2]{ "shaders/application/default.vert", "shaders/application/default.frag" };
-    shader = new Shader(paths, 2, "Default");
-    initUniforms();
 }
 
-Application::~Application() {
-    delete shader;
-}
+Application::~Application() { }
 
 void Application::run() {
-    auto grid = std::make_shared<LineMesh>(Meshes::grid(10.0f, 10));
-    auto axes = std::make_shared<LineMesh>(Meshes::axes(1.0f));
-    auto sphere = std::make_shared<TriangleMesh>(Meshes::sphere(16, 32));
-
     Scene scene(camera, projection);
-    std::string paths[2]{ "shaders/application/default.vert", "shaders/application/default.frag" };
-    scene.shaders.emplace_back(paths, 2, "default");
 
-    scene.add(scene.shaders[0], grid, mat4(1.0f));
-    for(int i = -4 ; i <= 4 ; ++i) {
-        scene.add(scene.shaders[0], sphere, translate(i, std::abs(i), 0).scale(0.5f));
-        scene.add(scene.shaders[0], sphere, translate(i, 9 - std::abs(i), 0).scale(0.5f));
-    }
+    std::string paths[2]{ "shaders/default.vert", "shaders/default.frag" };
+    scene.add("default", std::make_shared<Shader>(paths, 2, "default"));
+    paths[0] = "shaders/line_mesh.vert";
+    paths[1] = "shaders/line_mesh.frag";
+    scene.add("line mesh", std::make_shared<Shader>(paths, 2, "line mesh"));
+
+    scene.add("grid", std::make_shared<LineMesh>(Meshes::grid(10.0f, 10)));
+    scene.add("sphere", std::make_shared<TriangleMesh>(Meshes::sphere(16, 32)));
+    scene.add("axes", std::make_shared<LineMesh>(Meshes::axes(1.0f)));
+
+    scene.add("default", "grid", mat4(1.0f));
+    scene.add("default", "sphere", mat4(1.0f));
+    Element& axes = scene.add("line mesh", "axes", mat4(1.0f));
 
     /* ---- Main Loop ---- */
     while(!glfwWindowShouldClose(window)) {
@@ -65,20 +57,10 @@ void Application::run() {
         glClearColor(0.1, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // shader->use();
-        // updateUniforms();
-        // calculateMVP(mat4(1.0f));
-        // bindTexture(0);
-        //
-        // if(isGridDrawn) { grid.draw(); }
-        //
-        // if(areAxesDrawn) {
-        //     calculateMVP(translate(camera.getPosition() + 2.0f * camera.getDirection()) * scale(0.5f));
-        //     axes.draw();
-        // }
-        //
-        // calculateMVP(mat4(1.0f));
-        // sphere.draw();
+        axes.isActive = areAxesDrawn;
+        if(areAxesDrawn) {
+            axes.model = translate(camera.getPosition() + 2.0f * camera.getDirection()).scale(0.5f);
+        }
 
         scene.draw();
 
@@ -118,16 +100,6 @@ void Application::handleKeyEvent(int key) {
         case GLFW_KEY_Q:
             areAxesDrawn = !areAxesDrawn;
             break;
-        case GLFW_KEY_G:
-            isGridDrawn = !isGridDrawn;
-            break;
-        case GLFW_KEY_H:
-            isGroundDrawn = !isGroundDrawn;
-            break;
-        case GLFW_KEY_J:
-            hasGlobalLighting = !hasGlobalLighting;
-            shader->setUniform("globalLighting", hasGlobalLighting);
-            break;
         case GLFW_KEY_W:
             camera.move(CameraControls::forward, delta);
             break;
@@ -148,35 +120,4 @@ void Application::handleKeyEvent(int key) {
             break;
         default: break;
     }
-}
-
-void Application::initUniforms() {
-    shader->use();
-}
-
-void Application::updateUniforms() {
-    shader->setUniform("cameraPos", camera.getPosition());
-}
-
-void Application::calculateMVP(const mat4& model) const {
-    shader->setUniform("mvp", camera.getVPmatrix(projection) * model);
-    shader->setUniform("model", model);
-    shader->setUniform("normalModel", transposeInverse(model));
-}
-
-void Application::bindTexture(const Texture& texture, unsigned int texUnit) {
-    texture.bind(texUnit);
-}
-
-void Application::bindTexture(unsigned int textureID, unsigned int texUnit) {
-    glActiveTexture(GL_TEXTURE0 + texUnit);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-}
-
-void Application::bindTexture(const Texture& texture) {
-    texture.bind();
-}
-
-void Application::bindTexture(unsigned int textureID) {
-    glBindTexture(GL_TEXTURE_2D, textureID);
 }
