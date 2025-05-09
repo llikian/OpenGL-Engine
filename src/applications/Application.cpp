@@ -66,7 +66,10 @@ void Application::run() {
     scene.add("axes", std::make_shared<LineMesh>(Meshes::axes(1.0f)));
 
     scene.add("line mesh", "grid", mat4(1.0f));
-    scene.add("default", "sphere", mat4(1.0f));
+
+    float y = 0.0f;
+    float r = 1.0f;
+    for(uint i = 0 ; i < 10 ; ++i) { scene.add("default", "sphere", translateY(y += r).scale(r *= 0.75f)); }
     uint axesIndex = scene.add("line mesh", "axes", mat4(1.0f));
 
     /* Point Cloud */ {
