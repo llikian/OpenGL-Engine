@@ -58,6 +58,7 @@ set(SOURCES
         lib/imgui/imgui_widgets.cpp
         lib/imgui/backends/imgui_impl_glfw.cpp
         lib/imgui/backends/imgui_impl_opengl3.cpp
+        lib/imgui/misc/cpp/imgui_stdlib.cpp
 
         lib/stb/stb_image.cpp
 )

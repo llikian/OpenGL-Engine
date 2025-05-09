@@ -13,8 +13,8 @@
 #include "mesh/Mesh.hpp"
 
 struct Element {
-    std::shared_ptr<Shader> shader;
-    std::shared_ptr<Mesh> mesh;
+    std::string shader;
+    std::string mesh;
     mat4 model;
     bool isActive;
 };

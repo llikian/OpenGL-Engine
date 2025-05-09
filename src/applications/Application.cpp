@@ -65,7 +65,7 @@ void Application::run() {
     scene.add("sphere", std::make_shared<TriangleMesh>(Meshes::sphere(16, 32)));
     scene.add("axes", std::make_shared<LineMesh>(Meshes::axes(1.0f)));
 
-    scene.add("default", "grid", mat4(1.0f));
+    scene.add("line mesh", "grid", mat4(1.0f));
     scene.add("default", "sphere", mat4(1.0f));
     uint axesIndex = scene.add("line mesh", "axes", mat4(1.0f));
 
@@ -92,18 +92,21 @@ void Application::run() {
         glClearColor(0.1, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        /* ImGui */ {
+            ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoCollapse
+                                           | ImGuiWindowFlags_NoResize
+                                           | ImGuiWindowFlags_NoMove);
+
+            ImGui::SetWindowPos("Scene", ImVec2(0.0f, 0.0f));
+            ImGui::SetWindowSize("Scene", ImVec2(0.2f * window.getWidth(), window.getHeight()));
+
+            ImGui::End();
+        }
+
         axes.isActive = areAxesDrawn;
         if(areAxesDrawn) { axes.model = translate(camera.getPosition() + 2.0f * camera.getDirection()).scale(0.5f); }
 
         scene.draw();
-
-        /* ImGui */ {
-            ImGui::Begin("Tests");
-
-            ImGui::Text("Hi ! x)");
-
-            ImGui::End();
-        }
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
