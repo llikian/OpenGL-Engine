@@ -11,13 +11,13 @@
 Window::Window(const std::string& name, void* windowUserPointer)
     : window(nullptr) {
     /* ---- GLFW ---- */
-    if(!glfwInit()) {
-        throw std::runtime_error("Failed to initialize GLFW.");
-    }
-
     glfwSetErrorCallback([](int code, const char* message) {
         std::cerr << "GLFW Error '" << code << "' : " << message << '\n';
     });
+
+    if(!glfwInit()) {
+        throw std::runtime_error("Failed to initialize GLFW.");
+    }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
