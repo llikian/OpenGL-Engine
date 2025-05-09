@@ -23,7 +23,7 @@ Window::Window(const std::string& name, void* windowUserPointer)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(1, 1, name.c_str(), nullptr, nullptr);
+    window = glfwCreateWindow(800, 450, name.c_str(), nullptr, nullptr);
     if(!window) {
         throw std::runtime_error("Failed to create window.");
     }
