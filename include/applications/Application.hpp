@@ -13,6 +13,10 @@
 #include "engine/Texture.hpp"
 #include "maths/mat4.hpp"
 
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 /**
  * @class Application
  * @brief An Application used to test functionalities.

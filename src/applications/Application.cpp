@@ -30,9 +30,20 @@ Application::Application()
 
     /* ---- GLFW Callbacks ---- */
     setCallbacks<Application>(window, true, true, true, false, true, false);
+
+    /* ---- ImGui ---- */
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init();
 }
 
-Application::~Application() { }
+Application::~Application() {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+}
 
 void Application::run() {
     Scene scene(camera, projection);
@@ -74,6 +85,10 @@ void Application::run() {
     while(!glfwWindowShouldClose(window)) {
         handleEvents();
 
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
         glClearColor(0.1, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -82,6 +97,16 @@ void Application::run() {
 
         scene.draw();
 
+        /* ImGui */ {
+            ImGui::Begin("Tests");
+
+            ImGui::Text("Hi ! x)");
+
+            ImGui::End();
+        }
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
     }
 }
