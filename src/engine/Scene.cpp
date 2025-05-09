@@ -65,17 +65,20 @@ void Scene::draw() {
             mesh->draw();
         }
 
+        ImGui::PushID(i);
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
-        ImGui::Text("%02d", i++);
+        ImGui::Text("%02d", ++i);
         ImGui::TableNextColumn();
         ImGui::Text("%s", shaderName.c_str());
         ImGui::TableNextColumn();
         ImGui::Text("%s", meshName.c_str());
         ImGui::TableNextColumn();
-        ImGui::Text(isActive ? "active" : "inactive");
+        ImGui::Checkbox("Is Active", &isActive);
+        ImGui::PopID();
     }
     ImGui::EndTable();
+
     ImGui::End();
 }
 
