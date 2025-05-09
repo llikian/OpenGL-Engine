@@ -181,7 +181,11 @@ void Shader::getUniforms() {
     delete[] uniformName;
 }
 
-std::string Shader::getName() {
+uint Shader::getID() const {
+    return id;
+}
+
+std::string Shader::getName() const {
     return name;
 }
 

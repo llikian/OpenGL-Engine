@@ -22,7 +22,6 @@
  */
 class Shader {
 public:
-
     /**
      * @brief Creates a shader program and compiles then attaches the shaders at the specified paths
      * to it.
@@ -63,21 +62,26 @@ public:
     void getUniforms();
 
     /**
+     * @brief Getter for the id of the shader.
+     * @return The id of the shader.
+     */
+    uint getID() const;
+
+    /**
      * @brief Getter for the name of the shader.
      * @return The name of the shader.
      */
-    std::string getName();
+    std::string getName() const;
 
     /**
      * @brief Sets the value of a uniform of any of the available types.
      * @param uniform The uniform's name.
      * @param value The new value of the uniform.
      */
-    template<typename... Value>
+    template <typename... Value>
     void setUniform(const std::string& uniform, Value... value);
 
 private:
-
     /**
      * @brief Sets the value of a uniform of type int.
      * @param location The uniform's location.
@@ -195,9 +199,9 @@ private:
      */
     static void setUniform(int location, const mat4& matrix);
 
-    unsigned int id; ///< The shader program's id.
-    std::string name; ///< The shader's name.
-    std::unordered_map<std::string, int> uniforms; ///< Stores uniforms id's.
+    uint id;                                               ///< The shader program's id.
+    std::string name;                                      ///< The shader's name.
+    std::unordered_map<std::string, int> uniforms;         ///< Stores uniforms id's.
     std::unordered_map<std::string, bool> unknownUniforms; ///< Stores unknown uniforms.
 };
 
