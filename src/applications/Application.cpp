@@ -48,29 +48,43 @@ Application::~Application() {
 void Application::run() {
     Scene scene(camera, projection);
 
+    std::shared_ptr<Shader> spotlightShader;
+    std::shared_ptr<Shader> flatShader;
+
     /* Shaders */ {
-        std::string paths[2]{ "shaders/default.vert", "shaders/default.frag" };
+        std::string paths[2]{ "shaders/vertex/pos_normal_tex.vert", "shaders/fragment/default.frag" };
         scene.add(std::make_shared<Shader>(paths, 2, "default"));
 
-        paths[0] = "shaders/line_mesh.vert";
-        paths[1] = "shaders/line_mesh.frag";
+        paths[0] = "shaders/line_mesh/line_mesh.vert";
+        paths[1] = "shaders/line_mesh/line_mesh.frag";
         scene.add(std::make_shared<Shader>(paths, 2, "line mesh"));
 
-        paths[0] = "shaders/point_mesh.vert";
-        paths[1] = "shaders/point_mesh.frag";
+        paths[0] = "shaders/point_mesh/point_mesh.vert";
+        paths[1] = "shaders/point_mesh/point_mesh.frag";
         scene.add(std::make_shared<Shader>(paths, 2, "point mesh"));
+
+        paths[0] = "shaders/vertex/pos_normal_tex.vert";
+        paths[1] = "shaders/fragment/spotlight.frag";
+        spotlightShader = std::make_shared<Shader>(paths, 2, "spotlight");
+        scene.add(spotlightShader);
+
+        paths[0] = "shaders/vertex/pos.vert";
+        paths[1] = "shaders/fragment/flat.frag";
+        flatShader = std::make_shared<Shader>(paths, 2, "flat");
+        scene.add(flatShader);
     }
 
     scene.add("grid", std::make_shared<LineMesh>(Meshes::grid(10.0f, 10)));
     scene.add("sphere", std::make_shared<TriangleMesh>(Meshes::sphere(16, 32)));
     scene.add("axes", std::make_shared<LineMesh>(Meshes::axes(1.0f)));
+    scene.add("plane", std::make_shared<TriangleMesh>(Meshes::plane(10.0f)));
 
-    scene.add("line mesh", "grid", mat4(1.0f));
+    // scene.add("line mesh", "grid", mat4(1.0f));
+    uint axesIndex = scene.add("line mesh", "axes", mat4(1.0f));
 
     float y = 0.0f;
     float r = 1.0f;
-    for(uint i = 0 ; i < 10 ; ++i) { scene.add("default", "sphere", translateY(y += r).scale(r *= 0.75f)); }
-    uint axesIndex = scene.add("line mesh", "axes", mat4(1.0f));
+    for(uint i = 0 ; i < 10 ; ++i) { scene.add("spotlight", "sphere", translateY(y += r).scale(r *= 0.75f)); }
 
     /* Point Cloud */ {
         std::shared_ptr<PointMesh> pointCloud = std::make_shared<PointMesh>();
@@ -81,6 +95,24 @@ void Application::run() {
         scene.add("point cloud", pointCloud);
         scene.add("point mesh", "point cloud", mat4(1.0f));
     }
+
+    scene.add("spotlight", "plane", mat4(1.0f));
+
+    /* Spotlight */ {
+        vec3 pos(0.0f, 5.0f, 0.0f);
+        scene.add("flat", "sphere", translate(pos).scale(0.1f));
+        spotlightShader->use();
+        spotlightShader->setUniform("spotlight.position", pos);
+        spotlightShader->setUniform("spotlight.direction", vec3(0.0f, -1.0f, 0.0f));
+        spotlightShader->setUniform("spotlight.umbra", std::cos(radians(45.0f)));
+        spotlightShader->setUniform("spotlight.penumbra", std::cos(radians(30.0f)));
+
+        vec3 color(Random::Vec3(0.0f, 1.0f));
+        spotlightShader->setUniform("spotlight.color", color);
+        flatShader->use();
+        flatShader->setUniform("color", color);
+    }
+
 
     Element& axes = scene.getElement(axesIndex);
 
@@ -105,6 +137,14 @@ void Application::run() {
 
             ImGui::End();
         }
+
+        spotlightShader->use();
+        float min = 0.2f;
+        float t = (std::cos(0.5f * time) + 1.0f) / 2.0f;
+        // spotlightShader->setUniform("spotlight.penumbra", std::cos(radians(45.0f * (min + t * (1.0f - min)))));
+
+        spotlightShader->setUniform("spotlight.umbra", std::cos(radians(45.0f * (t + 1.0f))));
+        spotlightShader->setUniform("spotlight.penumbra", 1.0f);
 
         axes.isActive = areAxesDrawn;
         if(areAxesDrawn) { axes.model = translate(camera.getPosition() + 2.0f * camera.getDirection()).scale(0.5f); }
