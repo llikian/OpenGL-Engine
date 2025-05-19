@@ -10,33 +10,41 @@
 #include "maths/trigonometry.hpp"
 
 mat4::mat4()
-    : values{{0.0f, 0.0f, 0.0f, 0.0f},
-             {0.0f, 0.0f, 0.0f, 0.0f},
-             {0.0f, 0.0f, 0.0f, 0.0f},
-             {0.0f, 0.0f, 0.0f, 0.0f}} { }
+    : values{
+        { 0.0f, 0.0f, 0.0f, 0.0f },
+        { 0.0f, 0.0f, 0.0f, 0.0f },
+        { 0.0f, 0.0f, 0.0f, 0.0f },
+        { 0.0f, 0.0f, 0.0f, 0.0f }
+    } { }
 
 mat4::mat4(float v00, float v01, float v02, float v03,
            float v10, float v11, float v12, float v13,
            float v20, float v21, float v22, float v23,
            float v30, float v31, float v32, float v33)
-    : values{{v00, v10, v20, v30},
-             {v01, v11, v21, v31},
-             {v02, v12, v22, v32},
-             {v03, v13, v23, v33}} { }
+    : values{
+        { v00, v10, v20, v30 },
+        { v01, v11, v21, v31 },
+        { v02, v12, v22, v32 },
+        { v03, v13, v23, v33 }
+    } { }
 
 mat4::mat4(float v00, float v01, float v02,
            float v10, float v11, float v12,
            float v20, float v21, float v22)
-    : values{{v00,  v10,  v20,  0.0f},
-             {v01,  v11,  v21,  0.0f},
-             {v02,  v12,  v22,  0.0f},
-             {0.0f, 0.0f, 0.0f, 1.0f}} { }
+    : values{
+        { v00, v10, v20, 0.0f },
+        { v01, v11, v21, 0.0f },
+        { v02, v12, v22, 0.0f },
+        { 0.0f, 0.0f, 0.0f, 1.0f }
+    } { }
 
 mat4::mat4(float scalar)
-    : values{{scalar, 0.0f,   0.0f,   0.0f},
-             {0.0f,   scalar, 0.0f,   0.0f},
-             {0.0f,   0.0f,   scalar, 0.0f},
-             {0.0f,   0.0f,   0.0f,   scalar}} { }
+    : values{
+        { scalar, 0.0f, 0.0f, 0.0f },
+        { 0.0f, scalar, 0.0f, 0.0f },
+        { 0.0f, 0.0f, scalar, 0.0f },
+        { 0.0f, 0.0f, 0.0f, scalar }
+    } { }
 
 float& mat4::operator ()(int row, int column) {
     return values[column][row];
@@ -145,51 +153,13 @@ mat4& mat4::translateZ(float scalar) {
     return *this;
 }
 
-mat4& mat4::rotate(float angle, const vec3& axis) {
-    angle = radians(angle);
-
-    float cosine = cosf(angle);
-    float sine = sinf(angle);
-
-    vec3 nAxis = axis;
-    if(nAxis != vec3(0.0f, 0.0f, 0.0f)) {
-        nAxis = normalize(axis);
-    }
-
-    vec3 temp = (1.0f - cosine) * nAxis;
-
-    float upperLeft3x3[3][3]{
-        {values[0][0], values[0][1], values[0][2]},
-        {values[1][0], values[1][1], values[1][2]},
-        {values[2][0], values[2][1], values[2][2]}
-    };
-
-    float rotation[3][3]{
-        {cosine + temp.x * nAxis.x,         temp.x * nAxis.y + sine * nAxis.z, temp.x * nAxis.z - sine * nAxis.y},
-        {temp.y * nAxis.x - sine * nAxis.z, cosine + temp.y * nAxis.y,         temp.y * nAxis.z + sine * nAxis.x},
-        {temp.x * nAxis.x + sine * nAxis.y, temp.x * nAxis.y - sine * nAxis.x, cosine + temp.x * nAxis.z}
-    };
-
-    for(int i = 0 ; i < 3 ; ++i) {
-        for(int j = 0 ; j < 3 ; ++j) {
-            values[j][i] = 0.0f;
-
-            for(int k = 0 ; k < 3 ; ++k) {
-                values[j][i] += upperLeft3x3[k][i] * rotation[j][k];
-            }
-        }
-    }
-
-    return *this;
-}
-
 mat4& mat4::rotateX(float angle) {
     angle = radians(angle);
 
     const float cosine = cosf(angle);
     const float sine = sinf(angle);
 
-    float column[4]{values[1][0], values[1][1], values[1][2], values[1][3]};
+    float column[4]{ values[1][0], values[1][1], values[1][2], values[1][3] };
 
     values[1][0] = cosine * column[0] + sine * values[2][0];
     values[1][1] = cosine * column[1] + sine * values[2][1];
@@ -210,7 +180,7 @@ mat4& mat4::rotateY(float angle) {
     const float cosine = cosf(angle);
     const float sine = sinf(angle);
 
-    float column[4]{values[0][0], values[0][1], values[0][2], values[0][3]};
+    float column[4]{ values[0][0], values[0][1], values[0][2], values[0][3] };
 
     values[0][0] = cosine * column[0] - sine * values[2][0];
     values[0][1] = cosine * column[1] - sine * values[2][1];
@@ -231,7 +201,7 @@ mat4& mat4::rotateZ(float angle) {
     const float cosine = cosf(angle);
     const float sine = sinf(angle);
 
-    float column[4]{values[0][0], values[0][1], values[0][2], values[0][3]};
+    float column[4]{ values[0][0], values[0][1], values[0][2], values[0][3] };
 
     values[0][0] = cosine * column[0] + sine * values[1][0];
     values[0][1] = cosine * column[1] + sine * values[1][1];

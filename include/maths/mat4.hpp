@@ -147,14 +147,6 @@ public:
     mat4& translateZ(float scalar);
 
     /**
-     * @brief Applies a transform that rotates around an axis by a certain angle.
-     * @param angle The rotation angle in degrees.
-     * @param axis The rotation axis.
-     * @return A reference to the matrix.
-     */
-    mat4& rotate(float angle, const vec3& axis);
-
-    /**
      * @brief Applies a transform that rotates around the x axis by a certain angle.
      * @param angle The rotation angle in degrees.
      * @return A reference to the matrix.

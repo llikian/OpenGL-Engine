@@ -96,7 +96,7 @@ mat4 translateZ(float scalar);
  * @param axis The rotation axis.
  * @return The rotation matrix.
  */
-mat4 rotate(float angle, const vec3& axis);
+mat4 rotate(float angle, vec3 axis);
 
 /**
  * @brief Calculates the rotation matrix that rotates around the x axis by a certain angle.

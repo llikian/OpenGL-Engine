@@ -25,7 +25,6 @@ mat4 scale(float x, float y, float z) {
     );
 }
 
-
 mat4 scale(const vec3& factors) {
     return mat4(
         factors.x, 0.0f, 0.0f,
@@ -93,23 +92,18 @@ mat4 translateZ(float scalar) {
                 0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-mat4 rotate(float angle, const vec3& axis) {
+mat4 rotate(float angle, vec3 axis) {
     angle = radians(angle);
-
     float cosine = cosf(angle);
     float sine = sinf(angle);
 
-    vec3 nAxis = axis;
-    if(nAxis != vec3(0.0f, 0.0f, 0.0f)) {
-        nAxis = normalize(axis);
-    }
-
-    vec3 temp = (1.0f - cosine) * nAxis;
+    if(float len = length(axis) ; len != 0.0f) { axis /= len; }
+    vec3 temp = (1.0f - cosine) * axis;
 
     return mat4(
-        cosine + temp.x * nAxis.x, temp.x * nAxis.y + sine * nAxis.z, temp.x * nAxis.z - sine * nAxis.y,
-        temp.y * nAxis.x - sine * nAxis.z, cosine + temp.y * nAxis.y, temp.y * nAxis.z + sine * nAxis.x,
-        temp.x * nAxis.x + sine * nAxis.y, temp.x * nAxis.y - sine * nAxis.x, cosine + temp.x * nAxis.z
+        axis.x * temp.x + cosine, axis.x * temp.y - axis.z * sine, axis.x * temp.z + axis.y * sine,
+        axis.y * temp.x + axis.z * sine, axis.y * temp.y + cosine, axis.y * temp.z - axis.x * sine,
+        axis.z * temp.x - axis.y * sine, axis.z * temp.y + axis.x * sine, axis.z * temp.z + cosine
     );
 }
 
