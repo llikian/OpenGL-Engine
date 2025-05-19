@@ -63,7 +63,7 @@ void Application::run() {
         paths[1] = "shaders/point_mesh/point_mesh.frag";
         scene.add(std::make_shared<Shader>(paths, 2, "point mesh"));
 
-        paths[0] = "shaders/vertex/pos_normal_tex.vert";
+        paths[0] = "shaders/vertex/pos_normal.vert";
         paths[1] = "shaders/fragment/spotlight.frag";
         spotlightShader = std::make_shared<Shader>(paths, 2, "spotlight");
         scene.add(spotlightShader);
@@ -77,14 +77,15 @@ void Application::run() {
     scene.add("grid", std::make_shared<LineMesh>(Meshes::grid(10.0f, 10)));
     scene.add("sphere", std::make_shared<TriangleMesh>(Meshes::sphere(16, 32)));
     scene.add("axes", std::make_shared<LineMesh>(Meshes::axes(1.0f)));
-    scene.add("plane", std::make_shared<TriangleMesh>(Meshes::plane(10.0f)));
+    scene.add("plane", std::make_shared<TriangleMesh>(Meshes::plane(100.0f)));
+    scene.add("pyramid", std::make_shared<TriangleMesh>(Meshes::pyramid(vec3(1.0f))));
 
     // scene.add("line mesh", "grid", mat4(1.0f));
     uint axesIndex = scene.add("line mesh", "axes", mat4(1.0f));
 
     float y = 0.0f;
     float r = 1.0f;
-    for(uint i = 0 ; i < 10 ; ++i) { scene.add("spotlight", "sphere", translateY(y += r).scale(r *= 0.75f)); }
+    for(uint i = 0 ; i < 10 ; ++i) { scene.add("spotlight", "sphere", translateY(y += r).scale(r *= 0.9f)); }
 
     /* Point Cloud */ {
         std::shared_ptr<PointMesh> pointCloud = std::make_shared<PointMesh>();
@@ -97,22 +98,38 @@ void Application::run() {
     }
 
     scene.add("spotlight", "plane", mat4(1.0f));
+    scene.add("spotlight", "pyramid", mat4(1.0f));
 
     /* Spotlight */ {
-        vec3 pos(0.0f, 5.0f, 0.0f);
-        scene.add("flat", "sphere", translate(pos).scale(0.1f));
-        spotlightShader->use();
-        spotlightShader->setUniform("spotlight.position", pos);
-        spotlightShader->setUniform("spotlight.direction", vec3(0.0f, -1.0f, 0.0f));
-        spotlightShader->setUniform("spotlight.umbra", std::cos(radians(45.0f)));
-        spotlightShader->setUniform("spotlight.penumbra", std::cos(radians(30.0f)));
-
+        vec3 pos(5.0f, 5.0f, 5.0f);
+        vec3 direction = normalize(-1.0f * pos);
         vec3 color(Random::Vec3(0.0f, 1.0f));
-        spotlightShader->setUniform("spotlight.color", color);
+        float penumbra = 20.0f;
+        float umbra = 30.0f;
+
+        auto cone = std::make_shared<LineMesh>();
+        vec3 right = cross(vec3(0.0f, 1.0f, 0.0f), direction);
+        vec3 dir = rotate(penumbra, right) * vec3(direction.x, direction.y, direction.z);
+        cone->addVertex(pos, color);
+        for(uint i = 0 ; i < 4 ; ++i) {
+            cone->addVertex(pos + 25.0f * dir, color);
+            cone->addLine(0, 1 + i);
+            dir = rotate(90.0f, direction) * dir;
+        }
+        scene.add("light cone", cone);
+        scene.add("line mesh", "light cone", mat4(1.0f));
+
+        scene.add("flat", "sphere", translate(pos).scale(0.1f));
         flatShader->use();
         flatShader->setUniform("color", color);
-    }
 
+        spotlightShader->use();
+        spotlightShader->setUniform("spotlight.position", pos);
+        spotlightShader->setUniform("spotlight.direction", direction);
+        spotlightShader->setUniform("spotlight.penumbra", std::cos(radians(penumbra)));
+        spotlightShader->setUniform("spotlight.umbra", std::cos(radians(umbra)));
+        spotlightShader->setUniform("spotlight.color", color);
+    }
 
     Element& axes = scene.getElement(axesIndex);
 
@@ -138,13 +155,10 @@ void Application::run() {
             ImGui::End();
         }
 
-        spotlightShader->use();
-        float min = 0.2f;
-        float t = (std::cos(0.5f * time) + 1.0f) / 2.0f;
-        // spotlightShader->setUniform("spotlight.penumbra", std::cos(radians(45.0f * (min + t * (1.0f - min)))));
-
-        spotlightShader->setUniform("spotlight.umbra", std::cos(radians(45.0f * (t + 1.0f))));
-        spotlightShader->setUniform("spotlight.penumbra", 1.0f);
+        for(uint i = 0 ; i < 10 ; ++i) {
+            mat4& model = scene.getElement(1 + i).model;
+            model = translate(2.0f * std::cos(time - i), model(1, 3), 2.0f * std::sin(time - i)).scale(model(0, 0));
+        }
 
         axes.isActive = areAxesDrawn;
         if(areAxesDrawn) { axes.model = translate(camera.getPosition() + 2.0f * camera.getDirection()).scale(0.5f); }
