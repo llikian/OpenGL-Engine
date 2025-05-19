@@ -6,6 +6,7 @@
 #include "mesh/meshes.hpp"
 
 #include <cmath>
+#include "maths/geometry.hpp"
 
 TriangleMesh Meshes::cube() {
     TriangleMesh mesh;
@@ -220,21 +221,22 @@ LineMesh Meshes::axes(float size) {
     return mesh;
 }
 
+// TODO : Add texture coordinates
 TriangleMesh Meshes::sphere(int divTheta, int divPhi) {
     TriangleMesh mesh;
 
     const double thetaStep = M_PI / divTheta;
-    const double phiStep = 2.0 * M_PI / divPhi;
+    const double phiStep = 2.0f * M_PI / divPhi;
 
     double theta = -M_PI_2 + thetaStep;
-    double phi = 0.0;
+    double phi = 0.0f;
 
-    for(int i = 0 ; i < divTheta ; ++i) {
+    for(int i = 0 ; i < divTheta - 1 ; ++i) {
         phi = 0.0;
 
-        for(int j = 0 ; j <= divPhi ; ++j) {
+        for(int j = 0 ; j < divPhi ; ++j) {
             vec3 point(std::cos(theta) * std::cos(phi), std::sin(theta), std::cos(theta) * std::sin(phi));
-            mesh.addVertex(point, point, vec2(static_cast<float>(j) / divPhi, 0.5 + point.y / 2.0));
+            mesh.addVertex(point, point, vec2());
 
             phi += phiStep;
         }
@@ -242,19 +244,36 @@ TriangleMesh Meshes::sphere(int divTheta, int divPhi) {
         theta += thetaStep;
     }
 
-    auto index = [&](int column, int row) -> int {
-        return row + column * (divPhi + 1);
+    auto index = [&](int column, int row) -> uint {
+        return row + column * divPhi;
     };
 
-    for(int i = 0 ; i < divTheta - 1 ; ++i) {
+    for(int i = 0 ; i < divTheta - 2 ; ++i) {
         for(int j = 0 ; j < divPhi ; ++j) {
             mesh.addFace(
                 index(i, j),
                 index(i + 1, j),
-                index(i + 1, j + 1),
-                index(i, j + 1)
+                index(i + 1, (j + 1) % divPhi),
+                index(i, (j + 1) % divPhi)
             );
         }
+    }
+
+    mesh.addVertex(vec3(0.0f, -1.0f, 0.0f), vec3(0.0f, -1.0f, 0.0f), vec2());
+    mesh.addVertex(vec3(0.0f, 1.0f, 0.0f), vec3(0.0f, 1.0f, 0.0f), vec2());
+
+    for(int i = 0 ; i < divPhi ; ++i) {
+        mesh.addTriangle(
+            index(divTheta - 1, 0),
+            index(0, i),
+            index(0, (i + 1) % divPhi)
+        );
+
+        mesh.addTriangle(
+            index(divTheta - 2, i),
+            index(divTheta - 1, 0) + 1,
+            index(divTheta - 2, (i + 1) % divPhi)
+        );
     }
 
     return mesh;
@@ -284,6 +303,52 @@ TriangleMesh Meshes::screen() {
     mesh.addVertex(vec3(1.0f, 1.0f, 0.0f), vec3(0.0f, 0.0f, 1.0f), vec2(1.0f, 1.0f));
 
     mesh.addFace(0, 1, 2, 3);
+
+    return mesh;
+}
+
+// TODO : Add texture coordinates
+TriangleMesh Meshes::pyramid(vec3 dimensions) {
+    TriangleMesh mesh;
+
+    dimensions.x /= 2.0f;
+    dimensions.z /= 2.0f;
+
+    vec3 positions[5] {
+        vec3(0.0f, dimensions.y, 0.0f),
+        vec3(dimensions.x, 0.0f, dimensions.z),
+        vec3(dimensions.x, 0.0f, -dimensions.z),
+        vec3(-dimensions.x, 0.0f, dimensions.z),
+        vec3(-dimensions.x, 0.0f, -dimensions.z)
+    };
+
+    vec3 normal = normalize(cross(positions[1] - positions[0], positions[2] - positions[0]));
+    mesh.addVertex(positions[0], normal, vec2());
+    mesh.addVertex(positions[1], normal, vec2());
+    mesh.addVertex(positions[2], normal, vec2());
+
+    normal = normalize(cross(positions[2] - positions[0], positions[4] - positions[0]));
+    mesh.addVertex(positions[0], normal, vec2());
+    mesh.addVertex(positions[2], normal, vec2());
+    mesh.addVertex(positions[4], normal, vec2());
+
+    normal = normalize(cross(positions[4] - positions[0], positions[3] - positions[0]));
+    mesh.addVertex(positions[0], normal, vec2());
+    mesh.addVertex(positions[4], normal, vec2());
+    mesh.addVertex(positions[3], normal, vec2());
+
+    normal = normalize(cross(positions[3] - positions[0], positions[1] - positions[0]));
+    mesh.addVertex(positions[0], normal, vec2());
+    mesh.addVertex(positions[3], normal, vec2());
+    mesh.addVertex(positions[1], normal, vec2());
+
+    normal = vec3(0.0f, -1.0f, 0.0f);
+    mesh.addVertex(positions[1], normal, vec2());
+    mesh.addVertex(positions[3], normal, vec2());
+    mesh.addVertex(positions[4], normal, vec2());
+    mesh.addVertex(positions[1], normal, vec2());
+    mesh.addVertex(positions[4], normal, vec2());
+    mesh.addVertex(positions[2], normal, vec2());
 
     return mesh;
 }

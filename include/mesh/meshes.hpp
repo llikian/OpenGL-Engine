@@ -60,4 +60,11 @@ namespace Meshes {
      * that can be used to render things directly on the screen.
      */
     TriangleMesh screen();
+
+    /**
+     * @brief Creates the mesh for a rectangular pyramid. The base will be on the y=0 plane.
+     * @param dimensions The dimensions of the pyramid. The x and z components represent the size of the base and the y
+     * component represent the height of the pyramid.
+     */
+    TriangleMesh pyramid(vec3 dimensions);
 }
