@@ -7,6 +7,7 @@
 
 #include <ostream>
 #include "vec3.hpp"
+#include "vec4.hpp"
 
 /**
  * @struct mat4
@@ -280,3 +281,19 @@ mat4 operator *(float scalar, const mat4& mat);
  *  @return The component-wise division of a matrix by a scalar.
  */
 mat4 operator /(const mat4& mat, float scalar);
+
+/**
+ * @brief Multiplies a matrix by a 3-component vector interpreted as the 4x1 column matrix (vec.x, vec.y, vec.z, 0.0).
+ * @param mat The matrix.
+ * @param vec The vector.
+ * @return The vector formed with the values in the first 3 rows of the result of mat * (vec.x, vec.y, vec.z, 0.0).
+ */
+vec3 operator*(const mat4& mat, const vec3& vec);
+
+/**
+ * @brief Multiplies a matrix by a 4-component vector interpreted as a 4x1 column matrix.
+ * @param mat The matrix.
+ * @param vec The vector.
+ * @return The vector formed with the values in the 4 rows of mat * vec.
+ */
+vec4 operator*(const mat4& mat, const vec4& vec);

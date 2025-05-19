@@ -374,3 +374,20 @@ mat4 operator /(const mat4& mat, float scalar) {
 
     return result;
 }
+
+vec3 operator*(const mat4& mat, const vec3& vec) {
+    return vec3(
+        mat(0, 0) * vec.x + mat(0, 1) * vec.y + mat(0, 2) * vec.z,
+        mat(1, 0) * vec.x + mat(1, 1) * vec.y + mat(1, 2) * vec.z,
+        mat(2, 0) * vec.x + mat(2, 1) * vec.y + mat(2, 2) * vec.z
+    );
+}
+
+vec4 operator*(const mat4& mat, const vec4& vec) {
+    return vec4(
+        mat(0, 0) * vec.x + mat(0, 1) * vec.y + mat(0, 2) * vec.z + mat(0, 3) * vec.w,
+        mat(1, 0) * vec.x + mat(1, 1) * vec.y + mat(1, 2) * vec.z + mat(1, 3) * vec.w,
+        mat(2, 0) * vec.x + mat(2, 1) * vec.y + mat(2, 2) * vec.z + mat(2, 3) * vec.w,
+        mat(3, 0) * vec.x + mat(3, 1) * vec.y + mat(3, 2) * vec.z + mat(3, 3) * vec.w
+    );
+}
