@@ -13,8 +13,8 @@ out vec4 fragColor;
 struct Spotlight {
     vec3 position;
     vec3 direction;
-    float umbra; // Cosinus of Cutoff Angle
-    float penumbra; // Cosinus of Smooth Cutoff Angle
+    float penumbra; // Cosinus of the Cutoff Angle
+    float umbra; // Cosinus of the Smooth Cutoff Angle
     vec3 color;
 };
 
