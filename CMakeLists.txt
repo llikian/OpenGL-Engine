@@ -20,34 +20,45 @@ set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
 
 # Set sources and includes
 set(SOURCES
-        # Classes
-        src/engine/ApplicationBase.cpp
-        src/engine/Camera.cpp
-        src/engine/Image.cpp
-        src/engine/Scene.cpp
-        src/engine/Shader.cpp
-        src/engine/Texture.cpp
+        # Assets Module
+        src/assets/AssetManager.cpp
+        src/assets/Camera.cpp
+        src/assets/Cubemap.cpp
+        src/assets/Image.cpp
+        src/assets/Shader.cpp
+        src/assets/Texture.cpp
+
+        # Culling Module
+        src/culling/AABB.cpp
+        src/culling/Frustum.cpp
+
+        # Engine Module
+        src/engine/callbacks.cpp
+        src/engine/EventHandler.cpp
+        src/engine/Framebuffer.cpp
+        src/engine/Node.cpp
+        src/engine/SceneGraph.cpp
         src/engine/Window.cpp
 
+        # Maths Module
+        src/maths/functions.cpp
+        src/maths/geometry.cpp
         src/maths/mat3.cpp
         src/maths/mat4.cpp
-        src/maths/vec2.cpp
-        src/maths/vec3.cpp
-        src/maths/vec4.cpp
         src/maths/quaternion.cpp
-
-        src/mesh/LineMesh.cpp
-        src/mesh/Mesh.cpp
-        src/mesh/PointMesh.cpp
-        src/mesh/TriangleMesh.cpp
-
-        src/utility/Random.cpp
-
-        # Other Sources
-        src/maths/geometry.cpp
+        src/maths/Transform.cpp
         src/maths/transforms.cpp
         src/maths/trigonometry.cpp
-        src/mesh/meshes.cpp
+
+        # Mesh Module
+        src/mesh/Attribute.cpp
+        src/mesh/Mesh.cpp
+        src/mesh/primitives.cpp
+
+        # Utility Module
+        src/utility/hash.cpp
+        src/utility/LifetimeLogger.cpp
+        src/utility/Random.cpp
 
         # Libraries
         lib/glad/src/glad.c

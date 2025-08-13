@@ -5,77 +5,59 @@
 
 #pragma once
 
-#include "engine/ApplicationBase.hpp"
-
-#include "engine/Camera.hpp"
-#include "engine/Scene.hpp"
-#include "engine/Shader.hpp"
-#include "engine/Texture.hpp"
-#include "maths/mat4.hpp"
-
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
+#include "assets/Camera.hpp"
+#include "assets/Cubemap.hpp"
+#include "culling/Frustum.hpp"
+#include "engine/Framebuffer.hpp"
+#include "engine/SceneGraph.hpp"
 
 /**
  * @class Application
- * @brief An Application used to test functionalities.
+ * @brief Core of the project. Assembles everything together and handles the main loop.
  */
-class Application : public ApplicationBase {
+class Application {
 public:
-    /* ---- Constructor & Destructor ---- */
-
     /**
-     * @brief Sets the default value of all member variables and constants.
+     * @brief Constructor.
      */
     Application();
 
     /**
-     * @brief Frees all allocated memory.
+     * @brief Frees all resources.
      */
-    ~Application() override;
-
-    /* ---- Public Methods ---- */
+    ~Application();
 
     /**
-     * @brief Contains the main loop.
+     * @brief Executes the main loop of the application.
      */
-    void run() override;
-
-    /* ---- Callbacks ----*/
-
-    /**
-     * @brief Handles what happens when the window is resized. Updates the width and height in Window, and
-     * updates the projection matrix.
-     * @param width The new width.
-     * @param height The new height.
-     */
-    void handleWindowSizeCallback(int width, int height) override;
-
-    /**
-     * @brief Handles what happens when the cursor is moved. Handles the camera's movement and updates the
-     * mouse position.
-     * @param xPos The horizontal position of the mouse.
-     * @param yPos The vertical position of the mouse.
-     */
-    void handleCursorPositionCallback(double xPos, double yPos) override;
+    void run();
 
 private:
-    /* ---- Private Methods ---- */
+    /**
+     * @brief Draws the framebuffer's texture on the screen and applies post processing shader.
+     */
+    void draw_post_processing() const;
 
     /**
-     * @brief Handles what happends when a specific key is pressed.
-     * @param key The key.
+     * @brief Draws the background.
      */
-    void handleKeyEvent(int key) override;
+    void draw_background() const;
 
-    /* ---- Variables & Constants ---- */
-    bool wireframe;     ///< Whether to display in wireframe mode.
-    bool cullface;      ///< Whether face culling is activated.
-    bool cursorVisible; ///< Whether the cursor is currently visible.
-    bool areAxesDrawn;  ///< Whether the axes are drawn.
+    /**
+     * @brief Draws the imgui debug window.
+     */
+    void draw_imgui_debug_window();
 
-    mat4 projection; ///< The projection matrix.
+    /**
+     * @brief Draw the imgui object editor window.
+     */
+    void draw_imgui_object_ediot_window();
 
-    Camera camera; ///< A first person camera to move around the scene.
+    SceneGraph scene_graph;  ///< Scene graph.
+    Camera camera;           ///< The camera.
+    Framebuffer framebuffer; ///< The framebuffer used to render.
+
+    Frustum frustum; ///< The frustum used for culling.
+
+    bool are_axes_drawn; ///< Whether the axes are drawn.
 };

@@ -8,15 +8,15 @@
 #include <cmath>
 
 float length(const vec2& vec) {
-    return sqrtf(vec.x * vec.x + vec.y * vec.y);
+    return std::sqrt(vec.x * vec.x + vec.y * vec.y);
 }
 
 float length(const vec3& vec) {
-    return sqrtf(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+    return std::sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 }
 
 float length(const vec4& vec) {
-    return sqrtf(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
+    return std::sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
 }
 
 float dot(const vec2& left, const vec2& right) {

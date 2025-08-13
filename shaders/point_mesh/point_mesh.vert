@@ -5,16 +5,16 @@
 
 #version 460 core
 
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aColor;
-layout (location = 2) in float aSize;
+layout (location = 0) in vec3 a_position;
+layout (location = 3) in vec3 a_color;
+layout (location = 5) in float a_point_size;
 
-out vec3 color;
+out vec3 v_color;
 
-uniform mat4 mvp;
+uniform mat4 u_mvp;
 
 void main() {
-    gl_Position = mvp * vec4(aPos, 1.0f);
-    color = aColor;
-    gl_PointSize = aSize;
+    gl_Position = u_mvp * vec4(a_position, 1.0f);
+    v_color = a_color;
+    gl_PointSize = a_point_size;
 }

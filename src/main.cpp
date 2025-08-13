@@ -1,16 +1,25 @@
 /***************************************************************************************************
  * @file  main.cpp
- * @brief Contains the main program of the engine
+ * @brief Contains the main program of the project
  **************************************************************************************************/
-
-#include "applications/Application.hpp"
 
 #include <iostream>
 #include <stdexcept>
+#include "applications/Application.hpp"
+#include "assets/AssetManager.hpp"
+#include "engine/EventHandler.hpp"
+#include "engine/Window.hpp"
 
 int main() {
     try {
-        Application().run();
+        /* Making Sure Singletons are Initialized First */
+        Window::get();
+        EventHandler::get();
+        AssetManager::get();
+
+        /* Running Application */
+        Application app;
+        app.run();
     } catch(const std::exception& exception) {
         std::cerr << "ERROR : " << exception.what() << '\n';
         return -1;

@@ -6,7 +6,7 @@
 #pragma once
 
 #include "mat4.hpp"
-#include "vec4.hpp"
+#include "quaternion.hpp"
 #include "vec3.hpp"
 
 /**
@@ -37,21 +37,21 @@ mat4 scale(const vec3& factors);
  * @param factor The scaling factor.
  * @return The scaling matrix.
  */
-mat4 scaleX(float factor);
+mat4 scale_x(float factor);
 
 /**
  * @brief Calculates the scaling matrix that only scales in the y direction.
  * @param factor The scaling factor.
  * @return The scaling matrix.
  */
-mat4 scaleY(float factor);
+mat4 scale_y(float factor);
 
 /**
  * @brief Calculates the scaling matrix that only scales in the z direction.
  * @param factor The scaling factor.
  * @return The scaling matrix.
  */
-mat4 scaleZ(float factor);
+mat4 scale_z(float factor);
 
 /**
  * @brief Calculates the translation matrix that displaces by a specific vector.
@@ -74,21 +74,21 @@ mat4 translate(float x, float y, float z);
  * @param scalar The displacement amount.
  * @return The translation matrix.
  */
-mat4 translateX(float scalar);
+mat4 translate_x(float scalar);
 
 /**
  * @brief Calculates the translation matrix that only displaces in the y direction.
  * @param scalar The displacement amount.
  * @return The translation matrix.
  */
-mat4 translateY(float scalar);
+mat4 translate_y(float scalar);
 
 /**
  * @brief Calculates the translation matrix that only displaces in the z direction.
  * @param scalar The displacement amount.
  * @return The translation matrix.
  */
-mat4 translateZ(float scalar);
+mat4 translate_z(float scalar);
 
 /**
  * @brief Calculates the rotation matrix that rotates around an axis by a certain angle.
@@ -103,21 +103,43 @@ mat4 rotate(float angle, vec3 axis);
  * @param angle The rotation angle in degrees.
  * @return The rotation matrix.
  */
-mat4 rotateX(float angle);
+mat4 rotate_x(float angle);
 
 /**
  * @brief Calculates the rotation matrix that rotates around the y axis by a certain angle.
  * @param angle The rotation angle in degrees.
  * @return The rotation matrix.
  */
-mat4 rotateY(float angle);
+mat4 rotate_y(float angle);
 
 /**
  * @brief Calculates the rotation matrix that rotates around the z axis by a certain angle.
  * @param angle The rotation angle in degrees.
  * @return The rotation matrix.
  */
-mat4 rotateZ(float angle);
+mat4 rotate_z(float angle);
+
+/**
+ * @brief Calculates the TRS matrix such that TRS=T*Ry*Rx*Rz*S, with T being a translation matrix,
+ * Rx, Ry, Rz being rotation matrices around their respective axis and S being a scale matrix.
+ * @param translation The value of the translation vector.
+ * @param rotation The values of the rotation angles.
+ * @param scale The values of the scaling factors.
+ * @return The matrix that scales then rotates then translates a point according to the given
+ * parameters.
+ */
+mat4 TRS_matrix(const vec3& translation, const vec3& rotation, const vec3& scale);
+
+/**
+ * @brief Calculates the TRS matrix such that TRS=T*Rq*S, with T being a translation matrix, Rq
+ * being the rotation matrix derived from a quaternion S being a scale matrix.
+ * @param translation The value of the translation vector.
+ * @param rotation The rotation quaternion. Assumed to be a unit quaternion.
+ * @param scale The values of the scaling factors.
+ * @return The matrix that scales then rotates then translates a point according to the given
+ * parameters.
+ */
+mat4 TRS_matrix(const vec3& translation, const quaternion& rotation, const vec3& scale);
 
 /**
  * @brief Calculates the 'look at' matrix. That allows to simulate a camera.
@@ -126,7 +148,7 @@ mat4 rotateZ(float angle);
  * @param up The up vector of the camera.
  * @return The 'look at' matrix.
  */
-mat4 lookAt(const vec3& eye, const vec3& target, const vec3& up);
+mat4 look_at(const vec3& eye, const vec3& target, const vec3& up);
 
 /**
  * @brief Calculates the perspective matrix.

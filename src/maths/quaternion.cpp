@@ -7,6 +7,10 @@
 
 #include <cmath>
 
+#include "maths/constants.hpp"
+#include "maths/trigonometry.hpp"
+#include "maths/vec2.hpp"
+
 quaternion::quaternion() : x(0.0f), y(0.0f), z(0.0f), w(0.0f) { }
 
 quaternion::quaternion(float x, float y, float z, float w) : x(x), y(y), z(z), w(w) { }
@@ -39,12 +43,12 @@ quaternion& quaternion::operator *=(const quaternion& q) {
 }
 
 quaternion& quaternion::operator /=(const quaternion& q) {
-    quaternion i = q.inverse();
+    quaternion inv = q.get_inverse();
 
-    x = y * i.z - z * i.y + x * i.w + w * i.x;
-    y = z * i.x - x * i.z + y * i.w + w * i.y;
-    z = x * i.y - y * i.x + z * i.w + w * i.z;
-    w = w * i.w - x * i.x - y * i.y - z * i.z;
+    x = y * inv.z - z * inv.y + x * inv.w + w * inv.x;
+    y = z * inv.x - x * inv.z + y * inv.w + w * inv.y;
+    z = x * inv.y - y * inv.x + z * inv.w + w * inv.z;
+    w = w * inv.w - x * inv.x - y * inv.y - z * inv.z;
 
     return *this;
 }
@@ -67,25 +71,23 @@ quaternion& quaternion::operator /=(float scalar) {
     return *this;;
 }
 
-float quaternion::norm() const {
-    return sqrt(x * x + y * y + z * z + w * w);
+float quaternion::get_length() const {
+    return std::sqrt(x * x + y * y + z * z + w * w);
 }
 
-quaternion quaternion::conjugate() const {
+quaternion quaternion::get_conjugate() const {
     return quaternion(-x, -y, -z, w);
 }
 
-quaternion quaternion::inverse() const {
-    float n = norm();
-    n = 1.0f / (n * n);
-
-    return quaternion(-n * x, -n * y, -n * z, n * w);
+quaternion quaternion::get_inverse() const {
+    float length = get_length();
+    length = 1.0f / (length * length);
+    return quaternion(-length * x, -length * y, -length * z, length * w);
 }
 
-mat4 quaternion::toMatrix() const {
-    float n = norm();
-    float s = 2.0f / (n * n);
-
+mat4 quaternion::get_matrix() const {
+    float length = get_length();
+    float s = 2.0f / (length * length);
     return mat4(
         1.0f - s * (y * y + z * z), s * (x * y - w * z), s * (x * z + w * y),
         s * (x * y + w * z), 1.0f - s * (x * x + z * z), s * (y * z - w * x),
@@ -93,34 +95,70 @@ mat4 quaternion::toMatrix() const {
     );
 }
 
-float norm(const quaternion& q) {
-    return q.norm();
+void quaternion::normalize() {
+    float length = get_length();
+    x /= length;
+    y /= length;
+    z /= length;
+    w /= length;
 }
 
-quaternion conjugate(const quaternion& q) {
-    return q.conjugate();
+quaternion euler_to_quaternion(const vec3& angles) {
+    vec3 cosine, sine;
+
+    if(angles.x == 0.0f) {
+        cosine.x = 1.0f;
+        sine.x = 0.0f;
+    } else {
+        float radians = degrees_to_radians(angles.x) / 2.0f;
+        cosine.x = std::cos(radians);
+        sine.x = std::sin(radians);
+    }
+
+    if(angles.y == 0.0f) {
+        cosine.y = 1.0f;
+        sine.y = 0.0f;
+    } else {
+        float radians = degrees_to_radians(angles.y) / 2.0f;
+        cosine.y = std::cos(radians);
+        sine.y = std::sin(radians);
+    }
+
+    if(angles.z == 0.0f) {
+        cosine.z = 1.0f;
+        sine.z = 0.0f;
+    } else {
+        float radians = degrees_to_radians(angles.z) / 2.0f;
+        cosine.z = std::cos(radians);
+        sine.z = std::sin(radians);
+    }
+
+    return quaternion(
+        sine.x * cosine.y * cosine.z - cosine.x * sine.y * sine.z,
+        cosine.x * sine.y * cosine.z + sine.x * cosine.y * sine.z,
+        cosine.x * cosine.y * sine.z - sine.x * sine.y * cosine.z,
+        cosine.x * cosine.y * cosine.z + sine.x * sine.y * sine.z
+    );
 }
 
-quaternion inverse(const quaternion& q) {
-    return q.inverse();
-}
+vec3 quaternion_to_euler(const quaternion& q) {
+    vec3 radians;
 
-mat4 toMatrix(const quaternion& q) {
-    return q.toMatrix();
-}
+    radians.x = std::atan2(2.0f * (q.w * q.x + q.y * q.z),
+                           1.0f - 2.0f * (q.x * q.x + q.y * q.y));
+    radians.y = -PI_HALF_F + 2.0f * std::atan2(std::sqrt(1.0f + 2.0f * (q.w * q.y - q.x * q.z)),
+                                               std::sqrt(1.0f - 2.0f * (q.w * q.y - q.x * q.z)));
+    radians.z = std::atan2(2.0f * (q.w * q.z + q.x * q.y),
+                           1.0f - 2.0f * (q.y * q.y + q.z * q.z));
 
-quaternion slerp(const quaternion& q, const quaternion& r, float t) {
-    float theta = acos(q.x * r.x + q.y * r.y + q.z * r.z + q.w * r.w);
-    float s = sin(theta);
-
-    return (sin(theta * (1.0f - t)) / s) * q + (sin(theta * t) / s) * r;
+    return vec3(radians_to_degrees(radians.x), radians_to_degrees(radians.y), radians_to_degrees(radians.z));
 }
 
 std::ostream& operator <<(std::ostream& stream, const quaternion& q) {
     std::cout << q.x << 'i'
-              << ((q.y >= 0) ? " + " : " - ") << fabs(q.y) << 'j'
-              << ((q.z >= 0) ? " + " : " - ") << fabs(q.y) << 'k'
-              << ((q.w >= 0) ? " + " : " - ") << fabs(q.y);
+        << ((q.y >= 0) ? " + " : " - ") << fabs(q.y) << 'j'
+        << ((q.z >= 0) ? " + " : " - ") << fabs(q.y) << 'k'
+        << ((q.w >= 0) ? " + " : " - ") << fabs(q.y);
 
     return stream;
 }
@@ -147,7 +185,7 @@ quaternion operator *(const quaternion& q, const quaternion& r) {
 }
 
 quaternion operator /(const quaternion& q, const quaternion& r) {
-    return q * r.inverse();
+    return q * r.get_inverse();
 }
 
 quaternion operator *(const quaternion& q, float scalar) {
@@ -163,5 +201,5 @@ quaternion operator /(const quaternion& q, float scalar) {
 }
 
 quaternion operator /(float scalar, const quaternion& q) {
-    return scalar * q.inverse();
+    return scalar * q.get_inverse();
 }

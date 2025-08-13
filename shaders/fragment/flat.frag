@@ -1,16 +1,14 @@
 /***************************************************************************************************
- * @file  default.frag
- * @brief Default fragment shader
+ * @file  flat.frag
+ * @brief Fragment shader that renders a mesh with a flat color
  **************************************************************************************************/
 
 #version 460 core
 
-in vec3 position;
+out vec4 frag_color;
 
-out vec4 fragColor;
-
-uniform vec3 color;
+uniform vec4 u_color;
 
 void main() {
-    fragColor = vec4(color , 1.0f);
+    frag_color = u_color;
 }

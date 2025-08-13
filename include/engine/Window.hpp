@@ -5,67 +5,87 @@
 
 #pragma once
 
-#include <glad/glad.h>
+#define GLFW_INCLUDE_NONE
+
 #include <GLFW/glfw3.h>
-#include <maths/vec2.hpp>
+#include <iostream>
+#include <string>
+
+#include "maths/vec2.hpp"
 
 /**
  * @class Window
- * @brief Handles initializing OpenGL, GLAD and GLFW and creates the window.
+ * @brief Acts as a layer above the GLFW window.
  */
 class Window {
 public:
-    /**
-     * @brief Initializes GLFW, GLAD and OpenGL.
-     * @param name The name of the window.
-     * @param windowUserPointer A pointer to
-     */
-    Window(const std::string& name, void* windowUserPointer);
+    Window(const Window&) = delete; ///< Delete copy constructor.
+    Window& operator=(const Window&) = delete; ///< Deleted copy operator.
 
     /**
-     * @brief Destroys the GLFW window.
+     * @brief Access the Window singleton.
+     * @return A reference to the Window singleton.
+     */
+    static inline Window& get() {
+        static Window window;
+        return window;
+    }
+
+    /**
+     * @return The GLFW window pointer.
+     */
+    static GLFWwindow* get_glfw();
+
+    /**
+     * @return The width of the window.
+     */
+    static int get_width();
+
+    /**
+     * @return The height of the window.
+     */
+    static int get_height();
+
+    /**
+     * @brief Returns the window's aspect ratio.
+     * @return The window's width divided by its height.
+     */
+    static float get_aspect_ratio();
+
+    /**
+     * @brief Updates the size of the window.
+     * @param width The window's current width.
+     * @param height The window's current height.
+     */
+    static void update_size(int width, int height);
+
+    /**
+     * @return A vec2 with the width of the window as the x component and its height as the y component.
+     */
+    static vec2 get_resolution();
+
+    /**
+     * @return Whether the window should close.
+     */
+    static bool should_close();
+
+    /**
+     * @brief Swaps the front and back buffers of the window.
+     */
+    static void swap_buffers();
+
+private:
+    /**
+     * @brief Initializes GLFW, GLAD and OpenGL and creates the GLFW window.
+     */
+    Window();
+
+    /**
+     * @brief Destroys the GLFW window and terminates GLFW.
      */
     ~Window();
 
-    /**
-     * @brief Returns the GLFWwindow pointer.
-     * @return The GLFW window.
-     */
-    operator GLFWwindow*();
-
-    /**
-     * @brief Updates the width and height of the window.
-     * @param width The window's new width.
-     * @param height The window's new height.
-     */
-    void updateSize(unsigned int width, unsigned int height);
-
-    /**
-     * @brief Getter for the width.
-     * @return The window's width.
-     */
-    unsigned int getWidth() const;
-
-    /**
-     * @brief Getter for the height.
-     * @return The window's height.
-     */
-    unsigned int getHeight() const;
-
-    /**
-     * @brief Returns the resolution of the window.
-     * @return A vec2 containing the width as the x component and the height as the y component.
-     */
-    vec2 getResolution() const;
-
-    /**
-     * @brief Returns the window's size ratio.
-     * @return The window's width divided by its height.
-     */
-    float getRatio() const;
-
-private:
-    GLFWwindow* window;  ///< The GLFW window.
-    unsigned int width;  ///< The width of the window in pixels.
-    unsigned int height; ///< The height of the window in pixels.
+    GLFWwindow* window; ///< The GLFW window pointer.
+    int width;          ///< The width of the window.
+    int height;         ///< The height of the window.
 };

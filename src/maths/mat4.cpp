@@ -46,14 +46,6 @@ mat4::mat4(float scalar)
         { 0.0f, 0.0f, 0.0f, scalar }
     } { }
 
-float& mat4::operator ()(int row, int column) {
-    return values[column][row];
-}
-
-const float& mat4::operator ()(int row, int column) const {
-    return values[column][row];
-}
-
 mat4& mat4::scale(float factor) {
     for(int i = 0 ; i < 3 ; ++i) {
         values[0][i] *= factor;
@@ -84,7 +76,7 @@ mat4& mat4::scale(const vec3& factors) {
     return *this;
 }
 
-mat4& mat4::scaleX(float factor) {
+mat4& mat4::scale_x(float factor) {
     for(int i = 0 ; i < 3 ; ++i) {
         values[0][i] *= factor;
     }
@@ -92,7 +84,7 @@ mat4& mat4::scaleX(float factor) {
     return *this;
 }
 
-mat4& mat4::scaleY(float factor) {
+mat4& mat4::scale_y(float factor) {
     for(int i = 0 ; i < 3 ; ++i) {
         values[1][i] *= factor;
     }
@@ -100,7 +92,7 @@ mat4& mat4::scaleY(float factor) {
     return *this;
 }
 
-mat4& mat4::scaleZ(float factor) {
+mat4& mat4::scale_z(float factor) {
     for(int i = 0 ; i < 3 ; ++i) {
         values[2][i] *= factor;
     }
@@ -126,7 +118,7 @@ mat4& mat4::translate(float x, float y, float z) {
     return *this;
 }
 
-mat4& mat4::translateX(float scalar) {
+mat4& mat4::translate_x(float scalar) {
     values[3][0] += values[0][0] * scalar;
     values[3][1] += values[0][1] * scalar;
     values[3][2] += values[0][2] * scalar;
@@ -135,7 +127,7 @@ mat4& mat4::translateX(float scalar) {
     return *this;
 }
 
-mat4& mat4::translateY(float scalar) {
+mat4& mat4::translate_y(float scalar) {
     values[3][0] += values[1][0] * scalar;
     values[3][1] += values[1][1] * scalar;
     values[3][2] += values[1][2] * scalar;
@@ -144,7 +136,7 @@ mat4& mat4::translateY(float scalar) {
     return *this;
 }
 
-mat4& mat4::translateZ(float scalar) {
+mat4& mat4::translate_z(float scalar) {
     values[3][0] += values[2][0] * scalar;
     values[3][1] += values[2][1] * scalar;
     values[3][2] += values[2][2] * scalar;
@@ -153,11 +145,11 @@ mat4& mat4::translateZ(float scalar) {
     return *this;
 }
 
-mat4& mat4::rotateX(float angle) {
-    angle = radians(angle);
+mat4& mat4::rotate_x(float angle) {
+    angle = degrees_to_radians(angle);
 
-    const float cosine = cosf(angle);
-    const float sine = sinf(angle);
+    const float cosine = std::cos(angle);
+    const float sine = std::sin(angle);
 
     float column[4]{ values[1][0], values[1][1], values[1][2], values[1][3] };
 
@@ -174,11 +166,11 @@ mat4& mat4::rotateX(float angle) {
     return *this;
 }
 
-mat4& mat4::rotateY(float angle) {
-    angle = radians(angle);
+mat4& mat4::rotate_y(float angle) {
+    angle = degrees_to_radians(angle);
 
-    const float cosine = cosf(angle);
-    const float sine = sinf(angle);
+    const float cosine = std::cos(angle);
+    const float sine = std::sin(angle);
 
     float column[4]{ values[0][0], values[0][1], values[0][2], values[0][3] };
 
@@ -195,11 +187,11 @@ mat4& mat4::rotateY(float angle) {
     return *this;
 }
 
-mat4& mat4::rotateZ(float angle) {
-    angle = radians(angle);
+mat4& mat4::rotate_z(float angle) {
+    angle = degrees_to_radians(angle);
 
-    const float cosine = cosf(angle);
-    const float sine = sinf(angle);
+    const float cosine = std::cos(angle);
+    const float sine = std::sin(angle);
 
     float column[4]{ values[0][0], values[0][1], values[0][2], values[0][3] };
 
@@ -302,17 +294,36 @@ mat4 operator -(const mat4& left, const mat4& right) {
 }
 
 mat4 operator *(const mat4& left, const mat4& right) {
-    mat4 result;
+    // mat4 result;
+    //
+    // for(int i = 0 ; i < 4 ; ++i) {
+    //     for(int j = 0 ; j < 4 ; ++j) {
+    //         for(int k = 0 ; k < 4 ; ++k) {
+    //             result(i, j) += left(i, k) * right(k, j);
+    //         }
+    //     }
+    // }
+    //
+    // return result;
 
-    for(int i = 0 ; i < 4 ; ++i) {
-        for(int j = 0 ; j < 4 ; ++j) {
-            for(int k = 0 ; k < 4 ; ++k) {
-                result(i, j) += left(i, k) * right(k, j);
-            }
-        }
-    }
-
-    return result;
+    return mat4(
+        left(0, 0) * right(0, 0) + left(0, 1) * right(1, 0) + left(0, 2) * right(2, 0) + left(0, 3) * right(3, 0),
+        left(0, 0) * right(0, 1) + left(0, 1) * right(1, 1) + left(0, 2) * right(2, 1) + left(0, 3) * right(3, 1),
+        left(0, 0) * right(0, 2) + left(0, 1) * right(1, 2) + left(0, 2) * right(2, 2) + left(0, 3) * right(3, 2),
+        left(0, 0) * right(0, 3) + left(0, 1) * right(1, 3) + left(0, 2) * right(2, 3) + left(0, 3) * right(3, 3),
+        left(1, 0) * right(0, 0) + left(1, 1) * right(1, 0) + left(1, 2) * right(2, 0) + left(1, 3) * right(3, 0),
+        left(1, 0) * right(0, 1) + left(1, 1) * right(1, 1) + left(1, 2) * right(2, 1) + left(1, 3) * right(3, 1),
+        left(1, 0) * right(0, 2) + left(1, 1) * right(1, 2) + left(1, 2) * right(2, 2) + left(1, 3) * right(3, 2),
+        left(1, 0) * right(0, 3) + left(1, 1) * right(1, 3) + left(1, 2) * right(2, 3) + left(1, 3) * right(3, 3),
+        left(2, 0) * right(0, 0) + left(2, 1) * right(1, 0) + left(2, 2) * right(2, 0) + left(2, 3) * right(3, 0),
+        left(2, 0) * right(0, 1) + left(2, 1) * right(1, 1) + left(2, 2) * right(2, 1) + left(2, 3) * right(3, 1),
+        left(2, 0) * right(0, 2) + left(2, 1) * right(1, 2) + left(2, 2) * right(2, 2) + left(2, 3) * right(3, 2),
+        left(2, 0) * right(0, 3) + left(2, 1) * right(1, 3) + left(2, 2) * right(2, 3) + left(2, 3) * right(3, 3),
+        left(3, 0) * right(0, 0) + left(3, 1) * right(1, 0) + left(3, 2) * right(2, 0) + left(3, 3) * right(3, 0),
+        left(3, 0) * right(0, 1) + left(3, 1) * right(1, 1) + left(3, 2) * right(2, 1) + left(3, 3) * right(3, 1),
+        left(3, 0) * right(0, 2) + left(3, 1) * right(1, 2) + left(3, 2) * right(2, 2) + left(3, 3) * right(3, 2),
+        left(3, 0) * right(0, 3) + left(3, 1) * right(1, 3) + left(3, 2) * right(2, 3) + left(3, 3) * right(3, 3)
+    );
 }
 
 mat4 operator +(const mat4& mat, float scalar) {

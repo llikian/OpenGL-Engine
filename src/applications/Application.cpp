@@ -6,37 +6,108 @@
 #include "applications/Application.hpp"
 
 #include <cmath>
-#include <memory>
+#include "assets/AssetManager.hpp"
+#include "engine/EventHandler.hpp"
+#include "glad/glad.h"
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+#include "maths/constants.hpp"
+#include "maths/functions.hpp"
 #include "maths/geometry.hpp"
-#include "maths/mat3.hpp"
 #include "maths/transforms.hpp"
-#include "maths/trigonometry.hpp"
-#include "mesh/Mesh.hpp"
-#include "mesh/meshes.hpp"
+#include "mesh/primitives.hpp"
+#include "utility/LifetimeLogger.hpp"
 #include "utility/Random.hpp"
 
 Application::Application()
-    : ApplicationBase("OpenGL Engine"),
-      wireframe(false), cullface(true), cursorVisible(false), areAxesDrawn(false),
-      projection(perspective(M_PI_4f, window.getRatio(), 0.1f, 100.0f)),
-      camera(vec3(0.0f, 2.0f, 5.0f)) {
-    /* ---- Repeatable Keys ---- */
-    repeatableKeys.emplace(GLFW_KEY_W, false);
-    repeatableKeys.emplace(GLFW_KEY_S, false);
-    repeatableKeys.emplace(GLFW_KEY_A, false);
-    repeatableKeys.emplace(GLFW_KEY_D, false);
-    repeatableKeys.emplace(GLFW_KEY_SPACE, false);
-    repeatableKeys.emplace(GLFW_KEY_LEFT_SHIFT, false);
-
-    /* ---- GLFW Callbacks ---- */
-    setCallbacks<Application>(window, true, true, true, false, true, false);
+    : camera(vec3(0.0f, 10.0f, 0.0f), PI_HALF_F, 0.1f, 1024.0f),
+      framebuffer(Window::get_width(), Window::get_height()),
+      are_axes_drawn(false) {
+    /* ---- Event Handler ---- */
+    EventHandler::set_active_camera(&camera);
+    EventHandler::get().associate_action_to_key(GLFW_KEY_Q, false, [this] { are_axes_drawn = !are_axes_drawn; });
 
     /* ---- ImGui ---- */
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui::GetIO().IniFilename = "data/imgui.ini";
+    ImGui_ImplGlfw_InitForOpenGL(Window::get_glfw(), true);
     ImGui_ImplOpenGL3_Init();
+
+    /* ---- Asset Manager ---- */
+    /* Shaders */
+    AssetManager::add_shader("point mesh", {
+                                 "shaders/point_mesh/point_mesh.vert",
+                                 "shaders/point_mesh/point_mesh.frag"
+                             });
+    AssetManager::add_shader("line mesh", {
+                                 "shaders/line_mesh/line_mesh.vert",
+                                 "shaders/line_mesh/line_mesh.frag"
+                             });
+    AssetManager::add_shader("background", {
+                                 "shaders/vertex/position_only-no_mvp.vert",
+                                 "shaders/fragment/background.frag"
+                             });
+    AssetManager::add_shader("flat", {
+                                 "shaders/vertex/position_only.vert",
+                                 "shaders/fragment/flat.frag"
+                             });
+    AssetManager::add_shader("lambert", {
+                                 "shaders/vertex/position_and_normal.vert",
+                                 "shaders/fragment/lambert.frag"
+                             });
+    AssetManager::add_shader("blinn-phong", {
+                                 "shaders/vertex/default.vert",
+                                 "shaders/fragment/blinn_phong.frag"
+                             });
+    AssetManager::add_shader("metallic-roughness", {
+                                 "shaders/vertex/tangent.vert",
+                                 "shaders/metallic-roughness/get_directions_tangent.frag",
+                                 "shaders/metallic-roughness/metallic_roughness.frag",
+                             });
+    AssetManager::add_shader("metallic-roughness no tangent", {
+                                 "shaders/vertex/default.vert",
+                                 "shaders/metallic-roughness/get_directions_no_tangent.frag",
+                                 "shaders/metallic-roughness/metallic_roughness.frag",
+                             });
+    AssetManager::add_shader("terrain", {
+                                 "shaders/terrain/terrain.vert",
+                                 "shaders/terrain/terrain.tesc",
+                                 "shaders/terrain/terrain.tese",
+                                 "shaders/terrain/terrain.frag"
+                             });
+    AssetManager::add_shader("post processing", {
+                                 "shaders/vertex/position_only-no_mvp.vert",
+                                 "shaders/fragment/post_processing.frag"
+                             });
+
+    /* Meshes */
+    AssetManager::add_mesh("sphere 8 16", create_sphere_mesh, 8, 16);
+    AssetManager::add_mesh("sphere 16 32", create_sphere_mesh, 16, 32);
+    AssetManager::add_mesh("icosphere 0", create_icosphere_mesh, 0);
+    AssetManager::add_mesh("icosphere 1", create_icosphere_mesh, 1);
+    AssetManager::add_mesh("icosphere 2", create_icosphere_mesh, 2);
+    AssetManager::add_mesh("cube", create_cube_mesh);
+    AssetManager::add_mesh("wireframe cube", create_wireframe_cube_mesh);
+    AssetManager::add_mesh("screen", create_screen_mesh);
+    AssetManager::add_mesh("axes", create_axes_mesh, 0.5f);
+    AssetManager::add_mesh("camera pyramid", create_pyramid_mesh,
+                           vec3(1.0f, 1.0f, -1.0f), vec3(1.0f, -1.0f, -1.0f), vec3(-1.0f, -1.0f, -1.0f), 1.0f);
+
+    /* Textures */
+    AssetManager::add_texture("default", vec3(1.0f));
+    AssetManager::add_texture("red", vec3(1.0f, 0.0f, 0.0f));
+    AssetManager::add_texture("green", vec3(0.0f, 1.0f, 0.0f));
+    AssetManager::add_texture("blue", vec3(0.0f, 0.0f, 1.0f));
+
+    /* ---- Scene Graph */
+    scene_graph.shaders.push_back(AssetManager::get_shader_ptr("flat"));
+    scene_graph.flat_shader_index = scene_graph.shaders.size() - 1;
+
+    /* ---- Other ---- */
+    // glfwSwapInterval(0); // disable vsync
 }
 
 Application::~Application() {
@@ -46,181 +117,127 @@ Application::~Application() {
 }
 
 void Application::run() {
-    Scene scene(camera, projection);
+    /* Light */
+    unsigned int light = scene_graph.add_flat_shaded_mesh_node("Light",
+                                                               0,
+                                                               AssetManager::get_mesh_ptr("icosphere 1"),
+                                                               vec4(1.0f));
+    scene_graph.transforms[light].set_local_position(0.0f, 100.0f, 0.0f);
 
-    std::shared_ptr<Shader> spotlightShader;
-    std::shared_ptr<Shader> flatShader;
+    /* Frustum Tests */ {
+        unsigned int frustum_tests_root = scene_graph.add_simple_node("Frustum Tests Root", 0);
+        unsigned int mesh_index = scene_graph.add_mesh(AssetManager::get_mesh_ptr("cube"));
 
-    /* Shaders */ {
-        std::string paths[2]{ "shaders/vertex/pos_normal_tex.vert", "shaders/fragment/default.frag" };
-        scene.add(std::make_shared<Shader>(paths, 2, "default"));
+        std::string name = "Frustum Test Mesh ";
 
-        paths[0] = "shaders/line_mesh/line_mesh.vert";
-        paths[1] = "shaders/line_mesh/line_mesh.frag";
-        scene.add(std::make_shared<Shader>(paths, 2, "line mesh"));
+        for(unsigned int i = 0 ; i < 10'000 ; ++i) {
+            unsigned int index = scene_graph.add_flat_shaded_mesh_node(name + std::to_string(i),
+                                                                       frustum_tests_root,
+                                                                       mesh_index,
+                                                                       vec4(1.0f));
 
-        paths[0] = "shaders/point_mesh/point_mesh.vert";
-        paths[1] = "shaders/point_mesh/point_mesh.frag";
-        scene.add(std::make_shared<Shader>(paths, 2, "point mesh"));
-
-        paths[0] = "shaders/vertex/pos_normal.vert";
-        paths[1] = "shaders/fragment/spotlight.frag";
-        spotlightShader = std::make_shared<Shader>(paths, 2, "spotlight");
-        scene.add(spotlightShader);
-
-        paths[0] = "shaders/vertex/pos.vert";
-        paths[1] = "shaders/fragment/flat.frag";
-        flatShader = std::make_shared<Shader>(paths, 2, "flat");
-        scene.add(flatShader);
-    }
-
-    scene.add("grid", std::make_shared<LineMesh>(Meshes::grid(10.0f, 10)));
-    scene.add("sphere", std::make_shared<TriangleMesh>(Meshes::sphere(16, 32)));
-    scene.add("axes", std::make_shared<LineMesh>(Meshes::axes(1.0f)));
-    scene.add("plane", std::make_shared<TriangleMesh>(Meshes::plane(100.0f)));
-    scene.add("pyramid", std::make_shared<TriangleMesh>(Meshes::pyramid(vec3(1.0f))));
-
-    // scene.add("line mesh", "grid", mat4(1.0f));
-    uint axesIndex = scene.add("line mesh", "axes", mat4(1.0f));
-
-    float y = 0.0f;
-    float r = 1.0f;
-    for(uint i = 0 ; i < 10 ; ++i) { scene.add("spotlight", "sphere", translateY(y += r).scale(r *= 0.9f)); }
-
-    /* Point Cloud */ {
-        std::shared_ptr<PointMesh> pointCloud = std::make_shared<PointMesh>();
-        for(uint i = 0 ; i < 100 ; ++i) {
-            pointCloud->addVertex(Random::Vec3(-10.0f, 10.0f), Random::Vec3(0.0f, 1.0f), Random::Float(1.0f, 10.0f));
+            scene_graph.transforms[index].set_local_position(Random::get_vec3(-500.0f, 500.0f));
+            scene_graph.transforms[index].set_local_scale(Random::get_vec3(1.0f, 5.0f));
         }
-
-        scene.add("point cloud", pointCloud);
-        scene.add("point mesh", "point cloud", mat4(1.0f));
     }
 
-    scene.add("spotlight", "plane", mat4(1.0f));
-    scene.add("spotlight", "pyramid", mat4(1.0f));
-
-    /* Spotlight */ {
-        vec3 pos(5.0f, 5.0f, 5.0f);
-        vec3 direction = normalize(-1.0f * pos);
-        vec3 color(Random::Vec3(0.0f, 1.0f));
-        float penumbra = 20.0f;
-        float umbra = 30.0f;
-
-        auto cone = std::make_shared<LineMesh>();
-        vec3 right = cross(vec3(0.0f, 1.0f, 0.0f), direction);
-        vec3 dir = rotate(penumbra, right) * vec3(direction.x, direction.y, direction.z);
-        cone->addVertex(pos, color);
-        for(uint i = 0 ; i < 4 ; ++i) {
-            cone->addVertex(pos + 25.0f * dir, color);
-            cone->addLine(0, 1 + i);
-            dir = rotate(90.0f, direction) * dir;
-        }
-        scene.add("light cone", cone);
-        scene.add("line mesh", "light cone", mat4(1.0f));
-
-        scene.add("flat", "sphere", translate(pos).scale(0.1f));
-        flatShader->use();
-        flatShader->setUniform("color", color);
-
-        spotlightShader->use();
-        spotlightShader->setUniform("spotlight.position", pos);
-        spotlightShader->setUniform("spotlight.direction", direction);
-        spotlightShader->setUniform("spotlight.penumbra", std::cos(radians(penumbra)));
-        spotlightShader->setUniform("spotlight.umbra", std::cos(radians(umbra)));
-        spotlightShader->setUniform("spotlight.color", color);
-    }
-
-    Element& axes = scene.getElement(axesIndex);
-
-    /* ---- Main Loop ---- */
-    while(!glfwWindowShouldClose(window)) {
-        handleEvents();
+    /* Main Loop */
+    while(!Window::should_close()) {
+        EventHandler::poll_and_handle_events();
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        glClearColor(0.1, 0.1f, 0.1f, 1.0f);
+        frustum.update(camera);
+
+        framebuffer.bind();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        /* ImGui */ {
-            ImGui::Begin("Scene", nullptr, ImGuiWindowFlags_NoCollapse
-                                           | ImGuiWindowFlags_NoResize
-                                           | ImGuiWindowFlags_NoMove);
+        draw_background();
+        scene_graph.draw(frustum);
+        draw_post_processing();
 
-            ImGui::SetWindowPos("Scene", ImVec2(0.0f, 0.0f));
-            ImGui::SetWindowSize("Scene", ImVec2(0.2f * window.getWidth(), window.getHeight()));
-
-            ImGui::End();
-        }
-
-        for(uint i = 0 ; i < 10 ; ++i) {
-            mat4& model = scene.getElement(1 + i).model;
-            model = translate(2.0f * std::cos(time - i), model(1, 3), 2.0f * std::sin(time - i)).scale(model(0, 0));
-        }
-
-        axes.isActive = areAxesDrawn;
-        if(areAxesDrawn) { axes.model = translate(camera.getPosition() + 2.0f * camera.getDirection()).scale(0.5f); }
-
-        scene.draw();
+        draw_imgui_debug_window();
+        draw_imgui_object_ediot_window();
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-        glfwSwapBuffers(window);
+        Window::swap_buffers();
     }
 }
 
-void Application::handleWindowSizeCallback(int width, int height) {
-    ApplicationBase::handleWindowSizeCallback(width, height);
+void Application::draw_post_processing() const {
+    const Shader& shader = AssetManager::get_shader("post processing");
+    shader.use();
+    shader.set_uniform("u_texture", 0);
+    shader.set_uniform("u_texture_resolution", framebuffer.get_resolution());
+    shader.set_uniform_if_exists("u_resolution", Window::get_resolution());
+    framebuffer.bind_texture(0);
 
-    projection(0, 0) = 1.0f / (tanf(M_PI_4f / 2.0f) * window.getRatio());
+    Framebuffer::bind_default();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    if(EventHandler::is_wireframe_enabled()) { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); }
+    AssetManager::get_mesh("screen").draw();
+    if(EventHandler::is_wireframe_enabled()) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); }
 }
 
-void Application::handleCursorPositionCallback(double xPos, double yPos) {
-    if(!cursorVisible) { camera.look(vec2(xPos - mousePos.x, yPos - mousePos.y)); }
+void Application::draw_background() const {
+    const Shader& shader = AssetManager::get_shader("background");
+    shader.use();
 
-    ApplicationBase::handleCursorPositionCallback(xPos, yPos);
+    shader.set_uniform("u_resolution", Window::get_resolution());
+    shader.set_uniform("u_camera_direction", camera.get_direction());
+    shader.set_uniform("u_camera_right", camera.get_right_vector());
+    shader.set_uniform("u_camera_up", camera.get_up_vector());
+
+    if(EventHandler::is_wireframe_enabled()) { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); }
+    AssetManager::get_mesh("screen").draw();
+    if(EventHandler::is_wireframe_enabled()) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); }
 }
 
-void Application::handleKeyEvent(int key) {
-    switch(key) {
-        case GLFW_KEY_ESCAPE:
-            glfwSetWindowShouldClose(window, true);
-            break;
-        case GLFW_KEY_Z:
-            glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_FILL : GL_LINE);
-            wireframe = !wireframe;
-            break;
-        case GLFW_KEY_C:
-            (cullface ? glDisable : glEnable)(GL_CULL_FACE);
-            cullface = !cullface;
-            break;
-        case GLFW_KEY_TAB:
-            glfwSetInputMode(window, GLFW_CURSOR, cursorVisible ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
-            cursorVisible = !cursorVisible;
-            break;
-        case GLFW_KEY_Q:
-            areAxesDrawn = !areAxesDrawn;
-            break;
-        case GLFW_KEY_W:
-            camera.move(CameraControls::forward, delta);
-            break;
-        case GLFW_KEY_S:
-            camera.move(CameraControls::backward, delta);
-            break;
-        case GLFW_KEY_A:
-            camera.move(CameraControls::left, delta);
-            break;
-        case GLFW_KEY_D:
-            camera.move(CameraControls::right, delta);
-            break;
-        case GLFW_KEY_SPACE:
-            camera.move(CameraControls::upward, delta);
-            break;
-        case GLFW_KEY_LEFT_SHIFT:
-            camera.move(CameraControls::downward, delta);
-            break;
-        default: break;
-    }
+void Application::draw_imgui_debug_window() {
+    static ImVec2 win_pos(0.0f, 0.0f);
+    static ImVec2 win_size(0.0f, 0.0f);
+
+    ImGui::Begin("Debug", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+
+    win_size.x = 0.2f * Window::get_width();
+    ImGui::SetWindowPos(win_pos);
+    ImGui::SetWindowSize(win_size);
+
+    ImGui::Text("fps: %f f/s", 1.0f / EventHandler::get_delta());
+    ImGui::Text("delta: %fs", EventHandler::get_delta());
+
+    ImGui::NewLine();
+    ImGui::Checkbox("Draw AABBs", &scene_graph.are_AABBs_drawn);
+    ImGui::Text("Total Nodes Count: %lu", scene_graph.nodes.size());
+    ImGui::Text("Total Drawn Objects: %d", scene_graph.total_drawn_objects);
+
+    ImGui::NewLine();
+    ImGui::Text("Camera:");
+    ImGui::SliderFloat("Sensitivity", &camera.sensitivity, 0.05f, 1.0f);
+    ImGui::SliderFloat("Movement Speed", &camera.movement_speed, 1.0f, 100.0f);
+
+    ImGui::NewLine();
+    scene_graph.add_imgui_node_tree();
+
+    ImGui::End();
+}
+
+void Application::draw_imgui_object_ediot_window() {
+    static ImVec2 win_pos(0.0f, 0.0f);
+    static ImVec2 win_size(0.0f, 0.0f);
+
+    ImGui::Begin("Object Editor", nullptr, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove);
+
+    win_pos.x = 0.7f * Window::get_width();
+    ImGui::SetWindowPos(win_pos);
+    win_size.x = Window::get_width() - win_pos.x;
+    ImGui::SetWindowSize(win_size);
+
+    scene_graph.add_object_editor_to_imgui_window();
+
+    ImGui::End();
 }

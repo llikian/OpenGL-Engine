@@ -62,7 +62,7 @@ mat3 inverse(const mat3& mat) {
     );
 }
 
-mat3 transposeInverse(const mat3& mat) {
+mat3 transpose_inverse(const mat3& mat) {
     float det = mat(0, 0) * (mat(1, 1) * mat(2, 2) - mat(1, 2) * mat(2, 1))
                 - mat(0, 1) * (mat(1, 0) * mat(2, 2) - mat(1, 2) * mat(2, 0))
                 + mat(0, 2) * (mat(1, 0) * mat(2, 1) - mat(1, 1) * mat(2, 0));
@@ -86,7 +86,7 @@ mat3 transposeInverse(const mat3& mat) {
     );
 }
 
-mat3 transposeInverse(const mat4& mat) {
+mat3 transpose_inverse(const mat4& mat) {
     float det = mat(0, 0) * (mat(1, 1) * mat(2, 2) - mat(1, 2) * mat(2, 1))
                 - mat(0, 1) * (mat(1, 0) * mat(2, 2) - mat(1, 2) * mat(2, 0))
                 + mat(0, 2) * (mat(1, 0) * mat(2, 1) - mat(1, 1) * mat(2, 0));
@@ -275,4 +275,12 @@ mat3 operator /(const mat3& mat, float scalar) {
     }
 
     return result;
+}
+
+vec3 operator*(const mat3& mat, const vec3& vec) {
+    return vec3(
+        mat(0, 0) * vec.x + mat(0, 1) * vec.y + mat(0, 2) * vec.z,
+        mat(1, 0) * vec.x + mat(1, 1) * vec.y + mat(1, 2) * vec.z,
+        mat(2, 0) * vec.x + mat(2, 1) * vec.y + mat(2, 2) * vec.z
+    );
 }

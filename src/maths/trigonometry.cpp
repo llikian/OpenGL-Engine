@@ -6,11 +6,12 @@
 #include "maths/trigonometry.hpp"
 
 #include <cmath>
+#include "maths/constants.hpp"
 
-float radians(float deg) {
-    return deg * M_PIf / 180.0f;
+float degrees_to_radians(float deg) {
+    return deg * PI_F / 180.0f;
 }
 
-float degrees(float rad) {
-    return rad * 180.0f / M_PIf;
+float radians_to_degrees(float rad) {
+    return rad * 180.0f / PI_F;
 }
