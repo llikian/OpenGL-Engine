@@ -19,7 +19,7 @@ static void opengl_error_callback(unsigned int source,
                                   int /* length */,
                                   const GLchar* message,
                                   const void* /* userParam */) {
-    static const std::unordered_set<unsigned int> ignore_list{
+    static const std::unordered_set<unsigned int> ignore_list {
         // Buffer detailed info: Buffer object ... (bound to GL_ELEMENT_ARRAY_BUFFER_ARB, usage hint
         // is GL_STATIC_DRAW) will use VIDEO memory as the source for buffer object operations.
         131185,
@@ -153,7 +153,7 @@ Window::Window()
     glPatchParameteri(GL_PATCH_VERTICES, 4);
 
     // Sets the default texture to a plain magenta color
-    constexpr unsigned char magenta[3]{ 255, 0, 255 };
+    constexpr unsigned char magenta[3] { 255, 0, 255 };
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, 0);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1, 1, 0, GL_RGB, GL_UNSIGNED_BYTE, magenta);

@@ -8,9 +8,6 @@
 #define GLFW_INCLUDE_NONE
 
 #include <GLFW/glfw3.h>
-#include <iostream>
-#include <string>
-
 #include "maths/vec2.hpp"
 
 /**
@@ -19,7 +16,7 @@
  */
 class Window {
 public:
-    Window(const Window&) = delete; ///< Delete copy constructor.
+    Window(const Window&) = delete;            ///< Delete copy constructor.
     Window& operator=(const Window&) = delete; ///< Deleted copy operator.
 
     /**

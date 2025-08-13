@@ -6,7 +6,6 @@
 #pragma once
 
 #include <iostream>
-
 #include "vector3.hpp"
 
 /**

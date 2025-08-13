@@ -6,7 +6,6 @@
 #pragma once
 
 #include <vector>
-
 #include "Attribute.hpp"
 #include "culling/AABB.hpp"
 #include "glad/glad.h"

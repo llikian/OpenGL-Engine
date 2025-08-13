@@ -6,7 +6,6 @@
 #pragma once
 
 #include <filesystem>
-
 #include "Image.hpp"
 #include "maths/vec3.hpp"
 

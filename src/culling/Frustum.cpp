@@ -8,7 +8,7 @@
 void Frustum::update(const Camera& camera) {
     view_projection = camera.get_view_projection_matrix();
 
-    static const vec4 projection_space_points[8]{
+    static const vec4 projection_space_points[8] {
         vec4(1.0f, 1.0f, 1.0f, 1.0f),
         vec4(1.0f, 1.0f, -1.0f, 1.0f),
         vec4(1.0f, -1.0f, 1.0f, 1.0f),

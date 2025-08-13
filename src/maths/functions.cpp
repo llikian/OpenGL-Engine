@@ -4,6 +4,7 @@
  **************************************************************************************************/
 
 #include "maths/functions.hpp"
+
 #include <cmath>
 
 vec3 hue_to_rgb(unsigned short hue) {

@@ -7,7 +7,6 @@
 
 #include <string>
 #include <vector>
-#include "maths/Transform.hpp"
 
 constexpr unsigned int INVALID_INDEX = ~0u;
 

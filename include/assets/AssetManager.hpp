@@ -6,10 +6,9 @@
 #pragma once
 
 #include <functional>
-
+#include "mesh/Mesh.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
-#include "mesh/Mesh.hpp"
 
 /**
  * @class AssetManager

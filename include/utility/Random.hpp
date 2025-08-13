@@ -28,6 +28,6 @@ public:
     static vec4 get_vec4(vec4 min, vec4 max);
 
 private:
-    inline static std::random_device seed{};
-    inline static std::default_random_engine generator{seed()};
+    inline static std::random_device seed {};
+    inline static std::default_random_engine generator { seed() };
 };

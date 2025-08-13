@@ -7,8 +7,6 @@
 
 #include <GLFW/glfw3.h>
 
-class Application;
-
 /**
  * @brief Implementation for the GLFW window size callback. Uses the window user pointer to tell the
  * event handler to handle the event.

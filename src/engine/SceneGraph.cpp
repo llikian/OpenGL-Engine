@@ -5,9 +5,9 @@
 
 #include "engine/SceneGraph.hpp"
 
-#include "imgui.h"
 #include "assets/AssetManager.hpp"
 #include "engine/Node.hpp"
+#include "imgui.h"
 
 SceneGraph::SceneGraph()
     : flat_shader_index(INVALID_INDEX),

@@ -5,17 +5,16 @@
 
 #include "applications/Application.hpp"
 
-#include <cmath>
-#include "assets/AssetManager.hpp"
-#include "engine/EventHandler.hpp"
-#include "glad/glad.h"
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "assets/AssetManager.hpp"
+#include "engine/EventHandler.hpp"
+#include "engine/Window.hpp"
+#include "glad/glad.h"
 #include "maths/constants.hpp"
 #include "maths/functions.hpp"
 #include "maths/geometry.hpp"
-#include "maths/transforms.hpp"
 #include "mesh/primitives.hpp"
 #include "utility/LifetimeLogger.hpp"
 #include "utility/Random.hpp"

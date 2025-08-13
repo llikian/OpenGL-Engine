@@ -4,7 +4,6 @@
  **************************************************************************************************/
 
 #include <iostream>
-#include <stdexcept>
 #include "applications/Application.hpp"
 #include "assets/AssetManager.hpp"
 #include "engine/EventHandler.hpp"

@@ -6,7 +6,6 @@
 #pragma once
 
 #include "assets/Camera.hpp"
-#include "assets/Cubemap.hpp"
 #include "culling/Frustum.hpp"
 #include "engine/Framebuffer.hpp"
 #include "engine/SceneGraph.hpp"

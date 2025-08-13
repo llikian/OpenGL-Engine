@@ -5,13 +5,11 @@
 
 #pragma once
 
-#include <functional>
 #include <vector>
-
-#include "Node.hpp"
 #include "assets/Shader.hpp"
 #include "culling/AABB.hpp"
 #include "mesh/Mesh.hpp"
+#include "Node.hpp"
 
 #define ADD_NODE_PARAMETERS const std::string& name, unsigned int parent
 

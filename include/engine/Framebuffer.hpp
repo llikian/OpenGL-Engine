@@ -6,7 +6,6 @@
 #pragma once
 
 #include "assets/Texture.hpp"
-#include "glad/glad.h"
 #include "maths/vec2.hpp"
 
 /**
@@ -32,6 +31,6 @@ private:
     unsigned int RBO; ///< Rendering Buffer Object.
     Texture texture;  ///< The texture the framebuffer will render on.
 
-    unsigned int width; ///< The width of the framebuffer's texture.
+    unsigned int width;  ///< The width of the framebuffer's texture.
     unsigned int height; ///< The height of the framebuffer's texture.
 };

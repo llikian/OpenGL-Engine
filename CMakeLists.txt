@@ -23,7 +23,6 @@ set(SOURCES
         # Assets Module
         src/assets/AssetManager.cpp
         src/assets/Camera.cpp
-        src/assets/Cubemap.cpp
         src/assets/Image.cpp
         src/assets/Shader.cpp
         src/assets/Texture.cpp
@@ -56,7 +55,6 @@ set(SOURCES
         src/mesh/primitives.cpp
 
         # Utility Module
-        src/utility/hash.cpp
         src/utility/LifetimeLogger.cpp
         src/utility/Random.cpp
 

@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include "glad/glad.h"
+#include "maths/mat4.hpp"
 
 Shader::Shader() : id(0) { }
 

@@ -5,7 +5,6 @@
 
 #include "maths/trigonometry.hpp"
 
-#include <cmath>
 #include "maths/constants.hpp"
 
 float degrees_to_radians(float deg) {

@@ -5,9 +5,10 @@
 
 #include "engine/EventHandler.hpp"
 
-#include <GLFW/glfw3.h>
+#include "glad/glad.h" // Needs to go first to avoid error
+
 #include "engine/callbacks.hpp"
-#include "glad/glad.h"
+#include "engine/Window.hpp"
 
 void EventHandler::poll_and_handle_events() {
     glfwPollEvents();

@@ -8,7 +8,7 @@
 #include "maths/mat4.hpp"
 
 mat3::mat3()
-    : values{
+    : values {
         { 0.0f, 0.0f, 0.0f },
         { 0.0f, 0.0f, 0.0f },
         { 0.0f, 0.0f, 0.0f }
@@ -17,14 +17,14 @@ mat3::mat3()
 mat3::mat3(float v00, float v01, float v02,
            float v10, float v11, float v12,
            float v20, float v21, float v22)
-    : values{
+    : values {
         { v00, v10, v20 },
         { v01, v11, v21 },
         { v02, v12, v22 }
     } { }
 
 mat3::mat3(float scalar)
-    : values{
+    : values {
         { scalar, 0.0f, 0.0f },
         { 0.0f, scalar, 0.0f },
         { 0.0f, 0.0f, scalar }

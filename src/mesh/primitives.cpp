@@ -7,7 +7,6 @@
 
 #include <cmath>
 #include <functional>
-
 #include "engine/Window.hpp"
 #include "maths/constants.hpp"
 #include "maths/geometry.hpp"
@@ -65,7 +64,7 @@ void create_cube_mesh(Mesh& mesh) {
     mesh.enable_attribute(ATTRIBUTE_NORMAL);
     mesh.enable_attribute(ATTRIBUTE_TEX_COORDS);
 
-    static const vec3 positions[8]{
+    static const vec3 positions[8] {
         vec3(1.0f, 1.0f, 1.0f),   // 0: TOP - RIGHT - FRONT
         vec3(1.0f, 1.0f, -1.0f),  // 1: TOP - RIGHT - BACK
         vec3(1.0f, -1.0f, 1.0f),  // 2: BOTTOM - RIGHT - FRONT
@@ -76,7 +75,7 @@ void create_cube_mesh(Mesh& mesh) {
         vec3(-1.0f, -1.0f, -1.0f) // 7: BOTTOM - LEFT - BACK
     };
 
-    static const vec3 normals[6]{
+    static const vec3 normals[6] {
         vec3(1.0f, 0.0f, 0.0f),  // 0: RIGHT
         vec3(-1.0f, 0.0f, 0.0f), // 1: LEFT
         vec3(0.0f, 1.0f, 0.0f),  // 2: TOP
@@ -85,7 +84,7 @@ void create_cube_mesh(Mesh& mesh) {
         vec3(0.0f, 0.0f, -1.0f)  // 5: BACK
     };
 
-    static const uvec4 faces[6]{
+    static const uvec4 faces[6] {
         uvec4(0, 2, 3, 1), // 0: RIGHT
         uvec4(5, 7, 6, 4), // 1: LEFT
         uvec4(5, 4, 0, 1), // 2: TOP
@@ -94,7 +93,7 @@ void create_cube_mesh(Mesh& mesh) {
         uvec4(1, 3, 7, 5)  // 5: BACK
     };
 
-    static const vec2 tex_coords[4]{
+    static const vec2 tex_coords[4] {
         vec2(0.0f, 1.0f),
         vec2(0.0f, 0.0f),
         vec2(1.0f, 0.0f),
@@ -202,7 +201,7 @@ void create_axes_mesh(Mesh& mesh, float length) {
     mesh.enable_attribute(ATTRIBUTE_COLOR);
 
     const vec3 origin(0.0f, 0.0f, 0.0f);
-    const vec3 axes[3]{
+    const vec3 axes[3] {
         vec3(1.0f, 0.0f, 0.0f),
         vec3(0.0f, 1.0f, 0.0f),
         vec3(0.0f, 0.0f, 1.0f)
@@ -242,7 +241,7 @@ void create_pyramid_mesh(Mesh& mesh, const vec3& A, const vec3& B, const vec3& C
 }
 
 void create_frustum_meshes(Mesh& faces, Mesh& lines, const Camera& camera) {
-    static const vec4 projection_space_points[8]{
+    static const vec4 projection_space_points[8] {
         vec4(1.0f, 1.0f, 1.0f, 1.0f),
         vec4(1.0f, 1.0f, -1.0f, 1.0f),
         vec4(1.0f, -1.0f, 1.0f, 1.0f),
@@ -314,7 +313,7 @@ void create_frustum_meshes(Mesh& faces, Mesh& lines, const Camera& camera) {
 }
 
 void create_icosphere_mesh(Mesh& mesh, unsigned int subdivisions) {
-    static constexpr unsigned int faces[12][5]{
+    static constexpr unsigned int faces[12][5] {
         { 13, 5, 18, 4, 12 },
         { 12, 4, 10, 8, 0 },
         { 13, 12, 0, 16, 1 },
@@ -329,7 +328,7 @@ void create_icosphere_mesh(Mesh& mesh, unsigned int subdivisions) {
         { 19, 7, 15, 14, 6 }
     };
 
-    std::vector<vec3> vertices{
+    std::vector<vec3> vertices {
         normalize(vec3(1.0f, 1.0f, 1.0f)),    // 0
         normalize(vec3(1.0f, 1.0f, -1.0f)),   // 1
         normalize(vec3(1.0f, -1.0f, 1.0f)),   // 2

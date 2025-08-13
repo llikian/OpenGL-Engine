@@ -7,11 +7,9 @@
 
 #include <filesystem>
 #include <initializer_list>
-#include <stdexcept>
 #include <string>
 #include <unordered_map>
 #include "maths/mat3.hpp"
-#include "maths/mat4.hpp"
 #include "maths/vec2.hpp"
 #include "maths/vec3.hpp"
 #include "maths/vec4.hpp"

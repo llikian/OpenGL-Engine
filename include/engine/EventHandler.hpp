@@ -10,7 +10,6 @@
 #include <unordered_map>
 #include "assets/Camera.hpp"
 #include "maths/vec2.hpp"
-#include "Window.hpp"
 
 using Action = std::function<void()>;
 
@@ -20,7 +19,7 @@ using Action = std::function<void()>;
  */
 class EventHandler {
 public:
-    EventHandler(const EventHandler&) = delete; ///< Delete copy constructor.
+    EventHandler(const EventHandler&) = delete;            ///< Delete copy constructor.
     EventHandler& operator=(const EventHandler&) = delete; ///< Deleted copy operator.
 
     static inline EventHandler& get() {

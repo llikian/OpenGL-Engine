@@ -5,7 +5,6 @@
 
 #pragma once
 
-#include <ostream>
 #include "vec3.hpp"
 
 struct mat4; // Forward-Definition of mat4

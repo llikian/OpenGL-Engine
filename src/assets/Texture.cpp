@@ -216,7 +216,7 @@ void Texture::create(const Image& image, bool srgb) {
 }
 
 void Texture::create(const vec3& color) {
-    unsigned char c[3]{
+    unsigned char c[3] {
         static_cast<unsigned char>(color.x * 255.0f),
         static_cast<unsigned char>(color.y * 255.0f),
         static_cast<unsigned char>(color.z * 255.0f)
@@ -225,7 +225,7 @@ void Texture::create(const vec3& color) {
 }
 
 void Texture::create(unsigned char r, unsigned char g, unsigned char b) {
-    unsigned char color[3]{ r, g, b };
+    unsigned char color[3] { r, g, b };
     create(1, 1, color, GL_RGB);
 }
 

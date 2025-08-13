@@ -10,7 +10,7 @@
 #include "maths/trigonometry.hpp"
 
 mat4::mat4()
-    : values{
+    : values {
         { 0.0f, 0.0f, 0.0f, 0.0f },
         { 0.0f, 0.0f, 0.0f, 0.0f },
         { 0.0f, 0.0f, 0.0f, 0.0f },
@@ -21,7 +21,7 @@ mat4::mat4(float v00, float v01, float v02, float v03,
            float v10, float v11, float v12, float v13,
            float v20, float v21, float v22, float v23,
            float v30, float v31, float v32, float v33)
-    : values{
+    : values {
         { v00, v10, v20, v30 },
         { v01, v11, v21, v31 },
         { v02, v12, v22, v32 },
@@ -31,7 +31,7 @@ mat4::mat4(float v00, float v01, float v02, float v03,
 mat4::mat4(float v00, float v01, float v02,
            float v10, float v11, float v12,
            float v20, float v21, float v22)
-    : values{
+    : values {
         { v00, v10, v20, 0.0f },
         { v01, v11, v21, 0.0f },
         { v02, v12, v22, 0.0f },
@@ -39,7 +39,7 @@ mat4::mat4(float v00, float v01, float v02,
     } { }
 
 mat4::mat4(float scalar)
-    : values{
+    : values {
         { scalar, 0.0f, 0.0f, 0.0f },
         { 0.0f, scalar, 0.0f, 0.0f },
         { 0.0f, 0.0f, scalar, 0.0f },
@@ -151,7 +151,7 @@ mat4& mat4::rotate_x(float angle) {
     const float cosine = std::cos(angle);
     const float sine = std::sin(angle);
 
-    float column[4]{ values[1][0], values[1][1], values[1][2], values[1][3] };
+    float column[4] { values[1][0], values[1][1], values[1][2], values[1][3] };
 
     values[1][0] = cosine * column[0] + sine * values[2][0];
     values[1][1] = cosine * column[1] + sine * values[2][1];
@@ -172,7 +172,7 @@ mat4& mat4::rotate_y(float angle) {
     const float cosine = std::cos(angle);
     const float sine = std::sin(angle);
 
-    float column[4]{ values[0][0], values[0][1], values[0][2], values[0][3] };
+    float column[4] { values[0][0], values[0][1], values[0][2], values[0][3] };
 
     values[0][0] = cosine * column[0] - sine * values[2][0];
     values[0][1] = cosine * column[1] - sine * values[2][1];
@@ -193,7 +193,7 @@ mat4& mat4::rotate_z(float angle) {
     const float cosine = std::cos(angle);
     const float sine = std::sin(angle);
 
-    float column[4]{ values[0][0], values[0][1], values[0][2], values[0][3] };
+    float column[4] { values[0][0], values[0][1], values[0][2], values[0][3] };
 
     values[0][0] = cosine * column[0] + sine * values[1][0];
     values[0][1] = cosine * column[1] + sine * values[1][1];

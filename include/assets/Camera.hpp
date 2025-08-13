@@ -178,5 +178,5 @@ private:
     mat4 view_matrix;       ///< The camera's view matrix. Used every frame in the mvp matrix calculation.
     mat4 projection_matrix; ///< The projection matrix. Used every frame in the mvp matrix calculation.
 
-    const vec3 WORLD_UP{ 0.0f, 1.0f, 0.0f }; ///< Where "up" is.
+    const vec3 WORLD_UP { 0.0f, 1.0f, 0.0f }; ///< Where "up" is.
 };
