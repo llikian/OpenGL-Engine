@@ -25,7 +25,7 @@ Application::Application()
       are_axes_drawn(false) {
     /* ---- Event Handler ---- */
     EventHandler::set_active_camera(&camera);
-    EventHandler::get().associate_action_to_key(GLFW_KEY_Q, false, [this] { are_axes_drawn = !are_axes_drawn; });
+    EventHandler::associate_action_to_key(GLFW_KEY_Q, false, [this] { are_axes_drawn = !are_axes_drawn; });
 
     /* ---- ImGui ---- */
     IMGUI_CHECKVERSION();
