@@ -10,14 +10,13 @@
 
 /**
  * @struct mat4
- * @brief Represents a 4 by 4 matrix.
+ * @brief Represents a 4 by 4 matrix. Even if the elements are accessed
  */
 struct mat4 {
-public:
     /**
      * @brief Constructs a mat4 with all components equal to 0.
      */
-    mat4();
+    mat4() = default;
 
     /**
      * @brief Constructs a mat4 with a specific value for each component.
@@ -55,7 +54,7 @@ public:
      * @param column The column's index.
      * @return A reference to the element.
      */
-    inline float& operator ()(int row, int column) { return values[column][row]; }
+    float& operator()(uint8_t row, uint8_t column) { return (&columns[column].x)[row]; }
 
     /**
      * @brief Accesses an element of the mat4.
@@ -63,112 +62,24 @@ public:
      * @param column The column's index.
      * @return A const reference to the element.
      */
-    inline const float& operator ()(int row, int column) const { return values[column][row]; }
+    const float& operator()(uint8_t row, uint8_t column) const { return (&columns[column].x)[row]; }
 
     /**
-     * @brief Applies a transform that scales by the same factor in all 3 directions.
-     * @param factor The scaling factor.
-     * @return A refence to the mat4.
+     * @brief Access a column of the mat4.
+     * @param column The column's index.
+     * @return A reference to the column.
      */
-    mat4& scale(float factor);
+    vec4& operator[](uint8_t column) { return columns[column]; }
 
     /**
-     * @brief Applies a transform that scales by a specific factor in each direction.
-     * @param x The scaling factor in the x direction.
-     * @param y The scaling factor in the y direction.
-     * @param z The scaling factor in the z direction.
-     * @return A refence to the mat4.
+     * @brief Access a column of the mat4.
+     * @param column The column's index.
+     * @return A const reference to the column.
      */
-    mat4& scale(float x, float y, float z);
-
-    /**
-     * @brief Applies a transformthat scales by a specific factor in each direction.
-     * @param factors The scaling factors.
-     * @return A reference to the mat4.
-     */
-    mat4& scale(const vec3& factors);
-
-    /**
-     * @brief Applies a transform that only scales in the x direction.
-     * @param factor The scaling factor.
-     * @return A reference to the mat4.
-     */
-    mat4& scale_x(float factor);
-
-    /**
-     * @brief Applies a transform that only scales in the y direction.
-     * @param factor The scaling factor.
-     * @return A reference to the mat4.
-     */
-    mat4& scale_y(float factor);
-
-    /**
-     * @brief Applies a transform that only scales in the z direction.
-     * @param factor The scaling factor.
-     * @return A reference to the mat4.
-     */
-    mat4& scale_z(float factor);
-
-    /**
-     * @brief Applies a transform that displaces by a specific vector.
-     * @param vector The displacement vector.
-     * @return A reference to the mat4.
-     */
-    mat4& translate(const vec3& vector);
-
-    /**
-     * @brief Applies a transform that displaces by a specific amount in each direction.
-     * @param x The displacement in the x direction.
-     * @param y The displacement in the y direction.
-     * @param z The displacement in the z direction.
-     * @return A reference to the mat4.
-     */
-    mat4& translate(float x, float y, float z);
-
-    /**
-     * @brief Applies a transform that only displaces in the x direction.
-     * @param scalar The displacement amount.
-     * @return A reference to the mat4.
-     */
-    mat4& translate_x(float scalar);
-
-    /**
-     * @brief Applies a transform that only displaces in the y direction.
-     * @param scalar The displacement amount.
-     * @return A reference to the mat4.
-     */
-    mat4& translate_y(float scalar);
-
-    /**
-     * @brief Applies a transform that only displaces in the z direction.
-     * @param scalar The displacement amount.
-     * @return A reference to the mat4.
-     */
-    mat4& translate_z(float scalar);
-
-    /**
-     * @brief Applies a transform that rotates around the x axis by a certain angle.
-     * @param angle The rotation angle in degrees.
-     * @return A reference to the mat4.
-     */
-    mat4& rotate_x(float angle);
-
-    /**
-     * @brief Applies a transform that rotates around the y axis by a certain angle.
-     * @param angle The rotation angle in degrees.
-     * @return A reference to the mat4.
-     */
-    mat4& rotate_y(float angle);
-
-    /**
-     * @brief Applies a transform that rotates around the z axis by a certain angle.
-     * @param angle The rotation angle in degrees.
-     * @return A reference to the mat4.
-     */
-    mat4& rotate_z(float angle);
+    const vec4& operator[](uint8_t column) const { return columns[column]; }
 
 private:
-    float values[4][4]; ///< The values of the mat4.
+    vec4 columns[4]; ///< The columns of the mat4.
 };
 
 /**
