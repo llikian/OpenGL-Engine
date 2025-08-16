@@ -61,6 +61,20 @@ struct vector4 {
     explicit vector4(Type value) : x(value), y(value), z(value), w(value) { }
 
     /**
+     * @brief Access an element of the vector4 by its index.
+     * @param index The index of the element. 0 <= index < 4.
+     * @return A reference to the element.
+     */
+    vector4& operator[](uint8_t index) { return (&x)[index]; }
+
+    /**
+     * @brief Access an element of the vector4 by its index.
+     * @param index The index of the element. 0 <= index < 4.
+     * @return A const reference to the element.
+     */
+    const vector4& operator[](uint8_t index) const { return (&x)[index]; }
+
+    /**
      * @brief Adds another vector4's components to the current instance's components.
      * @param vec The vector4 to add.
      * @return A reference to this instance.

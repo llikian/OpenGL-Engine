@@ -7,8 +7,10 @@
 
 #include <iostream>
 
-template <typename Type> struct vector3; // Forward Declaration of vector3 to avoid circular inclusion.
-template <typename Type> struct vector4; // Forward Declaration of vector4 to avoid circular inclusion.
+template <typename Type>
+struct vector3; // Forward Declaration of vector3 to avoid circular inclusion.
+template <typename Type>
+struct vector4; // Forward Declaration of vector4 to avoid circular inclusion.
 
 /**
  * @class vector2
@@ -46,6 +48,20 @@ struct vector2 {
      * @param value The value of each component.
      */
     explicit vector2(Type value) : x(value), y(value) { }
+
+    /**
+     * @brief Access an element of the vector2 by its index.
+     * @param index The index of the element. 0 <= index < 2.
+     * @return A reference to the element.
+     */
+    vector2& operator[](uint8_t index) { return (&x)[index]; }
+
+    /**
+     * @brief Access an element of the vector2 by its index.
+     * @param index The index of the element. 0 <= index < 2.
+     * @return A const reference to the element.
+     */
+    const vector2& operator[](uint8_t index) const { return (&x)[index]; }
 
     /**
      * @brief Adds another vector2's components to the current instance's components.
