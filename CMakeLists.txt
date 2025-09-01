@@ -79,6 +79,7 @@ set(INCLUDES
         lib/glad/include
         lib/imgui
         lib/imgui/backends
+        lib/imgui/misc/cpp
         lib/stb
 )
 

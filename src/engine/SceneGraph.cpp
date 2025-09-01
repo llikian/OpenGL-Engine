@@ -5,9 +5,10 @@
 
 #include "engine/SceneGraph.hpp"
 
+#include "imgui.h"
+#include "imgui_stdlib.h"
 #include "assets/AssetManager.hpp"
 #include "engine/Node.hpp"
-#include "imgui.h"
 
 SceneGraph::SceneGraph()
     : flat_shader_index(INVALID_INDEX),
@@ -96,7 +97,12 @@ void SceneGraph::add_object_editor_to_imgui_window() {
         Node& node = nodes[selected_node];
         Transform& transform = transforms[selected_node];
 
-        ImGui::Text("Selected Node: '%s'", node.name.c_str());
+        ImGui::Text("Node");
+        ImGui::SameLine();
+        ImGui::PushID(&node.name);
+        ImGui::InputText("", &node.name);
+        ImGui::PopID();
+        ImGui::NewLine();
 
         if(ImGui::Button("UNSELECT")) {
             set_is_selected(selected_node, false);
