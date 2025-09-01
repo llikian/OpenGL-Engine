@@ -137,6 +137,7 @@ void Application::run() {
 
             scene_graph.transforms[index].set_local_position(Random::get_vec3(-500.0f, 500.0f));
             scene_graph.transforms[index].set_local_scale(Random::get_vec3(1.0f, 5.0f));
+            scene_graph.colors[scene_graph.nodes[index].color_index] = vec4(Random::get_vec3(-0.5f, 0.5f), 1.0f);
         }
     }
 
