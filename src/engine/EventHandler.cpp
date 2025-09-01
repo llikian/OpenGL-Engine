@@ -41,7 +41,7 @@ EventHandler::EventHandler()
     });
 }
 
-void EventHandler::do_associate_action_to_key(int key, bool repeatable, const Action& action) {
+void EventHandler::do_associate_action_to_key(int key, bool repeatable, const KeyAction& action) {
     key_actions.emplace(key, action);
     if(repeatable) { repeatable_keys.emplace(key, false); }
 }
@@ -118,7 +118,7 @@ void EventHandler::do_handle_key_press_event(int key) {
     if(repeatable_key_iterator != repeatable_keys.end()) {
         repeatable_key_iterator->second = true;
     } else {
-        std::unordered_map<int, Action>::iterator action_iterator = key_actions.find(key);
+        std::unordered_map<int, KeyAction>::iterator action_iterator = key_actions.find(key);
         if(action_iterator != key_actions.end()) { action_iterator->second(); }
     }
 }

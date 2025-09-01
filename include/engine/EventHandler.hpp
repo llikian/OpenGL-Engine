@@ -6,12 +6,11 @@
 #pragma once
 
 #include <functional>
-#include <queue>
 #include <unordered_map>
 #include "assets/Camera.hpp"
 #include "maths/vec2.hpp"
 
-using Action = std::function<void()>;
+using KeyAction = std::function<void()>;
 
 /**
  * @class EventHandler
@@ -33,7 +32,7 @@ public:
      * @param repeatable Whether the action is repeated when holding down the key.
      * @param action What happens when the key is pressed.
      */
-    static void associate_action_to_key(int key, bool repeatable, const Action& action) {
+    static void associate_action_to_key(int key, bool repeatable, const KeyAction& action) {
         get().do_associate_action_to_key(key, repeatable, action);
     }
 
@@ -151,7 +150,7 @@ private:
      * @param repeatable Whether the action is repeated when holding down the key.
      * @param action What happens when the key is pressed.
      */
-    void do_associate_action_to_key(int key, bool repeatable, const Action& action);
+    void do_associate_action_to_key(int key, bool repeatable, const KeyAction& action);
 
     /**
      * @brief Destroys the action associated to a key and if the key is repeatable, removes it from
@@ -204,7 +203,7 @@ private:
      */
     void do_handle_cursor_position_event(int position_x, int position_y);
 
-    std::unordered_map<int, Action> key_actions;   ///< Stores the action associated with each key.
+    std::unordered_map<int, KeyAction> key_actions;   ///< Stores the action associated with each key.
     std::unordered_map<int, bool> repeatable_keys; ///< Stores repeatable keys and whether they are active.
 
     vec2 mouse_position; ///< The position of the cursor of the mouse on the window.
