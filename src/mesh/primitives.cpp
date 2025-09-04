@@ -12,7 +12,7 @@
 #include "maths/geometry.hpp"
 
 void create_sphere_mesh(Mesh& mesh, unsigned int horizontal_slices, unsigned int vertical_slices) {
-    mesh.set_primitive(Primitive::TRIANGLES);
+    mesh.set_primitive(MeshPrimitive::TRIANGLES);
     mesh.enable_attribute(ATTRIBUTE_NORMAL);
     mesh.enable_attribute(ATTRIBUTE_TEX_COORDS);
 
@@ -60,7 +60,7 @@ void create_sphere_mesh(Mesh& mesh, unsigned int horizontal_slices, unsigned int
 }
 
 void create_cube_mesh(Mesh& mesh) {
-    mesh.set_primitive(Primitive::TRIANGLES);
+    mesh.set_primitive(MeshPrimitive::TRIANGLES);
     mesh.enable_attribute(ATTRIBUTE_NORMAL);
     mesh.enable_attribute(ATTRIBUTE_TEX_COORDS);
 
@@ -112,7 +112,7 @@ void create_cube_mesh(Mesh& mesh) {
 }
 
 void create_wireframe_cube_mesh(Mesh& mesh) {
-    mesh.set_primitive(Primitive::LINES);
+    mesh.set_primitive(MeshPrimitive::LINES);
 
     mesh.add_vertex(vec3(1.0f, 1.0f, 1.0f));    // 0: TOP - RIGHT - FRONT
     mesh.add_vertex(vec3(1.0f, 1.0f, -1.0f));   // 1: TOP - RIGHT - BACK
@@ -154,7 +154,7 @@ void create_wireframe_cube_mesh(Mesh& mesh) {
 }
 
 void create_quad_mesh(Mesh& mesh, const vec3& A, const vec3& B, const vec3& C) {
-    mesh.set_primitive(Primitive::TRIANGLES);
+    mesh.set_primitive(MeshPrimitive::TRIANGLES);
     mesh.enable_attribute(ATTRIBUTE_NORMAL);
     mesh.enable_attribute(ATTRIBUTE_TEX_COORDS);
 
@@ -173,7 +173,7 @@ void create_quad_mesh(Mesh& mesh, const vec3& A, const vec3& B, const vec3& C) {
 }
 
 void create_triangle_mesh(Mesh& mesh, const vec3& A, const vec3& B, const vec3& C) {
-    mesh.set_primitive(Primitive::TRIANGLES);
+    mesh.set_primitive(MeshPrimitive::TRIANGLES);
     mesh.enable_attribute(ATTRIBUTE_NORMAL);
     mesh.enable_attribute(ATTRIBUTE_TEX_COORDS);
 
@@ -187,7 +187,7 @@ void create_triangle_mesh(Mesh& mesh, const vec3& A, const vec3& B, const vec3& 
 }
 
 void create_screen_mesh(Mesh& mesh) {
-    mesh.set_primitive(Primitive::TRIANGLES);
+    mesh.set_primitive(MeshPrimitive::TRIANGLES);
 
     mesh.add_vertex(vec3(-1.0f, 3.0f, 1.0f));
     mesh.add_vertex(vec3(-1.0f, -1.0f, 1.0f));
@@ -197,7 +197,7 @@ void create_screen_mesh(Mesh& mesh) {
 }
 
 void create_axes_mesh(Mesh& mesh, float length) {
-    mesh.set_primitive(Primitive::LINES);
+    mesh.set_primitive(MeshPrimitive::LINES);
     mesh.enable_attribute(ATTRIBUTE_COLOR);
 
     const vec3 origin(0.0f, 0.0f, 0.0f);
@@ -216,7 +216,7 @@ void create_axes_mesh(Mesh& mesh, float length) {
 }
 
 void create_pyramid_mesh(Mesh& mesh, const vec3& A, const vec3& B, const vec3& C, float height) {
-    mesh.set_primitive(Primitive::LINES);
+    mesh.set_primitive(MeshPrimitive::LINES);
 
     const vec3 BA = A - B;
     const vec3 BC = C - B;
@@ -260,7 +260,7 @@ void create_frustum_meshes(Mesh& faces, Mesh& lines, const Camera& camera) {
     }
 
     /* Line Mesh */
-    lines.set_primitive(Primitive::LINES);
+    lines.set_primitive(MeshPrimitive::LINES);
 
     lines.add_vertex(vec3(points[0]));
     lines.add_vertex(vec3(points[1]));
@@ -290,7 +290,7 @@ void create_frustum_meshes(Mesh& faces, Mesh& lines, const Camera& camera) {
     lines.add_line(7, 4);
 
     /* Face Mesh */
-    faces.set_primitive(Primitive::TRIANGLES);
+    faces.set_primitive(MeshPrimitive::TRIANGLES);
 
     faces.add_vertex(vec3(points[0]));
     faces.add_vertex(vec3(points[1]));
@@ -394,7 +394,7 @@ void create_icosphere_mesh(Mesh& mesh, unsigned int subdivisions) {
         add_triangle(face[4], face[0], index, subdivisions);
     }
 
-    mesh.set_primitive(Primitive::TRIANGLES);
+    mesh.set_primitive(MeshPrimitive::TRIANGLES);
     mesh.enable_attribute(ATTRIBUTE_NORMAL);
     mesh.enable_attribute(ATTRIBUTE_TEX_COORDS);
 

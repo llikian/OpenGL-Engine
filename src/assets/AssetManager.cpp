@@ -113,11 +113,11 @@ Shader& AssetManager::get_relevant_shader_from_mesh(const Mesh& mesh) {
     AssetManager& asset_manager = get();
 
     switch(mesh.get_primitive()) {
-        case Primitive::POINTS:
+        case MeshPrimitive::POINTS:
             return asset_manager.shaders["point mesh"];
-        case Primitive::LINES:
+        case MeshPrimitive::LINES:
             return asset_manager.shaders[mesh.has_attribute(ATTRIBUTE_COLOR) ? "line mesh" : "flat"];
-        case Primitive::TRIANGLES:
+        case MeshPrimitive::TRIANGLES:
             return asset_manager.shaders[mesh.has_attribute(ATTRIBUTE_NORMAL) ? "blinn-phong" : "flat"];
         default:
             return asset_manager.shaders["flat"];

@@ -14,7 +14,7 @@
 #include "maths/vec3.hpp"
 #include "maths/vec4.hpp"
 
-enum class Primitive : unsigned char {
+enum class MeshPrimitive : unsigned char {
     NONE,
     POINTS,
     LINES,
@@ -27,17 +27,17 @@ enum class Primitive : unsigned char {
  */
 class Mesh {
 public:
-    explicit Mesh(Primitive primitive = Primitive::NONE);
+    explicit Mesh(MeshPrimitive primitive = MeshPrimitive::NONE);
     ~Mesh();
 
     void draw() const;
 
-    void set_primitive(Primitive primitive);
+    void set_primitive(MeshPrimitive primitive);
 
     /**
      * @return The mesh's primitive.
      */
-    Primitive get_primitive() const;
+    MeshPrimitive get_primitive() const;
 
     AttributeType get_attribute_type(Attribute attribute) const;
 
@@ -148,7 +148,7 @@ private:
 
     static void add_vertex_helper(unsigned int) { }
 
-    Primitive primitive;
+    MeshPrimitive primitive;
 
     AttributeType attributes[ATTRIBUTE_AMOUNT];
     unsigned int stride;                  ///< Stride in amount of floats (not bytes).
@@ -164,11 +164,11 @@ private:
     AABB aabb;
 };
 
-inline unsigned int get_opengl_enum_for_primitive(Primitive primitive) {
+inline unsigned int get_opengl_enum_for_primitive(MeshPrimitive primitive) {
     switch(primitive) {
-        case Primitive::POINTS: return GL_POINTS;
-        case Primitive::LINES: return GL_LINES;
-        case Primitive::TRIANGLES: return GL_TRIANGLES;
+        case MeshPrimitive::POINTS: return GL_POINTS;
+        case MeshPrimitive::LINES: return GL_LINES;
+        case MeshPrimitive::TRIANGLES: return GL_TRIANGLES;
         default: return GL_NONE;
     }
 }

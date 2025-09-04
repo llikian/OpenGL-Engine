@@ -9,7 +9,7 @@
 #include "maths/geometry.hpp"
 #include "maths/mat3.hpp"
 
-Mesh::Mesh(Primitive primitive)
+Mesh::Mesh(MeshPrimitive primitive)
     : primitive(primitive), stride(0), active_attributes_count(0), VAO(0), VBO(0), EBO(0) {
     for(AttributeType& attribute : attributes) { attribute = AttributeType::NONE; }
     enable_attribute(ATTRIBUTE_POSITION);
@@ -20,7 +20,7 @@ Mesh::~Mesh() {
 }
 
 void Mesh::draw() const {
-    if(primitive == Primitive::NONE) {
+    if(primitive == MeshPrimitive::NONE) {
         std::cout << "[WARNING] Mesh wasn't drawn as it didn't have a primitive.\n";
         return;
     }
@@ -44,11 +44,11 @@ void Mesh::draw() const {
     }
 }
 
-void Mesh::set_primitive(Primitive primitive) {
+void Mesh::set_primitive(MeshPrimitive primitive) {
     this->primitive = primitive;
 }
 
-Primitive Mesh::get_primitive() const {
+MeshPrimitive Mesh::get_primitive() const {
     return primitive;
 }
 
