@@ -106,6 +106,7 @@ public:
         add_vertex_helper(0, std::forward<Args>(attribute_values)...);
     }
 
+    void add_index(unsigned int index);
     void add_line(unsigned int start, unsigned int end);
     void add_line_triangle(unsigned int A, unsigned int B, unsigned int C);
     void add_line_quad(unsigned int A, unsigned int B, unsigned int C, unsigned int D);

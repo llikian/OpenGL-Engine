@@ -123,7 +123,7 @@ void Application::run() {
                                                                vec4(1.0f));
     scene_graph.transforms[light].set_local_position(0.0f, 100.0f, 0.0f);
 
-    /* Frustum Tests */ {
+    /* Frustum Tests {
         unsigned int frustum_tests_root = scene_graph.add_simple_node("Frustum Tests Root", 0);
         unsigned int mesh_index = scene_graph.add_mesh(AssetManager::get_mesh_ptr("cube"));
 
@@ -140,6 +140,10 @@ void Application::run() {
             scene_graph.colors[scene_graph.nodes[index].color_index] = vec4(Random::get_vec3(-0.5f, 0.5f), 1.0f);
         }
     }
+    */
+
+    // scene_graph.add_gltf_scene_node("Duck", 0, "data/models/duck.glb");
+    scene_graph.add_gltf_scene_node("Suzanne", 0, "/home/llikian/Downloads/glTF-Sample-Models-main/2.0/Suzanne/glTF/Suzanne.gltf");
 
     /* Main Loop */
     while(!Window::should_close()) {

@@ -141,6 +141,10 @@ void Mesh::disable_attribute(Attribute attribute) {
     attributes[attribute] = AttributeType::NONE;
 }
 
+void Mesh::add_index(unsigned int index) {
+    indices.push_back(index);
+}
+
 void Mesh::add_line(unsigned int start, unsigned int end) {
     indices.push_back(start);
     indices.push_back(end);

@@ -15,6 +15,7 @@ struct Node {
         SIMPLE,           // NO DATA
         MESH,             // MESH, SHADER, AABB, (MATERIAL)
         FLAT_SHADED_MESH, // MESH, SHADER, AABB, COLOR
+        GLTF_SCENE,       // MESH, SHADER, AABB, COLOR
     };
 
     Node(const std::string& name, int parent, Type type);
@@ -28,6 +29,7 @@ struct Node {
     unsigned int drawable_index; ///< The index of node's drawable object. INVALID_INDEX if not drawable.
     unsigned int shader_index;   ///< The index of the node's shader. INVALID_INDEX if no shader.
     unsigned int color_index;    ///< The index of the node's color. INVALID_INDEX if no color.
+    unsigned int scene_index;    ///< The index of the node's scene. INVALID_INDEX if no color.
 
     bool is_visible;  ///< Whether the node is visible.
     bool is_selected; ///< Whether the node is selected.

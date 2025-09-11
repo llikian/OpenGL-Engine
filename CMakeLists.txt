@@ -23,6 +23,7 @@ set(SOURCES
         # Assets Module
         src/assets/AssetManager.cpp
         src/assets/Camera.cpp
+        src/assets/GLTF.cpp
         src/assets/Image.cpp
         src/assets/Shader.cpp
         src/assets/Texture.cpp
@@ -81,6 +82,7 @@ set(INCLUDES
         lib/imgui/backends
         lib/imgui/misc/cpp
         lib/stb
+        lib/tinygltf
 )
 
 set(LIBRARIES

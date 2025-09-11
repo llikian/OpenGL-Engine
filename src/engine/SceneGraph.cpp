@@ -78,6 +78,17 @@ unsigned int SceneGraph::add_flat_shaded_mesh_node(const std::string& name,
     return add_flat_shaded_mesh_node(name, parent, meshes.size() - 1, color);
 }
 
+unsigned int SceneGraph::add_gltf_scene_node(const std::string& name,
+                                             unsigned int parent,
+                                             const std::filesystem::path& scene_path) {
+    unsigned int index = add_node(name, parent, Node::Type::GLTF_SCENE);
+
+    gltf_scenes.emplace_back(scene_path, this, index);
+    nodes[index].scene_index = gltf_scenes.size() - 1;
+
+    return index;
+}
+
 unsigned int SceneGraph::add_mesh(const Mesh* mesh) {
     meshes.push_back(mesh);
     return meshes.size() - 1;
@@ -255,6 +266,7 @@ void SceneGraph::update_AABBs(unsigned int node_index) {
             AABBs[node_index].set(meshes[nodes[node_index].drawable_index]->get_AABB(), transforms[node_index]);
             break;
         case Node::Type::SIMPLE:
+        case Node::Type::GLTF_SCENE:
             for(unsigned int index : nodes[node_index].children) {
                 AABB::axis_aligned_min(min, AABBs[index].min_point);
                 AABB::axis_aligned_max(max, AABBs[index].max_point);
@@ -293,6 +305,9 @@ void SceneGraph::add_node_to_imgui_node_tree(unsigned int node_index) {
             break;
         case Node::Type::FLAT_SHADED_MESH:
             label += " F";
+            break;
+        case Node::Type::GLTF_SCENE:
+            label += " S";
             break;
         default:
             label += " ?";

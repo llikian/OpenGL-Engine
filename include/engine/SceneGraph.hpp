@@ -6,14 +6,16 @@
 #pragma once
 
 #include <vector>
+#include "Node.hpp"
+#include "assets/GLTF.hpp"
 #include "assets/Shader.hpp"
 #include "culling/AABB.hpp"
 #include "mesh/Mesh.hpp"
-#include "Node.hpp"
 
 #define ADD_NODE_PARAMETERS const std::string& name, unsigned int parent
 
-struct SceneGraph {
+class SceneGraph {
+public:
     SceneGraph();
 
     Node& operator[](unsigned int node_index);
@@ -25,6 +27,7 @@ struct SceneGraph {
     unsigned int add_mesh_node(ADD_NODE_PARAMETERS, const Mesh* mesh, const Shader* shader);
     unsigned int add_flat_shaded_mesh_node(ADD_NODE_PARAMETERS, unsigned int mesh_index, const vec4& color);
     unsigned int add_flat_shaded_mesh_node(ADD_NODE_PARAMETERS, const Mesh* mesh, const vec4& color);
+    unsigned int add_gltf_scene_node(ADD_NODE_PARAMETERS, const std::filesystem::path& scene_path);
 
     unsigned int add_mesh(const Mesh* mesh);
     unsigned int add_shader(const Shader* shader);
@@ -45,6 +48,7 @@ struct SceneGraph {
     std::vector<const Mesh*> meshes;
     std::vector<const Shader*> shaders;
     std::vector<vec4> colors;
+    std::vector<GLTF::Scene> gltf_scenes;
 
     bool are_AABBs_drawn;
     unsigned int total_drawn_objects;
