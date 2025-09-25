@@ -82,7 +82,7 @@ public:
      * orientation and scale).
      * @param model The row-major model matrix's values.
      */
-    void set_local_model(const float model[16]);
+    void set_local_model(const double* model);
 
     /**
      * @brief Sets the is_dirty flag to true, meaning the local model needs to be recalculated.

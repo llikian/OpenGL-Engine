@@ -63,7 +63,7 @@ void Transform::set_local_scale(float x, float y, float z) {
     is_dirty = true;
 }
 
-void Transform::set_local_model(const float model[16]) {
+void Transform::set_local_model(const double* model) {
     local_position.x = model[12];
     local_position.y = model[13];
     local_position.z = model[14];
