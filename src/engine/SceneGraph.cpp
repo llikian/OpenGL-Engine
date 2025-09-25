@@ -13,14 +13,31 @@
 SceneGraph::SceneGraph()
     : flat_shader_index(INVALID_INDEX),
       are_AABBs_drawn(false),
+      light_node_index(INVALID_INDEX),
       selected_node(INVALID_INDEX) {
+    /* Root */
     add_simple_node("Scene Graph", INVALID_INDEX);
+
+    /* Shaders */
+    shaders.push_back(AssetManager::get_shader_ptr("flat"));
+    flat_shader_index = shaders.size() - 1;
+
+    /* Light */
+    light_node_index = add_mesh_node("Light",
+                                     0,
+                                     AssetManager::get_mesh_ptr("icosphere 1"),
+                                     flat_shader_index);
+    add_color_to_node(vec4(1.0f), light_node_index);
+    transforms[light_node_index].set_local_position(0.0f, 100.0f, 0.0f);
 }
 
 Node& SceneGraph::operator[](unsigned int node_index) { return nodes[node_index]; }
 
 void SceneGraph::draw(const Frustum& frustum) {
     total_drawn_objects = 0;
+
+    light_color = colors[nodes[light_node_index].color_index];
+    light_position = transforms[light_node_index].get_global_position();
 
     update_transform_and_children();
     update_AABBs();
@@ -47,35 +64,20 @@ unsigned int SceneGraph::add_mesh_node(const std::string& name,
 unsigned int SceneGraph::add_mesh_node(const std::string& name,
                                        unsigned int parent,
                                        const Mesh* mesh,
+                                       unsigned int shader_index) {
+    meshes.push_back(mesh);
+
+    return add_mesh_node(name, parent, meshes.size() - 1, shader_index);
+}
+
+unsigned int SceneGraph::add_mesh_node(const std::string& name,
+                                       unsigned int parent,
+                                       const Mesh* mesh,
                                        const Shader* shader) {
     meshes.push_back(mesh);
     shaders.push_back(shader);
 
     return add_mesh_node(name, parent, meshes.size() - 1, shaders.size() - 1);
-}
-
-unsigned int SceneGraph::add_flat_shaded_mesh_node(const std::string& name,
-                                                   unsigned int parent,
-                                                   unsigned int mesh_index,
-                                                   const vec4& color) {
-    unsigned int index = add_node(name, parent, Node::Type::FLAT_SHADED_MESH);
-
-    nodes[index].drawable_index = mesh_index;
-    nodes[index].shader_index = flat_shader_index;
-
-    colors.push_back(color);
-    nodes[index].color_index = colors.size() - 1;
-
-    return index;
-}
-
-unsigned int SceneGraph::add_flat_shaded_mesh_node(const std::string& name,
-                                                   unsigned int parent,
-                                                   const Mesh* mesh,
-                                                   const vec4& color) {
-    meshes.push_back(mesh);
-
-    return add_flat_shaded_mesh_node(name, parent, meshes.size() - 1, color);
 }
 
 unsigned int SceneGraph::add_gltf_scene_node(const std::string& name,
@@ -97,6 +99,13 @@ unsigned int SceneGraph::add_mesh(const Mesh* mesh) {
 unsigned int SceneGraph::add_shader(const Shader* shader) {
     shaders.push_back(shader);
     return shaders.size() - 1;
+}
+
+unsigned int SceneGraph::add_color_to_node(const vec4& color, unsigned int node_index) {
+    colors.push_back(color);
+    unsigned int color_index = colors.size() - 1;
+    nodes[node_index].color_index = color_index;
+    return color_index;
 }
 
 void SceneGraph::add_imgui_node_tree() {
@@ -219,12 +228,13 @@ void SceneGraph::draw(const mat4& view_projection, const Shader* shader, unsigne
         Shader::set_uniform(u_normals_model_matrix_location, transpose_inverse(global_model));
     }
 
+    shader->set_uniform_if_exists("u_light.color", light_color);
+    shader->set_uniform_if_exists("u_light.position", light_position);
+
+    if(node.color_index != INVALID_INDEX) { shader->set_uniform_if_exists("u_color", colors[node.color_index]); }
+
     switch(node.type) {
         case Node::Type::MESH:
-            meshes[node.drawable_index]->draw();
-            break;
-        case Node::Type::FLAT_SHADED_MESH:
-            shader->set_uniform("u_color", colors[node.color_index]);
             meshes[node.drawable_index]->draw();
             break;
         default: break;
@@ -262,7 +272,6 @@ void SceneGraph::update_AABBs(unsigned int node_index) {
 
     switch(nodes[node_index].type) {
         case Node::Type::MESH:
-        case Node::Type::FLAT_SHADED_MESH:
             AABBs[node_index].set(meshes[nodes[node_index].drawable_index]->get_AABB(), transforms[node_index]);
             break;
         case Node::Type::SIMPLE:
@@ -302,9 +311,6 @@ void SceneGraph::add_node_to_imgui_node_tree(unsigned int node_index) {
             break;
         case Node::Type::MESH:
             label += " M";
-            break;
-        case Node::Type::FLAT_SHADED_MESH:
-            label += " F";
             break;
         case Node::Type::GLTF_SCENE:
             label += " S";

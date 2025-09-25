@@ -24,13 +24,13 @@ public:
 
     unsigned int add_simple_node(ADD_NODE_PARAMETERS);
     unsigned int add_mesh_node(ADD_NODE_PARAMETERS, unsigned int mesh_index, unsigned int shader_index);
+    unsigned int add_mesh_node(ADD_NODE_PARAMETERS, const Mesh* mesh, unsigned int shader_index);
     unsigned int add_mesh_node(ADD_NODE_PARAMETERS, const Mesh* mesh, const Shader* shader);
-    unsigned int add_flat_shaded_mesh_node(ADD_NODE_PARAMETERS, unsigned int mesh_index, const vec4& color);
-    unsigned int add_flat_shaded_mesh_node(ADD_NODE_PARAMETERS, const Mesh* mesh, const vec4& color);
     unsigned int add_gltf_scene_node(ADD_NODE_PARAMETERS, const std::filesystem::path& scene_path);
 
     unsigned int add_mesh(const Mesh* mesh);
     unsigned int add_shader(const Shader* shader);
+    unsigned int add_color_to_node(const vec4& color, unsigned int node_index);
 
     void add_imgui_node_tree();
     void add_object_editor_to_imgui_window();
@@ -54,6 +54,10 @@ public:
     unsigned int total_drawn_objects;
 
 private:
+    unsigned int light_node_index;
+    vec3 light_position;
+    vec4 light_color;
+
     void draw(const Frustum& frustum, unsigned int node_index);
     void draw(const mat4& view_projection, const Shader* shader, unsigned int node_index) const;
 

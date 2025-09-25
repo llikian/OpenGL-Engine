@@ -14,7 +14,6 @@ struct Node {
     enum class Type : unsigned char {
         SIMPLE,           // NO DATA
         MESH,             // MESH, SHADER, AABB, (MATERIAL)
-        FLAT_SHADED_MESH, // MESH, SHADER, AABB, COLOR
         GLTF_SCENE,       // MESH, SHADER, AABB, COLOR
     };
 
