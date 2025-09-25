@@ -9,20 +9,88 @@
 #include "imgui_stdlib.h"
 #include "assets/AssetManager.hpp"
 #include "engine/Node.hpp"
+#include "mesh/primitives.hpp"
 
 SceneGraph::SceneGraph()
     : flat_shader_index(INVALID_INDEX),
       are_AABBs_drawn(false),
       light_node_index(INVALID_INDEX),
       selected_node(INVALID_INDEX) {
-    /* Root */
-    add_simple_node("Scene Graph", INVALID_INDEX);
+    /* ---- Asset Manager ---- */
 
     /* Shaders */
+    AssetManager::add_shader("point mesh", {
+                                 "shaders/point_mesh/point_mesh.vert",
+                                 "shaders/point_mesh/point_mesh.frag"
+                             });
+    AssetManager::add_shader("line mesh", {
+                                 "shaders/line_mesh/line_mesh.vert",
+                                 "shaders/line_mesh/line_mesh.frag"
+                             });
+    AssetManager::add_shader("background", {
+                                 "shaders/vertex/position_only-no_mvp.vert",
+                                 "shaders/fragment/background.frag"
+                             });
+    AssetManager::add_shader("flat", {
+                                 "shaders/vertex/position_only.vert",
+                                 "shaders/fragment/flat.frag"
+                             });
+    AssetManager::add_shader("lambert", {
+                                 "shaders/vertex/position_and_normal.vert",
+                                 "shaders/fragment/lambert.frag"
+                             });
+    AssetManager::add_shader("blinn-phong", {
+                                 "shaders/vertex/default.vert",
+                                 "shaders/fragment/blinn_phong.frag"
+                             });
+    AssetManager::add_shader("metallic-roughness", {
+                                 "shaders/vertex/tangent.vert",
+                                 "shaders/metallic-roughness/get_directions_tangent.frag",
+                                 "shaders/metallic-roughness/metallic_roughness.frag",
+                             });
+    AssetManager::add_shader("metallic-roughness no tangent", {
+                                 "shaders/vertex/default.vert",
+                                 "shaders/metallic-roughness/get_directions_no_tangent.frag",
+                                 "shaders/metallic-roughness/metallic_roughness.frag",
+                             });
+    AssetManager::add_shader("terrain", {
+                                 "shaders/terrain/terrain.vert",
+                                 "shaders/terrain/terrain.tesc",
+                                 "shaders/terrain/terrain.tese",
+                                 "shaders/terrain/terrain.frag"
+                             });
+    AssetManager::add_shader("post processing", {
+                                 "shaders/vertex/position_only-no_mvp.vert",
+                                 "shaders/fragment/post_processing.frag"
+                             });
+
+    /* Meshes */
+    AssetManager::add_mesh("sphere 8 16", create_sphere_mesh, 8, 16);
+    AssetManager::add_mesh("sphere 16 32", create_sphere_mesh, 16, 32);
+    AssetManager::add_mesh("icosphere 0", create_icosphere_mesh, 0);
+    AssetManager::add_mesh("icosphere 1", create_icosphere_mesh, 1);
+    AssetManager::add_mesh("icosphere 2", create_icosphere_mesh, 2);
+    AssetManager::add_mesh("cube", create_cube_mesh);
+    AssetManager::add_mesh("wireframe cube", create_wireframe_cube_mesh);
+    AssetManager::add_mesh("screen", create_screen_mesh);
+    AssetManager::add_mesh("axes", create_axes_mesh, 0.5f);
+    AssetManager::add_mesh("camera pyramid", create_pyramid_mesh,
+                           vec3(1.0f, 1.0f, -1.0f), vec3(1.0f, -1.0f, -1.0f), vec3(-1.0f, -1.0f, -1.0f), 1.0f);
+
+    /* Textures */
+    AssetManager::add_texture("default", vec3(1.0f));
+    AssetManager::add_texture("red", vec3(1.0f, 0.0f, 0.0f));
+    AssetManager::add_texture("green", vec3(0.0f, 1.0f, 0.0f));
+    AssetManager::add_texture("blue", vec3(0.0f, 0.0f, 1.0f));
+
+    /* ---- Root ---- */
+    add_simple_node("Scene Graph", INVALID_INDEX);
+
+    /* ---- Shaders ---- */
     shaders.push_back(AssetManager::get_shader_ptr("flat"));
     flat_shader_index = shaders.size() - 1;
 
-    /* Light */
+    /* ---- Light ---- */
     light_node_index = add_mesh_node("Light",
                                      0,
                                      AssetManager::get_mesh_ptr("icosphere 1"),

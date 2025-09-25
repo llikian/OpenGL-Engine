@@ -15,7 +15,6 @@
 #include "maths/constants.hpp"
 #include "maths/functions.hpp"
 #include "maths/geometry.hpp"
-#include "mesh/primitives.hpp"
 #include "utility/LifetimeLogger.hpp"
 #include "utility/Random.hpp"
 
@@ -35,76 +34,6 @@ Application::Application()
     ImGui_ImplGlfw_InitForOpenGL(Window::get_glfw(), true);
     ImGui_ImplOpenGL3_Init();
 
-    /* ---- Asset Manager ---- */
-    /* Shaders */
-    AssetManager::add_shader("point mesh", {
-                                 "shaders/point_mesh/point_mesh.vert",
-                                 "shaders/point_mesh/point_mesh.frag"
-                             });
-    AssetManager::add_shader("line mesh", {
-                                 "shaders/line_mesh/line_mesh.vert",
-                                 "shaders/line_mesh/line_mesh.frag"
-                             });
-    AssetManager::add_shader("background", {
-                                 "shaders/vertex/position_only-no_mvp.vert",
-                                 "shaders/fragment/background.frag"
-                             });
-    AssetManager::add_shader("flat", {
-                                 "shaders/vertex/position_only.vert",
-                                 "shaders/fragment/flat.frag"
-                             });
-    AssetManager::add_shader("lambert", {
-                                 "shaders/vertex/position_and_normal.vert",
-                                 "shaders/fragment/lambert.frag"
-                             });
-    AssetManager::add_shader("blinn-phong", {
-                                 "shaders/vertex/default.vert",
-                                 "shaders/fragment/blinn_phong.frag"
-                             });
-    AssetManager::add_shader("metallic-roughness", {
-                                 "shaders/vertex/tangent.vert",
-                                 "shaders/metallic-roughness/get_directions_tangent.frag",
-                                 "shaders/metallic-roughness/metallic_roughness.frag",
-                             });
-    AssetManager::add_shader("metallic-roughness no tangent", {
-                                 "shaders/vertex/default.vert",
-                                 "shaders/metallic-roughness/get_directions_no_tangent.frag",
-                                 "shaders/metallic-roughness/metallic_roughness.frag",
-                             });
-    AssetManager::add_shader("terrain", {
-                                 "shaders/terrain/terrain.vert",
-                                 "shaders/terrain/terrain.tesc",
-                                 "shaders/terrain/terrain.tese",
-                                 "shaders/terrain/terrain.frag"
-                             });
-    AssetManager::add_shader("post processing", {
-                                 "shaders/vertex/position_only-no_mvp.vert",
-                                 "shaders/fragment/post_processing.frag"
-                             });
-
-    /* Meshes */
-    AssetManager::add_mesh("sphere 8 16", create_sphere_mesh, 8, 16);
-    AssetManager::add_mesh("sphere 16 32", create_sphere_mesh, 16, 32);
-    AssetManager::add_mesh("icosphere 0", create_icosphere_mesh, 0);
-    AssetManager::add_mesh("icosphere 1", create_icosphere_mesh, 1);
-    AssetManager::add_mesh("icosphere 2", create_icosphere_mesh, 2);
-    AssetManager::add_mesh("cube", create_cube_mesh);
-    AssetManager::add_mesh("wireframe cube", create_wireframe_cube_mesh);
-    AssetManager::add_mesh("screen", create_screen_mesh);
-    AssetManager::add_mesh("axes", create_axes_mesh, 0.5f);
-    AssetManager::add_mesh("camera pyramid", create_pyramid_mesh,
-                           vec3(1.0f, 1.0f, -1.0f), vec3(1.0f, -1.0f, -1.0f), vec3(-1.0f, -1.0f, -1.0f), 1.0f);
-
-    /* Textures */
-    AssetManager::add_texture("default", vec3(1.0f));
-    AssetManager::add_texture("red", vec3(1.0f, 0.0f, 0.0f));
-    AssetManager::add_texture("green", vec3(0.0f, 1.0f, 0.0f));
-    AssetManager::add_texture("blue", vec3(0.0f, 0.0f, 1.0f));
-
-    /* ---- Scene Graph */
-    scene_graph.shaders.push_back(AssetManager::get_shader_ptr("flat"));
-    scene_graph.flat_shader_index = scene_graph.shaders.size() - 1;
-
     /* ---- Other ---- */
     // glfwSwapInterval(0); // disable vsync
 }
@@ -116,13 +45,6 @@ Application::~Application() {
 }
 
 void Application::run() {
-    /* Light */
-    unsigned int light = scene_graph.add_flat_shaded_mesh_node("Light",
-                                                               0,
-                                                               AssetManager::get_mesh_ptr("icosphere 1"),
-                                                               vec4(1.0f));
-    scene_graph.transforms[light].set_local_position(0.0f, 100.0f, 0.0f);
-
     /* Frustum Tests {
         unsigned int frustum_tests_root = scene_graph.add_simple_node("Frustum Tests Root", 0);
         unsigned int mesh_index = scene_graph.add_mesh(AssetManager::get_mesh_ptr("cube"));
@@ -142,8 +64,7 @@ void Application::run() {
     }
     */
 
-    // scene_graph.add_gltf_scene_node("Duck", 0, "data/models/duck.glb");
-    scene_graph.add_gltf_scene_node("Suzanne", 0, "/home/llikian/Downloads/glTF-Sample-Models-main/2.0/Suzanne/glTF/Suzanne.gltf");
+    scene_graph.add_gltf_scene_node("Duck", 0, "data/models/duck.glb");
 
     /* Main Loop */
     while(!Window::should_close()) {
