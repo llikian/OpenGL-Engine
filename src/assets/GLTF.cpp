@@ -5,10 +5,8 @@
 
 #include "assets/GLTF.hpp"
 
-#define TINYGLTF_IMPLEMENTATION
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "tiny_gltf.h"
-
+#include <algorithm>
+#include "assets/AssetManager.hpp"
 #include "engine/SceneGraph.hpp"
 
 GLTF::Scene::Scene(const std::filesystem::path& path, SceneGraph* scene_graph, unsigned int scene_node_index) {
@@ -44,8 +42,7 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
         tinygltf::Mesh& t_mesh = model.meshes[i];
         Mesh& mesh = meshes[i];
 
-        mesh.name = t_mesh.name;
-        if(mesh.name.empty()) { std::cerr << "Mesh with no name\n"; }
+        mesh.name = t_mesh.name.empty() ? "Mesh " + std::to_string(i) : t_mesh.name;
 
         size_t primitives_count = t_mesh.primitives.size();
         mesh.primitives.resize(primitives_count);
@@ -54,7 +51,7 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
 
         for(unsigned int j = 0 ; j < primitives_count ; ++j) {
             tinygltf::Primitive& t_primitive = t_mesh.primitives[j];
-            Primitive& primitive = mesh.primitives[i];
+            Primitive& primitive = mesh.primitives[j];
 
             std::cout << "\tPrimitive " << j << ' ';
 
@@ -182,31 +179,115 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
                 const tinygltf::Buffer& t_buffer = model.buffers[t_buffer_view.buffer];
 
                 size_t byte_offset = t_accessor.byteOffset + t_buffer_view.byteOffset;
-                const unsigned int* data = reinterpret_cast<const unsigned int*>(
-                    t_buffer.data.data() + byte_offset);
 
-                for(size_t k = 0 ; k < t_accessor.count ; ++k) {
-                    primitive.add_index(data[k]);
+                switch(t_accessor.componentType) {
+                    case TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE: {
+                        const unsigned char* data = t_buffer.data.data() + byte_offset;
+                        for(size_t k = 0 ; k < t_accessor.count ; ++k) { primitive.add_index(data[k]); }
+                        break;
+                    }
+                    case TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT: {
+                        auto data = reinterpret_cast<const unsigned short*>(t_buffer.data.data() + byte_offset);
+                        for(size_t k = 0 ; k < t_accessor.count ; ++k) { primitive.add_index(data[k]); }
+                        break;
+                    }
+                    case TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT: {
+                        auto data = reinterpret_cast<const unsigned int*>(t_buffer.data.data() + byte_offset);
+                        for(size_t k = 0 ; k < t_accessor.count ; ++k) { primitive.add_index(data[k]); }
+                        break;
+                    }
+                    default: throw std::runtime_error("Wrong or unknown component type in indices accessor.");
                 }
             }
 
             primitive.bind_buffers();
 
-            std::cout << "\tPrimitive has: " << primitive.get_vertices_amount() << " vertices\n";
-            std::cout << "\tPrimitive has: " << primitive.get_indices_amount() << " indices\n";
+            std::cout << "\t\tPrimitive has: " << primitive.get_vertices_amount() << " vertices"
+                << " and " << primitive.get_indices_amount() << " indices.\n";
         }
     }
 
-    for(const Mesh& mesh : meshes) {
-        int mesh_node_index = scene_graph->add_simple_node(mesh.name, scene_node_index);
+    /* ---- Scenes ---- */
+    if(model.scenes.size() == 0) {
+        throw std::runtime_error("Unhandled case, no scene in GLTF file.");
+    } else if(model.scenes.size() == 1) {
+        const tinygltf::Scene& t_scene = model.scenes[0];
+        if(!t_scene.name.empty()) { scene_graph->nodes[scene_node_index].name = t_scene.name; }
 
-        unsigned int i = 0;
-        for(const Primitive& primitive : mesh.primitives) {
-            scene_graph->add_flat_shaded_mesh_node("Primitive " + std::to_string(i++),
-                                                   mesh_node_index,
-                                                   &primitive,
-                                                   vec4(1.0f)
-            );
+        for(int node_index : t_scene.nodes) {
+            add_node(model.nodes, model.nodes[node_index], scene_graph, scene_node_index);
         }
+    } else {
+        unsigned int i = 0;
+
+        for(const tinygltf::Scene& t_scene : model.scenes) {
+            unsigned int sg_node_index = scene_graph->add_simple_node(t_scene.name.empty()
+                                                                          ? "Scene " + std::to_string(i)
+                                                                          : t_scene.name,
+                                                                      scene_node_index);
+
+            for(int node_index : t_scene.nodes) {
+                add_node(model.nodes, model.nodes[node_index], scene_graph, sg_node_index);
+            }
+
+            ++i;
+        }
+    }
+}
+
+void GLTF::Scene::add_node(const std::vector<tinygltf::Node>& t_nodes,
+                           const tinygltf::Node& t_node,
+                           SceneGraph* scene_graph,
+                           int sg_parent_index) {
+    if(t_node.mesh == -1) {
+        sg_parent_index = scene_graph->add_simple_node(t_node.name, sg_parent_index);
+    } else {
+        const auto& [mesh_name, primitives] = meshes[t_node.mesh];
+        sg_parent_index = scene_graph->add_simple_node(mesh_name, sg_parent_index);
+
+        for(unsigned int j = 0 ; j < primitives.get_size() ; ++j) {
+            const Primitive& primitive = primitives[j];
+            // TODO: Update this when materials are handled.
+            unsigned int node_index = scene_graph->add_mesh_node("Primitive " + std::to_string(j),
+                                                   sg_parent_index,
+                                                   &primitive,
+                                                   AssetManager::get_shader_ptr("lambert"));
+            scene_graph->add_color_to_node(vec4(1.0f), node_index);
+        }
+    }
+
+    bool transformed = false;
+
+    if(t_node.translation.size() == 3) {
+        scene_graph->transforms[sg_parent_index].set_local_position(t_node.translation[0],
+                                                                    t_node.translation[1],
+                                                                    t_node.translation[2]);
+        transformed = true;
+    }
+
+    if(t_node.rotation.size() == 4) {
+        scene_graph->transforms[sg_parent_index].set_local_orientation(t_node.rotation[0],
+                                                                       t_node.rotation[1],
+                                                                       t_node.rotation[2],
+                                                                       t_node.rotation[3]);
+        transformed = true;
+    }
+
+    if(t_node.scale.size() == 3) {
+        scene_graph->transforms[sg_parent_index].set_local_scale(t_node.scale[0],
+                                                                 t_node.scale[1],
+                                                                 t_node.scale[2]);
+        transformed = true;
+    }
+
+    if(!transformed && t_node.matrix.size() == 16) {
+        scene_graph->transforms[sg_parent_index].set_local_model(t_node.matrix.data());
+    }
+
+    for(int node_index : t_node.children) {
+        add_node(t_nodes,
+                 t_nodes[node_index],
+                 scene_graph,
+                 sg_parent_index);
     }
 }

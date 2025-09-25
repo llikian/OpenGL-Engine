@@ -42,6 +42,11 @@ namespace GLTF {
 
         void load(const std::filesystem::path& path, SceneGraph* scene_graph, unsigned int scene_node_index);
 
+        void add_node(const std::vector<tinygltf::Node>& t_nodes,
+                      const tinygltf::Node& t_node,
+                      SceneGraph* scene_graph,
+                      int sg_parent_index);
+
     private:
         HeapArray<Mesh> meshes;
     };
