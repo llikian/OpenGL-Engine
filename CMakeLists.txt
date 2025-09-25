@@ -71,6 +71,8 @@ set(SOURCES
         lib/imgui/misc/cpp/imgui_stdlib.cpp
 
         lib/stb/stb_image.cpp
+
+        lib/tinygltf/tiny_gltf.cc
 )
 
 set(INCLUDES
