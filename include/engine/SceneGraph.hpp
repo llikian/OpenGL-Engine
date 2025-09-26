@@ -7,6 +7,7 @@
 
 #include <vector>
 #include "Node.hpp"
+#include "assets/AssetManager.hpp"
 #include "assets/GLTF.hpp"
 #include "assets/Shader.hpp"
 #include "culling/AABB.hpp"
@@ -23,14 +24,13 @@ public:
     void draw(const Frustum& frustum);
 
     unsigned int add_simple_node(ADD_NODE_PARAMETERS);
-    unsigned int add_mesh_node(ADD_NODE_PARAMETERS, unsigned int mesh_index, unsigned int shader_index);
-    unsigned int add_mesh_node(ADD_NODE_PARAMETERS, const Mesh* mesh, unsigned int shader_index);
-    unsigned int add_mesh_node(ADD_NODE_PARAMETERS, const Mesh* mesh, const Shader* shader);
+    unsigned int add_mesh_node(ADD_NODE_PARAMETERS, unsigned int mesh_index, ShaderName shader_name);
+    unsigned int add_mesh_node(ADD_NODE_PARAMETERS, const Mesh* mesh, ShaderName shader_name);
     unsigned int add_gltf_scene_node(ADD_NODE_PARAMETERS, const std::filesystem::path& scene_path);
 
     unsigned int add_mesh(const Mesh* mesh);
-    unsigned int add_shader(const Shader* shader);
-    unsigned int add_color_to_node(const vec4& color, unsigned int node_index);
+    unsigned int add_color_to_node(unsigned int node_index, const vec4& color);
+    unsigned int add_material_to_node(unsigned int node_index, const Material* material);
 
     void add_imgui_node_tree();
     void add_object_editor_to_imgui_window();
@@ -43,10 +43,8 @@ public:
     std::vector<AABB> AABBs;
     std::vector<int> is_in_frustum;
 
-    unsigned int flat_shader_index;
-
     std::vector<const Mesh*> meshes;
-    std::vector<const Shader*> shaders;
+    std::vector<const Material*> materials;
     std::vector<vec4> colors;
     std::vector<GLTF::Scene> gltf_scenes;
 
@@ -59,7 +57,7 @@ private:
     vec4 light_color;
 
     void draw(const Frustum& frustum, unsigned int node_index);
-    void draw(const mat4& view_projection, const Shader* shader, unsigned int node_index) const;
+    void draw(const mat4& view_projection, const Shader& shader, unsigned int node_index) const;
 
     void update_transform_and_children(unsigned int node_index = 0);
     void force_update_transform_and_children(unsigned int node_index = 0);

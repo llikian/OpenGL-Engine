@@ -8,14 +8,6 @@
 #include <ranges>
 #include "mesh/primitives.hpp"
 
-Shader& AssetManager::add_shader(const std::string& name,
-                                 const std::initializer_list<std::filesystem::path>& paths_list) {
-    return get().shaders.emplace(std::piecewise_construct,
-                                 std::forward_as_tuple(name),
-                                 std::forward_as_tuple(paths_list, name))
-                .first->second;
-}
-
 Texture& AssetManager::add_texture(const std::filesystem::path& path, bool flip_vertically, bool srgb) {
     AssetManager& asset_manager = get();
     auto iterator = asset_manager.textures.find(path.string());
@@ -43,15 +35,8 @@ Mesh& AssetManager::add_mesh(const std::string& name) {
     return get().meshes.emplace(name, Mesh()).first->second;
 }
 
-Shader& AssetManager::get_shader(const std::string& shader_name) {
-    AssetManager& asset_manager = get();
-
-    auto iterator = asset_manager.shaders.find(shader_name);
-    if(iterator == asset_manager.shaders.end()) {
-        throw std::runtime_error("Couldn't find shader '" + shader_name + "' in asset manager");
-    }
-
-    return iterator->second;
+Shader& AssetManager::get_shader(ShaderName shader_name) {
+    return get().shaders[shader_name];
 }
 
 Texture& AssetManager::get_texture(const std::string& texture_name_or_path) {
@@ -76,13 +61,6 @@ Mesh& AssetManager::get_mesh(const std::string& mesh_name) {
     return iterator->second;
 }
 
-Shader* AssetManager::get_shader_ptr(const std::string& shader_name) {
-    AssetManager& asset_manager = get();
-
-    auto iterator = asset_manager.shaders.find(shader_name);
-    return iterator == asset_manager.shaders.end() ? nullptr : &iterator->second;
-}
-
 Texture* AssetManager::get_texture_ptr(const std::string& texture_name_or_path) {
     AssetManager& asset_manager = get();
 
@@ -97,10 +75,6 @@ Mesh* AssetManager::get_mesh_ptr(const std::string& mesh_name) {
     return iterator == asset_manager.meshes.end() ? nullptr : &iterator->second;
 }
 
-bool AssetManager::has_shader(const std::string& shader_name) {
-    return get().shaders.contains(shader_name);
-}
-
 bool AssetManager::has_texture(const std::string& texture_name_or_path) {
     return get().textures.contains(texture_name_or_path);
 }
@@ -110,23 +84,67 @@ bool AssetManager::has_mesh(const std::string& mesh_name) {
 }
 
 Shader& AssetManager::get_relevant_shader_from_mesh(const Mesh& mesh) {
-    AssetManager& asset_manager = get();
+    return get().shaders[get_relevant_shader_name_from_mesh(mesh)];
+}
 
+ShaderName AssetManager::get_relevant_shader_name_from_mesh(const Mesh& mesh) {
     switch(mesh.get_primitive()) {
-        case MeshPrimitive::POINTS:
-            return asset_manager.shaders["point mesh"];
-        case MeshPrimitive::LINES:
-            return asset_manager.shaders[mesh.has_attribute(ATTRIBUTE_COLOR) ? "line mesh" : "flat"];
-        case MeshPrimitive::TRIANGLES:
-            return asset_manager.shaders[mesh.has_attribute(ATTRIBUTE_NORMAL) ? "blinn-phong" : "flat"];
-        default:
-            return asset_manager.shaders["flat"];
+        case MeshPrimitive::POINTS: return SHADER_POINT_MESH;
+        case MeshPrimitive::LINES: return mesh.has_attribute(ATTRIBUTE_COLOR) ? SHADER_LINE_MESH : SHADER_FLAT;
+        case MeshPrimitive::TRIANGLES: return mesh.has_attribute(ATTRIBUTE_NORMAL) ? SHADER_BLINN_PHONG : SHADER_FLAT;
+        default: return SHADER_FLAT;
     }
 }
 
-AssetManager::AssetManager() { }
+AssetManager::AssetManager() {
+    /* Shaders */
+    shaders[SHADER_POINT_MESH].create({
+                                          "shaders/point_mesh/point_mesh.vert",
+                                          "shaders/point_mesh/point_mesh.frag"
+                                      }, "point mesh");
+    shaders[SHADER_LINE_MESH].create({
+                                         "shaders/line_mesh/line_mesh.vert",
+                                         "shaders/line_mesh/line_mesh.frag"
+                                     }, "line mesh");
+    shaders[SHADER_BACKGROUND].create({
+                                          "shaders/vertex/position_only-no_mvp.vert",
+                                          "shaders/fragment/background.frag"
+                                      }, "background");
+    shaders[SHADER_FLAT].create({
+                                    "shaders/vertex/position_only.vert",
+                                    "shaders/fragment/flat.frag"
+                                }, "flat");
+    shaders[SHADER_LAMBERT].create({
+                                       "shaders/vertex/position_and_normal.vert",
+                                       "shaders/fragment/lambert.frag"
+                                   }, "lambert");
+    shaders[SHADER_BLINN_PHONG].create({
+                                           "shaders/vertex/default.vert",
+                                           "shaders/fragment/blinn_phong.frag"
+                                       }, "blinn-phong");
+    shaders[SHADER_METALLIC_ROUGHNESS].create({
+                                                  "shaders/vertex/tangent.vert",
+                                                  "shaders/metallic-roughness/get_directions_tangent.frag",
+                                                  "shaders/metallic-roughness/metallic_roughness.frag",
+                                              }, "metallic-roughness");
+    shaders[SHADER_METALLIC_ROUGHNESS_NO_TANGENT].create({
+                                                             "shaders/vertex/default.vert",
+                                                             "shaders/metallic-roughness/get_directions_no_tangent.frag",
+                                                             "shaders/metallic-roughness/metallic_roughness.frag",
+                                                         }, "metallic-roughness no tangent");
+    shaders[SHADER_TERRAIN].create({
+                                       "shaders/terrain/terrain.vert",
+                                       "shaders/terrain/terrain.tesc",
+                                       "shaders/terrain/terrain.tese",
+                                       "shaders/terrain/terrain.frag"
+                                   }, "terrain");
+    shaders[SHADER_POST_PROCESSING].create({
+                                               "shaders/vertex/position_only-no_mvp.vert",
+                                               "shaders/fragment/post_processing.frag"
+                                           }, "post processing");
+}
 
 AssetManager::~AssetManager() {
-    for(Shader& shader : shaders | std::views::values) { shader.free(); }
+    for(unsigned int i = 0 ; i < SHADER_COUNT ; ++i) { shaders[i].free(); }
     for(Texture& texture : textures | std::views::values) { texture.free(); }
 }

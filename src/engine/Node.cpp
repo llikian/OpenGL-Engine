@@ -10,8 +10,9 @@ Node::Node(const std::string& name, int parent, Type type)
       name(name),
       parent(parent),
       drawable_index(INVALID_INDEX),
-      shader_index(INVALID_INDEX),
+      shader_name(SHADER_NONE),
       color_index(INVALID_INDEX),
       scene_index(INVALID_INDEX),
+      material_index(INVALID_INDEX),
       is_visible(true),
       is_selected(false) { }

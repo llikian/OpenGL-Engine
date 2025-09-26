@@ -64,7 +64,8 @@ void Application::run() {
     }
     */
 
-    scene_graph.add_gltf_scene_node("Duck", 0, "data/models/duck.glb");
+    // scene_graph.add_gltf_scene_node("Duck", 0, "data/models/duck.glb");
+    scene_graph.add_gltf_scene_node("Buggy", 0, "/home/llikian/Downloads/glTF-Sample-Models-main/2.0/Buggy/glTF-Binary/Buggy.glb");
 
     /* Main Loop */
     while(!Window::should_close()) {
@@ -93,7 +94,7 @@ void Application::run() {
 }
 
 void Application::draw_post_processing() const {
-    const Shader& shader = AssetManager::get_shader("post processing");
+    const Shader& shader = AssetManager::get_shader(SHADER_POST_PROCESSING);
     shader.use();
     shader.set_uniform("u_texture", 0);
     shader.set_uniform("u_texture_resolution", framebuffer.get_resolution());
@@ -109,7 +110,7 @@ void Application::draw_post_processing() const {
 }
 
 void Application::draw_background() const {
-    const Shader& shader = AssetManager::get_shader("background");
+    const Shader& shader = AssetManager::get_shader(SHADER_BACKGROUND);
     shader.use();
 
     shader.set_uniform("u_resolution", Window::get_resolution());
@@ -141,8 +142,7 @@ void Application::draw_imgui_debug_window() {
     ImGui::Text("Total Drawn Objects: %d", scene_graph.total_drawn_objects);
 
     ImGui::NewLine();
-    ImGui::Text("Camera:");
-    ImGui::SliderFloat("Sensitivity", &camera.sensitivity, 0.05f, 1.0f);
+    ImGui::Text("Camera:"); ImGui::SliderFloat("Sensitivity", &camera.sensitivity, 0.05f, 1.0f);
     ImGui::SliderFloat("Movement Speed", &camera.movement_speed, 1.0f, 100.0f);
 
     ImGui::NewLine();

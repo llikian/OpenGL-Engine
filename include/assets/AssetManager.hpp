@@ -10,6 +10,23 @@
 #include "Shader.hpp"
 #include "Texture.hpp"
 
+enum ShaderName {
+    SHADER_NONE = -1,
+
+    SHADER_POINT_MESH,
+    SHADER_LINE_MESH,
+    SHADER_BACKGROUND,
+    SHADER_FLAT,
+    SHADER_LAMBERT,
+    SHADER_BLINN_PHONG,
+    SHADER_METALLIC_ROUGHNESS,
+    SHADER_METALLIC_ROUGHNESS_NO_TANGENT,
+    SHADER_TERRAIN,
+    SHADER_POST_PROCESSING,
+
+    SHADER_COUNT
+};
+
 /**
  * @class AssetManager
  * @brief
@@ -24,12 +41,6 @@ public:
         return asset_manager;
     }
 
-    /**
-     * @brief Add a shader to the unordered_map.
-     * @param name The name of the shader (key).
-     * @param paths_list The paths to each of the different shaders (parameter to the value's constructor).
-     */
-    static Shader& add_shader(const std::string& name, const std::initializer_list<std::filesystem::path>& paths_list);
     static Texture& add_texture(const std::filesystem::path& path, bool flip_vertically, bool srgb);
     static Texture& add_texture(const std::string& name, const Texture& texture);
     static Texture& add_texture(const std::string& name, const vec3& color);
@@ -54,26 +65,24 @@ public:
                     std::forward<Args>(args)...);
     }
 
-    static Shader& get_shader(const std::string& shader_name);
+    static Shader& get_shader(ShaderName shader_name);
     static Texture& get_texture(const std::string& texture_name_or_path);
     static Mesh& get_mesh(const std::string& mesh_name);
 
-    static Shader* get_shader_ptr(const std::string& shader_name);
     static Texture* get_texture_ptr(const std::string& texture_name_or_path);
     static Mesh* get_mesh_ptr(const std::string& mesh_name);
 
-    static bool has_shader(const std::string& shader_name);
     static bool has_texture(const std::string& texture_name_or_path);
-    static bool has_model(const std::string& model_name);
     static bool has_mesh(const std::string& mesh_name);
 
     static Shader& get_relevant_shader_from_mesh(const Mesh& mesh);
+    static ShaderName get_relevant_shader_name_from_mesh(const Mesh& mesh);
 
 private:
     AssetManager();
     ~AssetManager();
 
-    std::unordered_map<std::string, Shader> shaders;
+    Shader shaders[SHADER_COUNT];
     std::unordered_map<std::string, Texture> textures;
     std::unordered_map<std::string, Mesh> meshes;
 };

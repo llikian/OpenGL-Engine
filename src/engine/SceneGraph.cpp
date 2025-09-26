@@ -12,58 +12,10 @@
 #include "mesh/primitives.hpp"
 
 SceneGraph::SceneGraph()
-    : flat_shader_index(INVALID_INDEX),
-      are_AABBs_drawn(false),
+    : are_AABBs_drawn(false),
       light_node_index(INVALID_INDEX),
       selected_node(INVALID_INDEX) {
     /* ---- Asset Manager ---- */
-
-    /* Shaders */
-    AssetManager::add_shader("point mesh", {
-                                 "shaders/point_mesh/point_mesh.vert",
-                                 "shaders/point_mesh/point_mesh.frag"
-                             });
-    AssetManager::add_shader("line mesh", {
-                                 "shaders/line_mesh/line_mesh.vert",
-                                 "shaders/line_mesh/line_mesh.frag"
-                             });
-    AssetManager::add_shader("background", {
-                                 "shaders/vertex/position_only-no_mvp.vert",
-                                 "shaders/fragment/background.frag"
-                             });
-    AssetManager::add_shader("flat", {
-                                 "shaders/vertex/position_only.vert",
-                                 "shaders/fragment/flat.frag"
-                             });
-    AssetManager::add_shader("lambert", {
-                                 "shaders/vertex/position_and_normal.vert",
-                                 "shaders/fragment/lambert.frag"
-                             });
-    AssetManager::add_shader("blinn-phong", {
-                                 "shaders/vertex/default.vert",
-                                 "shaders/fragment/blinn_phong.frag"
-                             });
-    AssetManager::add_shader("metallic-roughness", {
-                                 "shaders/vertex/tangent.vert",
-                                 "shaders/metallic-roughness/get_directions_tangent.frag",
-                                 "shaders/metallic-roughness/metallic_roughness.frag",
-                             });
-    AssetManager::add_shader("metallic-roughness no tangent", {
-                                 "shaders/vertex/default.vert",
-                                 "shaders/metallic-roughness/get_directions_no_tangent.frag",
-                                 "shaders/metallic-roughness/metallic_roughness.frag",
-                             });
-    AssetManager::add_shader("terrain", {
-                                 "shaders/terrain/terrain.vert",
-                                 "shaders/terrain/terrain.tesc",
-                                 "shaders/terrain/terrain.tese",
-                                 "shaders/terrain/terrain.frag"
-                             });
-    AssetManager::add_shader("post processing", {
-                                 "shaders/vertex/position_only-no_mvp.vert",
-                                 "shaders/fragment/post_processing.frag"
-                             });
-
     /* Meshes */
     AssetManager::add_mesh("sphere 8 16", create_sphere_mesh, 8, 16);
     AssetManager::add_mesh("sphere 16 32", create_sphere_mesh, 16, 32);
@@ -86,16 +38,12 @@ SceneGraph::SceneGraph()
     /* ---- Root ---- */
     add_simple_node("Scene Graph", INVALID_INDEX);
 
-    /* ---- Shaders ---- */
-    shaders.push_back(AssetManager::get_shader_ptr("flat"));
-    flat_shader_index = shaders.size() - 1;
-
     /* ---- Light ---- */
     light_node_index = add_mesh_node("Light",
                                      0,
                                      AssetManager::get_mesh_ptr("icosphere 1"),
-                                     flat_shader_index);
-    add_color_to_node(vec4(1.0f), light_node_index);
+                                     SHADER_FLAT);
+    add_color_to_node(light_node_index, vec4(1.0f));
     transforms[light_node_index].set_local_position(0.0f, 100.0f, 0.0f);
 }
 
@@ -120,11 +68,11 @@ unsigned int SceneGraph::add_simple_node(const std::string& name, unsigned int p
 unsigned int SceneGraph::add_mesh_node(const std::string& name,
                                        unsigned int parent,
                                        unsigned int mesh_index,
-                                       unsigned int shader_index) {
+                                       ShaderName shader_name) {
     unsigned int index = add_node(name, parent, Node::Type::MESH);
 
     nodes[index].drawable_index = mesh_index;
-    nodes[index].shader_index = shader_index;
+    nodes[index].shader_name = shader_name;
 
     return index;
 }
@@ -132,20 +80,10 @@ unsigned int SceneGraph::add_mesh_node(const std::string& name,
 unsigned int SceneGraph::add_mesh_node(const std::string& name,
                                        unsigned int parent,
                                        const Mesh* mesh,
-                                       unsigned int shader_index) {
+                                       ShaderName shader_name) {
     meshes.push_back(mesh);
 
-    return add_mesh_node(name, parent, meshes.size() - 1, shader_index);
-}
-
-unsigned int SceneGraph::add_mesh_node(const std::string& name,
-                                       unsigned int parent,
-                                       const Mesh* mesh,
-                                       const Shader* shader) {
-    meshes.push_back(mesh);
-    shaders.push_back(shader);
-
-    return add_mesh_node(name, parent, meshes.size() - 1, shaders.size() - 1);
+    return add_mesh_node(name, parent, meshes.size() - 1, shader_name);
 }
 
 unsigned int SceneGraph::add_gltf_scene_node(const std::string& name,
@@ -164,16 +102,18 @@ unsigned int SceneGraph::add_mesh(const Mesh* mesh) {
     return meshes.size() - 1;
 }
 
-unsigned int SceneGraph::add_shader(const Shader* shader) {
-    shaders.push_back(shader);
-    return shaders.size() - 1;
-}
-
-unsigned int SceneGraph::add_color_to_node(const vec4& color, unsigned int node_index) {
+unsigned int SceneGraph::add_color_to_node(unsigned int node_index, const vec4& color) {
     colors.push_back(color);
     unsigned int color_index = colors.size() - 1;
     nodes[node_index].color_index = color_index;
     return color_index;
+}
+
+unsigned int SceneGraph::add_material_to_node(unsigned int node_index, const Material* material) {
+    materials.push_back(material);
+    unsigned int material_index = materials.size() - 1;
+    nodes[node_index].color_index = material_index;
+    return material_index;
 }
 
 void SceneGraph::add_imgui_node_tree() {
@@ -212,8 +152,8 @@ void SceneGraph::add_object_editor_to_imgui_window() {
         if(is_dirty) { transform.set_local_model_to_dirty(); }
 
         ImGui::NewLine();
-        if(node.shader_index != INVALID_INDEX) {
-            ImGui::Text("Shader: '%s'", shaders[node.shader_index]->get_name().c_str());
+        if(node.shader_name != SHADER_NONE) {
+            ImGui::Text("Shader: '%s'", AssetManager::get_shader(node.shader_name).get_name().c_str());
         }
         if(node.color_index != INVALID_INDEX) { ImGui::ColorEdit4("Color", &colors[node.color_index].x); }
     } else {
@@ -243,25 +183,24 @@ void SceneGraph::draw(const Frustum& frustum, unsigned int node_index) {
     if(AABBs[node_index].is_in_frustum(frustum)) {
         if(node.drawable_index != INVALID_INDEX) {
             ++total_drawn_objects;
-            const Shader* shader = shaders[node.shader_index];
-            draw(frustum.view_projection, shader, node_index);
+            draw(frustum.view_projection, AssetManager::get_shader(node.shader_name), node_index);
         }
 
         if(are_AABBs_drawn || node.is_selected) {
-            const Shader* shader = shaders[flat_shader_index];
-            shader->use();
-            shader->set_uniform("u_mvp", frustum.view_projection * AABBs[node_index].get_global_model_matrix());
+            const Shader& shader = AssetManager::get_shader(SHADER_FLAT);
+            shader.use();
+            shader.set_uniform("u_mvp", frustum.view_projection * AABBs[node_index].get_global_model_matrix());
 
             if(node.is_selected) {
                 if(node.parent == INVALID_INDEX || !nodes[node.parent].is_selected) {
-                    shader->set_uniform("u_color", vec4(0.0f, 1.0f, 1.0f, 1.0f));
+                    shader.set_uniform("u_color", vec4(0.0f, 1.0f, 1.0f, 1.0f));
                 } else {
-                    shader->set_uniform("u_color", vec4(0.0f, 0.0f, 1.0f, 1.0f));
+                    shader.set_uniform("u_color", vec4(0.0f, 0.0f, 1.0f, 1.0f));
                 }
             } else if(node.drawable_index == INVALID_INDEX) { // Not a drawable node.
-                shader->set_uniform("u_color", vec4(0.0f, 1.0f, 0.0f, 1.0f));
+                shader.set_uniform("u_color", vec4(0.0f, 1.0f, 0.0f, 1.0f));
             } else {
-                shader->set_uniform("u_color", vec4(1.0f, 0.0f, 0.0f, 1.0f));
+                shader.set_uniform("u_color", vec4(1.0f, 0.0f, 0.0f, 1.0f));
             }
 
             glLineWidth(3.0f);
@@ -273,33 +212,29 @@ void SceneGraph::draw(const Frustum& frustum, unsigned int node_index) {
     }
 }
 
-void SceneGraph::draw(const mat4& view_projection, const Shader* shader, unsigned int node_index) const {
+void SceneGraph::draw(const mat4& view_projection, const Shader& shader, unsigned int node_index) const {
     const Node& node = nodes[node_index];
 
-    if(shader == nullptr) {
-        std::cout << "[WARNING] Node wasn't drawn as it didn't have any shader.\n";
-        return;
-    }
-
-    shader->use();
+    shader.use();
 
     const mat4& global_model = transforms[node_index].get_global_model_const_reference();
-    shader->set_uniform_if_exists("u_model", global_model);
+    shader.set_uniform_if_exists("u_model", global_model);
 
-    int u_mvp_location = shader->get_uniform_location("u_mvp");
+    int u_mvp_location = shader.get_uniform_location("u_mvp");
     if(u_mvp_location != -1) {
         Shader::set_uniform(u_mvp_location, view_projection * global_model);
     }
 
-    int u_normals_model_matrix_location = shader->get_uniform_location("u_normals_model_matrix");
+    int u_normals_model_matrix_location = shader.get_uniform_location("u_normals_model_matrix");
     if(u_normals_model_matrix_location != -1) {
         Shader::set_uniform(u_normals_model_matrix_location, transpose_inverse(global_model));
     }
 
-    shader->set_uniform_if_exists("u_light.color", light_color);
-    shader->set_uniform_if_exists("u_light.position", light_position);
+    shader.set_uniform_if_exists("u_light.color", light_color);
+    shader.set_uniform_if_exists("u_light.position", light_position);
 
-    if(node.color_index != INVALID_INDEX) { shader->set_uniform_if_exists("u_color", colors[node.color_index]); }
+    if(node.color_index != INVALID_INDEX) { shader.set_uniform_if_exists("u_color", colors[node.color_index]); }
+    if(node.material_index != INVALID_INDEX) { materials[node.material_index]->update_shader_uniforms(&shader); }
 
     switch(node.type) {
         case Node::Type::MESH:
