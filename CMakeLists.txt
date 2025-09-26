@@ -40,6 +40,11 @@ set(SOURCES
         src/engine/SceneGraph.cpp
         src/engine/Window.cpp
 
+        # Materials Module
+        src/materials/Material.cpp
+        src/materials/MRMaterial.cpp
+        src/materials/PhongMaterial.cpp
+
         # Maths Module
         src/maths/functions.cpp
         src/maths/geometry.cpp
