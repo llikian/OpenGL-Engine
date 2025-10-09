@@ -6,6 +6,8 @@
 #include "assets/GLTF.hpp"
 
 #include <algorithm>
+
+#include "stb_image_write.h"
 #include "assets/AssetManager.hpp"
 #include "engine/SceneGraph.hpp"
 
@@ -50,18 +52,59 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
         std::cout << "Mesh '" << mesh.name << "'\n";
 
         for(unsigned int j = 0 ; j < primitives_count ; ++j) {
-            tinygltf::Primitive& t_primitive = t_mesh.primitives[j];
+            const tinygltf::Primitive& t_primitive = t_mesh.primitives[j];
             Primitive& primitive = mesh.primitives[j];
+
+            if(t_primitive.material != -1) {
+                const tinygltf::Material& t_material = model.materials[t_primitive.material];
+
+                primitive.material = new MRMaterial(t_material.name);
+                MRMaterial* material = primitive.material;
+
+                material->base_color = vec4(
+                    t_material.pbrMetallicRoughness.baseColorFactor[0],
+                    t_material.pbrMetallicRoughness.baseColorFactor[1],
+                    t_material.pbrMetallicRoughness.baseColorFactor[2],
+                    t_material.pbrMetallicRoughness.baseColorFactor[3]
+                );
+
+                material->metallic = t_material.pbrMetallicRoughness.metallicFactor;
+                material->roughness = t_material.pbrMetallicRoughness.roughnessFactor;
+
+                int base_color_texture_index = t_material.pbrMetallicRoughness.baseColorTexture.index;
+                if(base_color_texture_index == -1) {
+                    material->base_color_map.create(255, 255, 255);
+                } else {
+                    const tinygltf::Image& t_image = model.images[model.textures[base_color_texture_index].source];
+                    material->base_color_map.create(t_image.width, t_image.height, t_image.image.data(), GL_SRGB);
+                }
+
+                int MR_texture_index = t_material.pbrMetallicRoughness.metallicRoughnessTexture.index;
+                if(MR_texture_index == -1) {
+                    material->metallic_roughness_map.create(vec3(0.0f, 0.5f, 0.0f));
+                } else {
+                    const tinygltf::Image& t_image = model.images[model.textures[MR_texture_index].source];
+                    material->metallic_roughness_map.create(t_image.width, t_image.height, t_image.image.data(), GL_RGB);
+                }
+
+                int normal_map_index = t_material.normalTexture.index;
+                if(normal_map_index == -1) {
+                    material->normal_map.create(vec3(1.0f, 0.5f, 0.5f));
+                } else {
+                    const tinygltf::Image& t_image = model.images[model.textures[normal_map_index].source];
+                    material->normal_map.create(t_image.width, t_image.height, t_image.image.data(), GL_RGB);
+                }
+            }
 
             std::cout << "\tPrimitive " << j << ' ';
 
             switch(t_primitive.mode) {
                 case TINYGLTF_MODE_POINTS:
-                    primitive.set_primitive(MeshPrimitive::POINTS);
+                    primitive.primitive.set_primitive(MeshPrimitive::POINTS);
                     std::cout << "(POINTS)\n";
                     break;
                 case TINYGLTF_MODE_LINE:
-                    primitive.set_primitive(MeshPrimitive::LINES);
+                    primitive.primitive.set_primitive(MeshPrimitive::LINES);
                     std::cout << "(LINES)\n";
                     break;
                 case TINYGLTF_MODE_LINE_LOOP:
@@ -69,7 +112,7 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
                 case TINYGLTF_MODE_LINE_STRIP:
                     throw std::runtime_error("Unhandled primitive mode: TINYGLTF_MODE_LINE_STRIP.");
                 case TINYGLTF_MODE_TRIANGLES:
-                    primitive.set_primitive(MeshPrimitive::TRIANGLES);
+                    primitive.primitive.set_primitive(MeshPrimitive::TRIANGLES);
                     std::cout << "(TRIANGLES)\n";
                     break;
                 case TINYGLTF_MODE_TRIANGLE_STRIP:
@@ -100,7 +143,7 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
                     std::cout << "\t\tUnhandled attribute " << attribute_name << ", " << accessor_index << '\n';
                 } else {
                     AttributeType attribute_type;
-                    switch(model.accessors[accessor_index].type) {
+                    switch(t_accessor.type) {
                         case TINYGLTF_TYPE_VEC2:
                             attribute_type = AttributeType::VEC2;
                             break;
@@ -163,13 +206,13 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
                     throw std::runtime_error("Not the same amount of values between vertex attributes.");
                 }
 
-                primitive.enable_attribute(attr_info.attribute, attr_info.attribute_type);
+                primitive.primitive.enable_attribute(attr_info.attribute, attr_info.attribute_type);
             }
 
             for(size_t k = 0 ; k < vertex_count ; ++k) {
                 for(const AttributeInfo& attribute_info : attribute_infos) {
-                    primitive.push_values(attribute_info.data + k * attribute_info.stride_in_floats,
-                                          attribute_info.elements_count);
+                    primitive.primitive.push_values(attribute_info.data + k * attribute_info.stride_in_floats,
+                                                    attribute_info.elements_count);
                 }
             }
 
@@ -183,27 +226,27 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
                 switch(t_accessor.componentType) {
                     case TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE: {
                         const unsigned char* data = t_buffer.data.data() + byte_offset;
-                        for(size_t k = 0 ; k < t_accessor.count ; ++k) { primitive.add_index(data[k]); }
+                        for(size_t k = 0 ; k < t_accessor.count ; ++k) { primitive.primitive.add_index(data[k]); }
                         break;
                     }
                     case TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT: {
                         auto data = reinterpret_cast<const unsigned short*>(t_buffer.data.data() + byte_offset);
-                        for(size_t k = 0 ; k < t_accessor.count ; ++k) { primitive.add_index(data[k]); }
+                        for(size_t k = 0 ; k < t_accessor.count ; ++k) { primitive.primitive.add_index(data[k]); }
                         break;
                     }
                     case TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT: {
                         auto data = reinterpret_cast<const unsigned int*>(t_buffer.data.data() + byte_offset);
-                        for(size_t k = 0 ; k < t_accessor.count ; ++k) { primitive.add_index(data[k]); }
+                        for(size_t k = 0 ; k < t_accessor.count ; ++k) { primitive.primitive.add_index(data[k]); }
                         break;
                     }
                     default: throw std::runtime_error("Wrong or unknown component type in indices accessor.");
                 }
             }
 
-            primitive.bind_buffers();
+            primitive.primitive.bind_buffers();
 
-            std::cout << "\t\tPrimitive has: " << primitive.get_vertices_amount() << " vertices"
-                << " and " << primitive.get_indices_amount() << " indices.\n";
+            std::cout << "\t\tPrimitive has: " << primitive.primitive.get_vertices_amount() << " vertices"
+                << " and " << primitive.primitive.get_indices_amount() << " indices.\n";
         }
     }
 
@@ -247,12 +290,35 @@ void GLTF::Scene::add_node(const std::vector<tinygltf::Node>& t_nodes,
 
         for(unsigned int j = 0 ; j < primitives.get_size() ; ++j) {
             const Primitive& primitive = primitives[j];
-            // TODO: Update this when materials are handled.
-            unsigned int node_index = scene_graph->add_mesh_node("Primitive " + std::to_string(j),
-                                                   sg_parent_index,
-                                                   &primitive,
-                                                   AssetManager::get_shader_ptr("lambert"));
-            scene_graph->add_color_to_node(vec4(1.0f), node_index);
+            std::string primitive_name = "Primitive " + std::to_string(j);
+
+            if(primitive.material != nullptr) {
+                ShaderName shader_name = primitive.primitive.has_attribute(ATTRIBUTE_TANGENT)
+                                             ? SHADER_METALLIC_ROUGHNESS
+                                             : SHADER_METALLIC_ROUGHNESS_NO_TANGENT;
+
+                unsigned int node_index = scene_graph->add_mesh_node(primitive_name,
+                                                                     sg_parent_index,
+                                                                     &primitive.primitive,
+                                                                     shader_name);
+
+                scene_graph->add_material_to_node(node_index, primitive.material);
+            } else {
+                ShaderName shader_name = AssetManager::get_relevant_shader_name_from_mesh(primitive.primitive);
+
+                unsigned int node_index = scene_graph->add_mesh_node(primitive_name,
+                                                                     sg_parent_index,
+                                                                     &primitive.primitive,
+                                                                     shader_name);
+
+                switch(shader_name) {
+                    case SHADER_FLAT:
+                    case SHADER_LAMBERT:
+                        scene_graph->add_color_to_node(node_index, vec4(1.0f));
+                        break;
+                    default: break;
+                }
+            }
         }
     }
 

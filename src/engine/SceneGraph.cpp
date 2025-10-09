@@ -8,6 +8,7 @@
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "assets/AssetManager.hpp"
+#include "engine/EventHandler.hpp"
 #include "engine/Node.hpp"
 #include "mesh/primitives.hpp"
 
@@ -44,7 +45,7 @@ SceneGraph::SceneGraph()
                                      AssetManager::get_mesh_ptr("icosphere 1"),
                                      SHADER_FLAT);
     add_color_to_node(light_node_index, vec4(1.0f));
-    transforms[light_node_index].set_local_position(0.0f, 100.0f, 0.0f);
+    transforms[light_node_index].set_local_position(0.0f, 10.0f, 0.0f);
 }
 
 Node& SceneGraph::operator[](unsigned int node_index) { return nodes[node_index]; }
@@ -52,7 +53,10 @@ Node& SceneGraph::operator[](unsigned int node_index) { return nodes[node_index]
 void SceneGraph::draw(const Frustum& frustum) {
     total_drawn_objects = 0;
 
-    light_color = colors[nodes[light_node_index].color_index];
+    const vec4& color = colors[nodes[light_node_index].color_index];
+    light_color.x = color.x;
+    light_color.y = color.y;
+    light_color.z = color.z;
     light_position = transforms[light_node_index].get_global_position();
 
     update_transform_and_children();
@@ -109,10 +113,10 @@ unsigned int SceneGraph::add_color_to_node(unsigned int node_index, const vec4& 
     return color_index;
 }
 
-unsigned int SceneGraph::add_material_to_node(unsigned int node_index, const Material* material) {
+unsigned int SceneGraph::add_material_to_node(unsigned int node_index, Material* material) {
     materials.push_back(material);
     unsigned int material_index = materials.size() - 1;
-    nodes[node_index].color_index = material_index;
+    nodes[node_index].material_index = material_index;
     return material_index;
 }
 
@@ -156,6 +160,7 @@ void SceneGraph::add_object_editor_to_imgui_window() {
             ImGui::Text("Shader: '%s'", AssetManager::get_shader(node.shader_name).get_name().c_str());
         }
         if(node.color_index != INVALID_INDEX) { ImGui::ColorEdit4("Color", &colors[node.color_index].x); }
+        if(node.material_index != INVALID_INDEX) { materials[node.material_index]->add_to_object_editor(); }
     } else {
         ImGui::Text("No Node is Selected");
     }
@@ -230,8 +235,10 @@ void SceneGraph::draw(const mat4& view_projection, const Shader& shader, unsigne
         Shader::set_uniform(u_normals_model_matrix_location, transpose_inverse(global_model));
     }
 
+    shader.set_uniform_if_exists("u_light.intensity", 3.0f);
     shader.set_uniform_if_exists("u_light.color", light_color);
     shader.set_uniform_if_exists("u_light.position", light_position);
+    shader.set_uniform_if_exists("u_camera_position", EventHandler::get_active_camera()->get_position());
 
     if(node.color_index != INVALID_INDEX) { shader.set_uniform_if_exists("u_color", colors[node.color_index]); }
     if(node.material_index != INVALID_INDEX) { materials[node.material_index]->update_shader_uniforms(&shader); }

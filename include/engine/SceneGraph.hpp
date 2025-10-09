@@ -30,7 +30,7 @@ public:
 
     unsigned int add_mesh(const Mesh* mesh);
     unsigned int add_color_to_node(unsigned int node_index, const vec4& color);
-    unsigned int add_material_to_node(unsigned int node_index, const Material* material);
+    unsigned int add_material_to_node(unsigned int node_index, Material* material);
 
     void add_imgui_node_tree();
     void add_object_editor_to_imgui_window();
@@ -44,7 +44,7 @@ public:
     std::vector<int> is_in_frustum;
 
     std::vector<const Mesh*> meshes;
-    std::vector<const Material*> materials;
+    std::vector<Material*> materials;
     std::vector<vec4> colors;
     std::vector<GLTF::Scene> gltf_scenes;
 
@@ -54,7 +54,7 @@ public:
 private:
     unsigned int light_node_index;
     vec3 light_position;
-    vec4 light_color;
+    vec3 light_color;
 
     void draw(const Frustum& frustum, unsigned int node_index);
     void draw(const mat4& view_projection, const Shader& shader, unsigned int node_index) const;

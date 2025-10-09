@@ -6,14 +6,23 @@
 #pragma once
 
 #include <filesystem>
+
+#include "Shader.hpp"
 #include "tiny_gltf.h"
+#include "materials/MRMaterial.hpp"
 #include "mesh/Mesh.hpp"
 #include "utility/HeapArray.hpp"
 
 class SceneGraph;
 
 namespace GLTF {
-    using Primitive = ::Mesh;
+    struct Primitive {
+        ::Mesh primitive;
+        MRMaterial* material;
+        const Shader* shader;
+
+        ~Primitive() { delete material; }
+    };
 
     struct Mesh {
         std::string name;

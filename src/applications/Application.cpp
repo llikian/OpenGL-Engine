@@ -65,7 +65,10 @@ void Application::run() {
     */
 
     // scene_graph.add_gltf_scene_node("Duck", 0, "data/models/duck.glb");
-    scene_graph.add_gltf_scene_node("Buggy", 0, "/home/llikian/Downloads/glTF-Sample-Models-main/2.0/Buggy/glTF-Binary/Buggy.glb");
+    // scene_graph.add_gltf_scene_node("Buggy", 0, "/home/llikian/Downloads/glTF-Sample-Models-main/2.0/Buggy/glTF-Binary/Buggy.glb");
+    unsigned int sponza = scene_graph
+       .add_gltf_scene_node("Sponza", 0, "/home/llikian/Downloads/glTF-Sample-Models-main/2.0/Sponza/glTF/Sponza.gltf");
+    scene_graph.transforms[sponza].set_local_scale(10.0f);
 
     /* Main Loop */
     while(!Window::should_close()) {
@@ -142,7 +145,8 @@ void Application::draw_imgui_debug_window() {
     ImGui::Text("Total Drawn Objects: %d", scene_graph.total_drawn_objects);
 
     ImGui::NewLine();
-    ImGui::Text("Camera:"); ImGui::SliderFloat("Sensitivity", &camera.sensitivity, 0.05f, 1.0f);
+    ImGui::Text("Camera:");
+    ImGui::SliderFloat("Sensitivity", &camera.sensitivity, 0.05f, 1.0f);
     ImGui::SliderFloat("Movement Speed", &camera.movement_speed, 1.0f, 100.0f);
 
     ImGui::NewLine();
