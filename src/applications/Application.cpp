@@ -65,9 +65,8 @@ void Application::run() {
     */
 
     // scene_graph.add_gltf_scene_node("Duck", 0, "data/models/duck.glb");
-    // scene_graph.add_gltf_scene_node("Buggy", 0, "/home/llikian/Downloads/glTF-Sample-Models-main/2.0/Buggy/glTF-Binary/Buggy.glb");
-    unsigned int sponza = scene_graph
-       .add_gltf_scene_node("Sponza", 0, "/home/llikian/Downloads/glTF-Sample-Models-main/2.0/Sponza/glTF/Sponza.gltf");
+    // scene_graph.add_gltf_scene_node("Buggy", 0, "data/models/buggy.glb");
+    unsigned int sponza = scene_graph.add_gltf_scene_node("Sponza", 0, "/home/llikian/Downloads/glTF-Sample-Models/2.0/Sponza/glTF/Sponza.gltf");
     scene_graph.transforms[sponza].set_local_scale(10.0f);
 
     /* Main Loop */
