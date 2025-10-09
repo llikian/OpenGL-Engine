@@ -114,9 +114,14 @@ public:
     static float get_time() { return get().time; }
 
     /**
-     * @return  How much time passed since the last frame.
+     * @return How much time passed since the last frame.
      */
     static float get_delta() { return get().delta; }
+
+    /**
+     * @return A pointer to the active camera.
+     */
+    static const Camera* get_active_camera() { return get().active_camera; }
 
     /**
      * @return Whether the mouse's cursor is visible.
@@ -203,8 +208,8 @@ private:
      */
     void do_handle_cursor_position_event(int position_x, int position_y);
 
-    std::unordered_map<int, KeyAction> key_actions;   ///< Stores the action associated with each key.
-    std::unordered_map<int, bool> repeatable_keys; ///< Stores repeatable keys and whether they are active.
+    std::unordered_map<int, KeyAction> key_actions; ///< Stores the action associated with each key.
+    std::unordered_map<int, bool> repeatable_keys;  ///< Stores repeatable keys and whether they are active.
 
     vec2 mouse_position; ///< The position of the cursor of the mouse on the window.
 
