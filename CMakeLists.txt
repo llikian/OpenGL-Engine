@@ -61,6 +61,9 @@ set(SOURCES
         src/mesh/primitives.cpp
 
         # Utility Module
+        include/utility/ansi.hpp
+        include/utility/HeapArray.hpp
+        src/utility/gl_enums.cpp
         src/utility/LifetimeLogger.cpp
         src/utility/Random.cpp
 
