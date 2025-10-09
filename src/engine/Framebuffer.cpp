@@ -12,7 +12,7 @@ Framebuffer::Framebuffer(unsigned int width, unsigned int height)
     glGenFramebuffers(1, &FBO);
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
 
-    texture.create(width, height, nullptr, GL_RGBA32F);
+    texture.create(GL_RGBA32F, GL_RGBA, GL_FLOAT, width, height, nullptr);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture.get_id(), 0);
 
     glGenRenderbuffers(1, &RBO);

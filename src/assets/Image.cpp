@@ -41,15 +41,3 @@ unsigned int Image::get_height() const {
 unsigned int Image::get_channels_amount() const {
     return channels_amount;
 }
-
-unsigned int Image::get_internal_format(bool srgb) const {
-    switch(channels_amount) {
-        case 3: return srgb ? GL_SRGB : GL_RGB;
-        case 4: return srgb ? GL_SRGB_ALPHA : GL_RGBA;
-        case 1: return GL_RED;
-        case 2: return GL_RG;
-        default:
-            throw std::runtime_error(std::string("Format error, ") + std::to_string(channels_amount)
-                                     + " channels in image.");
-    }
-}

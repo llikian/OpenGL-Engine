@@ -7,9 +7,9 @@
 
 #include <algorithm>
 
-#include "stb_image_write.h"
 #include "assets/AssetManager.hpp"
 #include "engine/SceneGraph.hpp"
+#include "utility/ansi.hpp"
 
 GLTF::Scene::Scene(const std::filesystem::path& path, SceneGraph* scene_graph, unsigned int scene_node_index) {
     load(path, scene_graph, scene_node_index);
@@ -75,24 +75,30 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
                 if(base_color_texture_index == -1) {
                     material->base_color_map.create(255, 255, 255);
                 } else {
-                    const tinygltf::Image& t_image = model.images[model.textures[base_color_texture_index].source];
-                    material->base_color_map.create(t_image.width, t_image.height, t_image.image.data(), GL_SRGB);
+                    const tinygltf::Texture& t_texture = model.textures[base_color_texture_index];
+                    material->base_color_map.create(model.images[t_texture.source],
+                                                    model.samplers[t_texture.sampler],
+                                                    true);
                 }
 
                 int MR_texture_index = t_material.pbrMetallicRoughness.metallicRoughnessTexture.index;
                 if(MR_texture_index == -1) {
                     material->metallic_roughness_map.create(vec3(0.0f, 0.5f, 0.0f));
                 } else {
-                    const tinygltf::Image& t_image = model.images[model.textures[MR_texture_index].source];
-                    material->metallic_roughness_map.create(t_image.width, t_image.height, t_image.image.data(), GL_RGB);
+                    const tinygltf::Texture& t_texture = model.textures[MR_texture_index];
+                    material->metallic_roughness_map.create(model.images[t_texture.source],
+                                                            model.samplers[t_texture.sampler],
+                                                            false);
                 }
 
                 int normal_map_index = t_material.normalTexture.index;
                 if(normal_map_index == -1) {
                     material->normal_map.create(vec3(1.0f, 0.5f, 0.5f));
                 } else {
-                    const tinygltf::Image& t_image = model.images[model.textures[normal_map_index].source];
-                    material->normal_map.create(t_image.width, t_image.height, t_image.image.data(), GL_RGB);
+                    const tinygltf::Texture& t_texture = model.textures[normal_map_index];
+                    material->normal_map.create(model.images[t_texture.source],
+                                                model.samplers[t_texture.sampler],
+                                                false);
                 }
             }
 
@@ -123,7 +129,7 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
                     throw std::runtime_error("Unknown primitive mode: " + std::to_string(t_primitive.mode) + '.');
             }
 
-            static const std::map<std::string, Attribute> GLTF_STRING_TO_ATTR{
+            static const std::map<std::string, Attribute> GLTF_STRING_TO_ATTR {
                 { "POSITION", ATTRIBUTE_POSITION },
                 { "NORMAL", ATTRIBUTE_NORMAL },
                 { "TEXCOORD_0", ATTRIBUTE_TEX_COORDS },

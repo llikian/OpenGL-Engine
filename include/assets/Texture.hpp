@@ -7,19 +7,8 @@
 
 #include <filesystem>
 #include "Image.hpp"
+#include "tiny_gltf.h"
 #include "maths/vec3.hpp"
-
-/**
- * @brief Gets the format, channels amount and type corresponding to an OpenGL internal format enum.
- * @param internal_format The OpenGL internal format.
- * @param format The base format corresponding to the internal format.
- * @param channels_amount The amount of chanels corresponding to the internal format.
- * @param type The type corresponding to the internal format.
- */
-void get_internal_format_parameters(int internal_format,
-                                    unsigned int& format,
-                                    unsigned int& channels_amount,
-                                    unsigned int& type);
 
 /**
  * @class Texture
@@ -65,12 +54,29 @@ public:
      * @warning The responsibility of freeing the texture goes to the user, so if this instance of
      * the Texture class already had an active texture (id != 0) and you no longer wish to use that
      * texture, be sure to call the free method beforehand.
-     * @param width The texture's width.
-     * @param height The texture's height.
+     * @param internal_format The texture's internal format.
+     * @param format The image data's format.
+     * @param type The image data's type.
+     * @param width The image's width.
+     * @param height The image's height.
      * @param data The texture's image data.
-     * @param internal_format The image data's internal format.
      */
-    void create(unsigned int width, unsigned int height, const void* data, int internal_format);
+    void create(unsigned int internal_format,
+                unsigned int format,
+                unsigned int type,
+                unsigned int width,
+                unsigned int height,
+                const void* data);
+
+    /**
+     * @brief Creates a texture by assigning an image's data to a new texture.
+     * @warning The responsibility of freeing the texture goes to the user, so if this instance of
+     * the Texture class already had an active texture (id != 0) and you no longer wish to use that
+     * texture, be sure to call the free method beforehand.
+     * @param image The image.
+     * @param srgb Whether to set the internal format to SRGB.
+     */
+    void create(const Image& image, bool srgb);
 
     /**
      * @brief Creates a texture by loading an image and assigning its data to a new texture.
@@ -82,16 +88,6 @@ public:
      * @param srgb Whether to set the internal format to SRGB.
      */
     void create(const std::filesystem::path& path, bool flip_vertically, bool srgb);
-
-    /**
-     * @brief Creates a texture by assigning an image's data to a new texture.
-     * @warning The responsibility of freeing the texture goes to the user, so if this instance of
-     * the Texture class already had an active texture (id != 0) and you no longer wish to use that
-     * texture, be sure to call the free method beforehand.
-     * @param image The image.
-     * @param srgb Whether to set the internal format to SRGB.
-     */
-    void create(const Image& image, bool srgb);
 
     /**
      * @brief Creates a 1*1px texture with a specific color.
@@ -112,6 +108,14 @@ public:
      * @param b The b component of the texture's color.
      */
     void create(unsigned char r, unsigned char g, unsigned char b);
+
+    /**
+     * @brief Creates a texture using an image and a sampler from the tinygltf library.
+     * @param image The image that describes its width, height and pixel data among other things.
+     * @param sampler The sampler that describes how the texture should be sampled.
+     * @param srgb Whether the texture should use the SRGB color space.
+     */
+    void create(const tinygltf::Image& image, const tinygltf::Sampler& sampler, bool srgb);
 
     /**
      * @brief Binds the texture to a specifc texture unit.
