@@ -21,11 +21,11 @@ static void get_formats_from_channels_amount(unsigned int channels_amount,
                                              unsigned int& format) {
     switch(channels_amount) {
         case 3:
-            internal_format = srgb ? GL_SRGB8_ALPHA8 : GL_RGB8;
+            internal_format = srgb ? GL_SRGB8 : GL_RGB8;
             format = GL_RGB;
             break;
         case 4:
-            internal_format = srgb ? GL_SRGB8 : GL_RGBA8;
+            internal_format = srgb ? GL_SRGB8_ALPHA8 : GL_RGBA8;
             format = GL_RGBA;
             break;
         case 1:

@@ -20,8 +20,6 @@ namespace GLTF {
         ::Mesh primitive;
         MRMaterial* material;
         const Shader* shader;
-
-        ~Primitive() { delete material; }
     };
 
     struct Mesh {
@@ -30,12 +28,8 @@ namespace GLTF {
     };
 
     struct AttributeInfo {
-        std::string name;
-
         Attribute attribute;
-        AttributeType attribute_type;
 
-        size_t values_count;
         const float* data;
         size_t stride_in_floats;
         unsigned char elements_count;
@@ -48,6 +42,13 @@ namespace GLTF {
     class Scene {
     public:
         Scene(const std::filesystem::path& path, SceneGraph* scene_graph, unsigned int scene_node_index);
+        ~Scene() {
+            for(unsigned int i = 0 ; i < meshes.get_size() ; ++i) {
+                for(unsigned int j = 0 ; j < meshes[i].primitives.get_size() ; ++j) {
+                    delete meshes[i].primitives[j].material;
+                }
+            }
+        }
 
         void load(const std::filesystem::path& path, SceneGraph* scene_graph, unsigned int scene_node_index);
 

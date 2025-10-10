@@ -9,7 +9,6 @@
 
 #include "assets/AssetManager.hpp"
 #include "engine/SceneGraph.hpp"
-#include "utility/ansi.hpp"
 
 GLTF::Scene::Scene(const std::filesystem::path& path, SceneGraph* scene_graph, unsigned int scene_node_index) {
     load(path, scene_graph, scene_node_index);
@@ -36,6 +35,8 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
     if(!error.empty()) { std::cerr << "Error loading GLTF scene: " << error << '\n'; }
     if(!success) { throw std::runtime_error("Failed to load GLTF scene from file '" + path.string() + "'."); }
 
+    std::cout << "Loading GLTF scene: " << path << ".\n";
+
     /* ---- Meshes ---- */
     size_t meshes_count = model.meshes.size();
     meshes.resize(meshes_count);
@@ -48,8 +49,6 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
 
         size_t primitives_count = t_mesh.primitives.size();
         mesh.primitives.resize(primitives_count);
-
-        std::cout << "Mesh '" << mesh.name << "'\n";
 
         for(unsigned int j = 0 ; j < primitives_count ; ++j) {
             const tinygltf::Primitive& t_primitive = t_mesh.primitives[j];
@@ -102,16 +101,12 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
                 }
             }
 
-            std::cout << "\tPrimitive " << j << ' ';
-
             switch(t_primitive.mode) {
                 case TINYGLTF_MODE_POINTS:
                     primitive.primitive.set_primitive(MeshPrimitive::POINTS);
-                    std::cout << "(POINTS)\n";
                     break;
                 case TINYGLTF_MODE_LINE:
                     primitive.primitive.set_primitive(MeshPrimitive::LINES);
-                    std::cout << "(LINES)\n";
                     break;
                 case TINYGLTF_MODE_LINE_LOOP:
                     throw std::runtime_error("Unhandled primitive mode: TINYGLTF_MODE_LINE_LOOP.");
@@ -119,7 +114,6 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
                     throw std::runtime_error("Unhandled primitive mode: TINYGLTF_MODE_LINE_STRIP.");
                 case TINYGLTF_MODE_TRIANGLES:
                     primitive.primitive.set_primitive(MeshPrimitive::TRIANGLES);
-                    std::cout << "(TRIANGLES)\n";
                     break;
                 case TINYGLTF_MODE_TRIANGLE_STRIP:
                     throw std::runtime_error("Unhandled primitive mode: TINYGLTF_MODE_TRIANGLE_STRIP.");
@@ -138,6 +132,7 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
             };
 
             std::vector<AttributeInfo> attribute_infos;
+            size_t vertex_count = 0;
 
             for(const auto& [attribute_name, accessor_index] : t_primitive.attributes) {
                 const tinygltf::Accessor& t_accessor = model.accessors[accessor_index];
@@ -146,8 +141,9 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
 
                 auto iterator = GLTF_STRING_TO_ATTR.find(attribute_name);
                 if(iterator == GLTF_STRING_TO_ATTR.end()) {
-                    std::cout << "\t\tUnhandled attribute " << attribute_name << ", " << accessor_index << '\n';
+                    std::cout << "\tUnhandled attribute: " << attribute_name << '\n';
                 } else {
+                    Attribute attribute = iterator->second;
                     AttributeType attribute_type;
                     switch(t_accessor.type) {
                         case TINYGLTF_TYPE_VEC2:
@@ -177,43 +173,34 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
                                 "Unknown attribute type: " + std::to_string(t_accessor.type) + '.');
                     }
 
+                    if(t_accessor.componentType != TINYGLTF_COMPONENT_TYPE_FLOAT) {
+                        throw std::runtime_error("Unhandled case: non-float attribute.");
+                    }
+
                     size_t byte_offset = t_accessor.byteOffset + t_buffer_view.byteOffset;
                     size_t stride_in_floats = t_buffer_view.byteStride == 0
                                                   ? get_attribute_type_count(attribute_type)
                                                   : t_buffer_view.byteStride / sizeof(float);
 
-                    attribute_infos.emplace_back(attribute_name,
-                                                 iterator->second,
-                                                 attribute_type,
-                                                 t_accessor.count,
+                    attribute_infos.emplace_back(attribute,
                                                  reinterpret_cast<const float*>(t_buffer.data.data() + byte_offset),
                                                  stride_in_floats,
                                                  get_attribute_type_count(attribute_type)
                     );
+
+                    if(vertex_count == 0) {
+                        vertex_count = t_accessor.count;
+                    } else if(vertex_count != t_accessor.count) {
+                        throw std::runtime_error("Not the same amount of values between vertex attributes.");
+                    }
+
+                    primitive.primitive.enable_attribute(attribute, attribute_type);
                 }
             }
 
             std::ranges::sort(attribute_infos, [](const AttributeInfo& a1, const AttributeInfo& a2) {
                 return a1.attribute < a2.attribute;
             });
-
-            size_t vertex_count = 0;
-            for(const auto& attr_info : attribute_infos) {
-                std::cout << "\t\t" << attr_info.name
-                    << " (" << static_cast<unsigned int>(attr_info.attribute) << ')'
-                    << ", " << attr_info.values_count << " values"
-                    << " of type " << attribute_type_to_string(attr_info.attribute_type)
-                    << " with stride of " << attr_info.stride_in_floats << " floats"
-                    << '\n';
-
-                if(vertex_count == 0) {
-                    vertex_count = attr_info.values_count;
-                } else if(vertex_count != attr_info.values_count) {
-                    throw std::runtime_error("Not the same amount of values between vertex attributes.");
-                }
-
-                primitive.primitive.enable_attribute(attr_info.attribute, attr_info.attribute_type);
-            }
 
             for(size_t k = 0 ; k < vertex_count ; ++k) {
                 for(const AttributeInfo& attribute_info : attribute_infos) {
@@ -250,9 +237,6 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
             }
 
             primitive.primitive.bind_buffers();
-
-            std::cout << "\t\tPrimitive has: " << primitive.primitive.get_vertices_amount() << " vertices"
-                << " and " << primitive.primitive.get_indices_amount() << " indices.\n";
         }
     }
 
@@ -328,32 +312,27 @@ void GLTF::Scene::add_node(const std::vector<tinygltf::Node>& t_nodes,
         }
     }
 
-    bool transformed = false;
-
-    if(t_node.translation.size() == 3) {
-        scene_graph->transforms[sg_parent_index].set_local_position(t_node.translation[0],
-                                                                    t_node.translation[1],
-                                                                    t_node.translation[2]);
-        transformed = true;
-    }
-
-    if(t_node.rotation.size() == 4) {
-        scene_graph->transforms[sg_parent_index].set_local_orientation(t_node.rotation[0],
-                                                                       t_node.rotation[1],
-                                                                       t_node.rotation[2],
-                                                                       t_node.rotation[3]);
-        transformed = true;
-    }
-
-    if(t_node.scale.size() == 3) {
-        scene_graph->transforms[sg_parent_index].set_local_scale(t_node.scale[0],
-                                                                 t_node.scale[1],
-                                                                 t_node.scale[2]);
-        transformed = true;
-    }
-
-    if(!transformed && t_node.matrix.size() == 16) {
+    if(t_node.matrix.size() == 16) {
         scene_graph->transforms[sg_parent_index].set_local_model(t_node.matrix.data());
+    } else {
+        if(t_node.translation.size() == 3) {
+            scene_graph->transforms[sg_parent_index].set_local_position(t_node.translation[0],
+                                                                        t_node.translation[1],
+                                                                        t_node.translation[2]);
+        }
+
+        if(t_node.rotation.size() == 4) {
+            scene_graph->transforms[sg_parent_index].set_local_orientation(t_node.rotation[0],
+                                                                           t_node.rotation[1],
+                                                                           t_node.rotation[2],
+                                                                           t_node.rotation[3]);
+        }
+
+        if(t_node.scale.size() == 3) {
+            scene_graph->transforms[sg_parent_index].set_local_scale(t_node.scale[0],
+                                                                     t_node.scale[1],
+                                                                     t_node.scale[2]);
+        }
     }
 
     for(int node_index : t_node.children) {
