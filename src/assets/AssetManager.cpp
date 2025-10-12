@@ -102,46 +102,67 @@ AssetManager::AssetManager() {
                                           "shaders/point_mesh/point_mesh.vert",
                                           "shaders/point_mesh/point_mesh.frag"
                                       }, "point mesh");
+
     shaders[SHADER_LINE_MESH].create({
                                          "shaders/line_mesh/line_mesh.vert",
                                          "shaders/line_mesh/line_mesh.frag"
                                      }, "line mesh");
+
     shaders[SHADER_BACKGROUND].create({
                                           "shaders/vertex/position_only-no_mvp.vert",
                                           "shaders/fragment/background.frag"
                                       }, "background");
+
     shaders[SHADER_FLAT].create({
                                     "shaders/vertex/position_only.vert",
                                     "shaders/fragment/flat.frag"
                                 }, "flat");
+
     shaders[SHADER_LAMBERT].create({
                                        "shaders/vertex/position_and_normal.vert",
                                        "shaders/fragment/lambert.frag"
                                    }, "lambert");
+
     shaders[SHADER_BLINN_PHONG].create({
                                            "shaders/vertex/default.vert",
                                            "shaders/fragment/blinn_phong.frag"
                                        }, "blinn-phong");
+    shaders[SHADER_BLINN_PHONG].use();
+    shaders[SHADER_BLINN_PHONG].set_uniform("u_diffuse_map", 0);
+
     shaders[SHADER_METALLIC_ROUGHNESS].create({
                                                   "shaders/vertex/tangent.vert",
                                                   "shaders/metallic-roughness/get_directions_tangent.frag",
                                                   "shaders/metallic-roughness/metallic_roughness.frag",
                                               }, "metallic-roughness");
+    shaders[SHADER_METALLIC_ROUGHNESS].use();
+    shaders[SHADER_METALLIC_ROUGHNESS].set_uniform("u_material.base_color_map", 0);
+    shaders[SHADER_METALLIC_ROUGHNESS].set_uniform("u_material.metallic_roughness_map", 1);
+    shaders[SHADER_METALLIC_ROUGHNESS].set_uniform("u_material.normal_map", 2);
+
     shaders[SHADER_METALLIC_ROUGHNESS_NO_TANGENT].create({
                                                              "shaders/vertex/default.vert",
                                                              "shaders/metallic-roughness/get_directions_no_tangent.frag",
                                                              "shaders/metallic-roughness/metallic_roughness.frag",
                                                          }, "metallic-roughness no tangent");
+    shaders[SHADER_METALLIC_ROUGHNESS_NO_TANGENT].use();
+    shaders[SHADER_METALLIC_ROUGHNESS_NO_TANGENT].set_uniform("u_material.base_color_map", 0);
+    shaders[SHADER_METALLIC_ROUGHNESS_NO_TANGENT].set_uniform("u_material.metallic_roughness_map", 1);
+    shaders[SHADER_METALLIC_ROUGHNESS_NO_TANGENT].set_uniform("u_material.normal_map", 2);
+
     shaders[SHADER_TERRAIN].create({
                                        "shaders/terrain/terrain.vert",
                                        "shaders/terrain/terrain.tesc",
                                        "shaders/terrain/terrain.tese",
                                        "shaders/terrain/terrain.frag"
                                    }, "terrain");
+
     shaders[SHADER_POST_PROCESSING].create({
                                                "shaders/vertex/position_only-no_mvp.vert",
                                                "shaders/fragment/post_processing.frag"
                                            }, "post processing");
+    shaders[SHADER_POST_PROCESSING].use();
+    shaders[SHADER_POST_PROCESSING].set_uniform("u_texture", 0);
 }
 
 AssetManager::~AssetManager() {

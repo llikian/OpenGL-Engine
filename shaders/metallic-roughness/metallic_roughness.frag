@@ -12,10 +12,6 @@ out vec4 frag_color;
 const float PI = 3.141592653589793f;
 const float INV_PI = 0.318309886183790f;
 
-uniform bool u_test1;
-
-//uniform samplerCube u_cubemap;
-
 struct Light {
     float intensity;
     vec3 color;
