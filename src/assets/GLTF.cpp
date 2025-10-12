@@ -14,6 +14,14 @@ GLTF::Scene::Scene(const std::filesystem::path& path, SceneGraph* scene_graph, u
     load(path, scene_graph, scene_node_index);
 }
 
+GLTF::Scene::~Scene() {
+    for(unsigned int i = 0 ; i < meshes.get_size() ; ++i) {
+        for(unsigned int j = 0 ; j < meshes[i].primitives.get_size() ; ++j) {
+            delete meshes[i].primitives[j].material;
+        }
+    }
+}
+
 void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_graph, unsigned int scene_node_index) {
     /* ---- TinyGLTF Load Model ---- */
     tinygltf::TinyGLTF loader;

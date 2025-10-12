@@ -42,13 +42,7 @@ namespace GLTF {
     class Scene {
     public:
         Scene(const std::filesystem::path& path, SceneGraph* scene_graph, unsigned int scene_node_index);
-        ~Scene() {
-            for(unsigned int i = 0 ; i < meshes.get_size() ; ++i) {
-                for(unsigned int j = 0 ; j < meshes[i].primitives.get_size() ; ++j) {
-                    delete meshes[i].primitives[j].material;
-                }
-            }
-        }
+        ~Scene();
 
         void load(const std::filesystem::path& path, SceneGraph* scene_graph, unsigned int scene_node_index);
 
