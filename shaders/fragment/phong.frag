@@ -19,7 +19,7 @@ uniform vec3 u_ambient;
 uniform vec3 u_diffuse;
 uniform vec3 u_specular;
 uniform float u_specular_exponent;
-uniform sampler2D u_diffuse_map;
+layout (binding = 0) uniform sampler2D u_diffuse_map;
 
 void main() {
     vec4 diffuse_map = texture(u_diffuse_map, v_tex_coords);

@@ -20,17 +20,12 @@ struct Light {
 
 uniform Light u_light;
 
-struct Material {
-    vec4 base_color;
-    sampler2D base_color_map;
-    float metallic;
-    float roughness;
-    sampler2D metallic_roughness_map;
-    float reflectance;
-    sampler2D normal_map;
-};
-
-uniform Material u_material;
+layout (binding = 0) uniform sampler2D u_base_color_map;
+layout (binding = 1) uniform sampler2D u_metallic_roughness_map;
+uniform vec4 u_base_color;
+uniform float u_metallic;
+uniform float u_roughness;
+uniform float u_reflectance;
 
 // Needs to be defined in another .frag file.
 void get_directions(out vec3 normal, out vec3 light_direction, out vec3 view_direction);
@@ -74,7 +69,7 @@ vec3 brdf(vec3 base_color, float metallic, float roughness) {
     float normal_dot_view = max(dot(normal, view_direction), 0.0f);
     float normal_dot_halfway = max(dot(normal, halfway_direction), 0.0f);
 
-    vec3 F0 = mix(vec3(0.16f * pow2(u_material.reflectance)), base_color, metallic);
+    vec3 F0 = mix(vec3(0.16f * pow2(u_reflectance)), base_color, metallic);
 
     vec3 F = F_Schlick(F0, max(dot(light_direction, halfway_direction), 0.0f));
     float D = D_GGX(normal_dot_halfway, roughness);
@@ -90,14 +85,14 @@ vec3 brdf(vec3 base_color, float metallic, float roughness) {
 }
 
 void main() {
-    vec4 base_color = u_material.base_color * texture(u_material.base_color_map, v_tex_coords);
+    vec4 base_color = u_base_color * texture(u_base_color_map, v_tex_coords);
 
     frag_color.a = base_color.a;
     if (frag_color.a < 0.2f) { discard; }
 
-    vec2 metallic_roughness = texture(u_material.metallic_roughness_map, v_tex_coords).bg;
-    float metallic = u_material.metallic * metallic_roughness.x;
-    float roughness = u_material.roughness * metallic_roughness.y;
+    vec2 metallic_roughness = texture(u_metallic_roughness_map, v_tex_coords).bg;
+    float metallic = u_metallic * metallic_roughness.x;
+    float roughness = u_roughness * metallic_roughness.y;
     roughness = max(roughness * roughness, 0.01f);
 
     frag_color.rgb = brdf(base_color.rgb, metallic, roughness);

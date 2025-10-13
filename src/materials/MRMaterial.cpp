@@ -5,7 +5,6 @@
 
 #include "materials/MRMaterial.hpp"
 
-#include "glad/glad.h"
 #include "imgui.h"
 
 MRMaterial::MRMaterial(const std::string& name)
@@ -20,10 +19,10 @@ void MRMaterial::update_shader_uniforms(const Shader* shader) const {
     metallic_roughness_map.bind(1);
     normal_map.bind(2);
 
-    shader->set_uniform_if_exists("u_material.base_color", base_color);
-    shader->set_uniform_if_exists("u_material.metallic", metallic);
-    shader->set_uniform_if_exists("u_material.roughness", roughness);
-    shader->set_uniform_if_exists("u_material.reflectance", reflectance);
+    shader->set_uniform_if_exists("u_base_color", base_color);
+    shader->set_uniform_if_exists("u_metallic", metallic);
+    shader->set_uniform_if_exists("u_roughness", roughness);
+    shader->set_uniform_if_exists("u_reflectance", reflectance);
 }
 
 bool MRMaterial::has_transparency() const {

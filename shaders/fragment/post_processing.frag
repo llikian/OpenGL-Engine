@@ -11,7 +11,7 @@ uniform bool u_test1;
 uniform bool u_test2;
 uniform bool u_test3;
 
-uniform sampler2D u_texture;
+layout (binding = 0) uniform sampler2D u_texture;
 uniform vec2 u_texture_resolution;
 uniform vec2 u_resolution;
 

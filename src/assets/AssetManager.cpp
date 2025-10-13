@@ -127,28 +127,18 @@ AssetManager::AssetManager() {
                                            "shaders/vertex/default.vert",
                                            "shaders/fragment/blinn_phong.frag"
                                        }, "blinn-phong");
-    shaders[SHADER_BLINN_PHONG].use();
-    shaders[SHADER_BLINN_PHONG].set_uniform("u_diffuse_map", 0);
 
     shaders[SHADER_METALLIC_ROUGHNESS].create({
                                                   "shaders/vertex/tangent.vert",
                                                   "shaders/metallic-roughness/get_directions_tangent.frag",
                                                   "shaders/metallic-roughness/metallic_roughness.frag",
                                               }, "metallic-roughness");
-    shaders[SHADER_METALLIC_ROUGHNESS].use();
-    shaders[SHADER_METALLIC_ROUGHNESS].set_uniform("u_material.base_color_map", 0);
-    shaders[SHADER_METALLIC_ROUGHNESS].set_uniform("u_material.metallic_roughness_map", 1);
-    shaders[SHADER_METALLIC_ROUGHNESS].set_uniform("u_material.normal_map", 2);
 
     shaders[SHADER_METALLIC_ROUGHNESS_NO_TANGENT].create({
                                                              "shaders/vertex/default.vert",
                                                              "shaders/metallic-roughness/get_directions_no_tangent.frag",
                                                              "shaders/metallic-roughness/metallic_roughness.frag",
                                                          }, "metallic-roughness no tangent");
-    shaders[SHADER_METALLIC_ROUGHNESS_NO_TANGENT].use();
-    shaders[SHADER_METALLIC_ROUGHNESS_NO_TANGENT].set_uniform("u_material.base_color_map", 0);
-    shaders[SHADER_METALLIC_ROUGHNESS_NO_TANGENT].set_uniform("u_material.metallic_roughness_map", 1);
-    shaders[SHADER_METALLIC_ROUGHNESS_NO_TANGENT].set_uniform("u_material.normal_map", 2);
 
     shaders[SHADER_TERRAIN].create({
                                        "shaders/terrain/terrain.vert",
@@ -161,8 +151,6 @@ AssetManager::AssetManager() {
                                                "shaders/vertex/position_only-no_mvp.vert",
                                                "shaders/fragment/post_processing.frag"
                                            }, "post processing");
-    shaders[SHADER_POST_PROCESSING].use();
-    shaders[SHADER_POST_PROCESSING].set_uniform("u_texture", 0);
 }
 
 AssetManager::~AssetManager() {
