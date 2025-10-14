@@ -45,25 +45,6 @@ Application::~Application() {
 }
 
 void Application::run() {
-    /* Frustum Tests {
-        unsigned int frustum_tests_root = scene_graph.add_simple_node("Frustum Tests Root", 0);
-        unsigned int mesh_index = scene_graph.add_mesh(AssetManager::get_mesh_ptr("cube"));
-
-        std::string name = "Frustum Test Mesh ";
-
-        for(unsigned int i = 0 ; i < 10'000 ; ++i) {
-            unsigned int index = scene_graph.add_flat_shaded_mesh_node(name + std::to_string(i),
-                                                                       frustum_tests_root,
-                                                                       mesh_index,
-                                                                       vec4(1.0f));
-
-            scene_graph.transforms[index].set_local_position(Random::get_vec3(-500.0f, 500.0f));
-            scene_graph.transforms[index].set_local_scale(Random::get_vec3(1.0f, 5.0f));
-            scene_graph.colors[scene_graph.nodes[index].color_index] = vec4(Random::get_vec3(-0.5f, 0.5f), 1.0f);
-        }
-    }
-    */
-
     // scene_graph.add_gltf_scene_node("Duck", 0, "data/models/duck.glb");
     // scene_graph.add_gltf_scene_node("Buggy", 0, "data/models/buggy.glb");
     unsigned int sponza = scene_graph.add_gltf_scene_node("Sponza", 0, "data/models/sponza/Sponza.gltf");
