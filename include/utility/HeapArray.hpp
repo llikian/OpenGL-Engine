@@ -53,7 +53,7 @@ public:
         }
     }
 
-    bool empty() const { return size > 0; }
+    bool empty() const { return size == 0; }
 
     Type* begin() { return data; }
 
