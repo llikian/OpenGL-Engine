@@ -27,8 +27,23 @@ public:
         for(unsigned int i = 0 ; i < size ; ++i) { data[i] = values[i]; }
     }
 
+    HeapArray(const HeapArray& other)
+        : size(other.size), data(new Type[size]) {
+        for(unsigned int i = 0 ; i < size ; ++i) { data[i] = other[i]; }
+    }
+
     ~HeapArray() {
         delete[] data;
+    }
+
+    HeapArray& operator=(const HeapArray& other) {
+        delete data;
+
+        size = other.size;
+        data = new Type[size];
+        for(unsigned int i = 0 ; i < size ; ++i) { data[i] = other[i]; }
+
+        return *this;
     }
 
     Type& operator[](size_t index) { return data[index]; }
