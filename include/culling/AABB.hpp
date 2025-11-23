@@ -13,6 +13,7 @@ struct AABB {
     AABB(const vec3& min_point, const vec3& max_point);
 
     bool is_in_frustum(const Frustum& frustum) const;
+    vec3 get_center() const;
     mat4 get_global_model_matrix() const;
 
     template <typename T1, typename T2>
