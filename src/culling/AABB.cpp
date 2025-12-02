@@ -46,10 +46,14 @@ bool AABB::is_in_frustum(const Frustum& frustum) const {
     return true;
 }
 
-mat4 AABB::get_global_model_matrix() const {
-    vec3 center(0.5f * (min_point.x + max_point.x),
+vec3 AABB::get_center() const {
+    return vec3(0.5f * (min_point.x + max_point.x),
                 0.5f * (min_point.y + max_point.y),
                 0.5f * (min_point.z + max_point.z));
+}
+
+mat4 AABB::get_global_model_matrix() const {
+    vec3 center = get_center();
 
     return mat4(
         max_point.x - center.x, 0.0f, 0.0f, center.x,
