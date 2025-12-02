@@ -48,8 +48,8 @@ Application::~Application() {
 void Application::run() {
     // scene_graph.add_gltf_scene_node("Duck", 0, "data/models/duck.glb");
     // scene_graph.add_gltf_scene_node("Buggy", 0, "data/models/buggy.glb");
-    // unsigned int sponza = scene_graph.add_gltf_scene_node("Sponza", 0, "data/models/sponza/Sponza.gltf");
-    // scene_graph.transforms[sponza].set_local_scale(10.0f);
+    unsigned int sponza = scene_graph.add_gltf_scene_node("Sponza", 0, "data/models/sponza/Sponza.gltf");
+    scene_graph.transforms[sponza].set_local_scale(10.0f);
 
     for(unsigned int i = 0 ; i < MAX_ICO_LEVEL ; ++i) {
         std::string mesh_name = "icosphere " + std::to_string(i);
@@ -77,12 +77,7 @@ void Application::run() {
 
         frustum.update(camera);
 
-        framebuffer.bind();
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        draw_background();
-        scene_graph.draw(frustum);
-        draw_post_processing();
+        draw();
 
         draw_imgui_debug_window();
         draw_imgui_object_ediot_window();
@@ -93,30 +88,35 @@ void Application::run() {
     }
 }
 
-void Application::draw_post_processing() const {
-    const Shader& shader = AssetManager::get_shader(SHADER_POST_PROCESSING);
-    shader.use();
-    shader.set_uniform("u_texture", 0);
-    shader.set_uniform("u_texture_resolution", framebuffer.get_resolution());
-    shader.set_uniform_if_exists("u_resolution", Window::get_resolution());
-    framebuffer.bind_texture(0);
-
-    Framebuffer::bind_default();
+void Application::draw() {
+    framebuffer.bind();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    /* ---- Background ---- */
+    const Shader& background_shader = AssetManager::get_shader(SHADER_BACKGROUND);
+    background_shader.use();
+    background_shader.set_uniform("u_resolution", Window::get_resolution());
+    background_shader.set_uniform("u_camera_direction", camera.get_direction());
+    background_shader.set_uniform("u_camera_right", camera.get_right_vector());
+    background_shader.set_uniform("u_camera_up", camera.get_up_vector());
 
     if(EventHandler::is_wireframe_enabled()) { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); }
     AssetManager::get_mesh("screen").draw();
     if(EventHandler::is_wireframe_enabled()) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); }
-}
 
-void Application::draw_background() const {
-    const Shader& shader = AssetManager::get_shader(SHADER_BACKGROUND);
-    shader.use();
+    /* ---- Scene ---- */
+    scene_graph.draw(frustum);
 
-    shader.set_uniform("u_resolution", Window::get_resolution());
-    shader.set_uniform("u_camera_direction", camera.get_direction());
-    shader.set_uniform("u_camera_right", camera.get_right_vector());
-    shader.set_uniform("u_camera_up", camera.get_up_vector());
+    /* ---- Post Processing ---- */
+    const Shader& post_processing_shader = AssetManager::get_shader(SHADER_POST_PROCESSING);
+    post_processing_shader.use();
+    post_processing_shader.set_uniform("u_texture", 0);
+    post_processing_shader.set_uniform("u_texture_resolution", framebuffer.get_resolution());
+    post_processing_shader.set_uniform_if_exists("u_resolution", Window::get_resolution());
+    framebuffer.bind_texture(0);
+
+    Framebuffer::bind_default();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     if(EventHandler::is_wireframe_enabled()) { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); }
     AssetManager::get_mesh("screen").draw();
@@ -146,7 +146,7 @@ void Application::draw_imgui_debug_window() {
     ImGui::SliderFloat("Sensitivity", &camera.sensitivity, 0.05f, 1.0f);
     ImGui::SliderFloat("Movement Speed", &camera.movement_speed, 1.0f, 100.0f);
 
-    ImGui::SliderInt("Icosphere Level", &ico_level, 0, MAX_ICO_LEVEL);
+    ImGui::SliderInt("Icosphere Level", &ico_level, 0, MAX_ICO_LEVEL - 1);
     scene_graph.nodes[ico_node].drawable_index = icospheres[ico_level];
 
     ImGui::NewLine();

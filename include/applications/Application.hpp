@@ -33,14 +33,9 @@ public:
 
 private:
     /**
-     * @brief Draws the framebuffer's texture on the screen and applies post processing shader.
+     * @brief Draws the background, the scene and handles post processing.
      */
-    void draw_post_processing() const;
-
-    /**
-     * @brief Draws the background.
-     */
-    void draw_background() const;
+    void draw();
 
     /**
      * @brief Draws the imgui debug window.
@@ -60,7 +55,7 @@ private:
 
     bool are_axes_drawn; ///< Whether the axes are drawn.
 
-    static constexpr unsigned int MAX_ICO_LEVEL = 8;
+    static constexpr unsigned int MAX_ICO_LEVEL = 8 + 1;
     unsigned int icospheres[MAX_ICO_LEVEL];
     int ico_level;
     unsigned int ico_node;
