@@ -156,6 +156,26 @@ void SceneGraph::add_object_editor_to_imgui_window() {
         if(is_dirty) { transform.set_local_model_to_dirty(); }
 
         ImGui::NewLine();
+        switch(node.type) {
+            case Node::Type::MESH: {
+                const Mesh* mesh = meshes[node.drawable_index];
+                ImGui::Text("Mesh: %zu vertices, %zu indices, attributes:",
+                            mesh->get_vertices_amount(),
+                            mesh->get_indices_amount());
+                for(unsigned int i = 0 ; i < ATTRIBUTE_AMOUNT ; ++i) {
+                    Attribute attribute = static_cast<Attribute>(i);
+                    if(mesh->has_attribute(attribute)) {
+                        ImGui::Text(" - %s (%s)",
+                                    attribute_to_string(attribute).c_str(),
+                                    attribute_type_to_string(mesh->get_attribute_type(attribute)).c_str());
+                    }
+                }
+                break;
+            }
+            default: break;
+        }
+
+        ImGui::NewLine();
         if(node.shader_name != SHADER_NONE) {
             ImGui::Text("Shader: '%s'", AssetManager::get_shader(node.shader_name).get_name().c_str());
         }
