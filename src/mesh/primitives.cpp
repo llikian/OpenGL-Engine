@@ -313,6 +313,10 @@ void create_frustum_meshes(Mesh& faces, Mesh& lines, const Camera& camera) {
 }
 
 void create_icosphere_mesh(Mesh& mesh, unsigned int subdivisions) {
+    mesh.set_primitive(MeshPrimitive::TRIANGLES);
+    mesh.enable_attribute(ATTRIBUTE_NORMAL);
+    mesh.enable_attribute(ATTRIBUTE_TEX_COORDS);
+
     static constexpr unsigned int faces[12][5] {
         { 13, 5, 18, 4, 12 },
         { 12, 4, 10, 8, 0 },
@@ -354,8 +358,6 @@ void create_icosphere_mesh(Mesh& mesh, unsigned int subdivisions) {
         normalize(vec3(-GOLDEN_RATIO_F, -INV_GOLDEN_RATIO_F, 0.0f)) // 19
     };
 
-    std::vector<unsigned int> indices;
-
     std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)> add_triangle =
         [&](unsigned int A, unsigned int B, unsigned int C, unsigned int depth) {
         if(depth > 0) {
@@ -371,9 +373,7 @@ void create_icosphere_mesh(Mesh& mesh, unsigned int subdivisions) {
             add_triangle(CA, BC, C, depth - 1);
             add_triangle(AB, BC, CA, depth - 1);
         } else {
-            indices.push_back(A);
-            indices.push_back(B);
-            indices.push_back(C);
+            mesh.add_triangle(A, B, C);
         }
     };
 
@@ -394,19 +394,11 @@ void create_icosphere_mesh(Mesh& mesh, unsigned int subdivisions) {
         add_triangle(face[4], face[0], index, subdivisions);
     }
 
-    mesh.set_primitive(MeshPrimitive::TRIANGLES);
-    mesh.enable_attribute(ATTRIBUTE_NORMAL);
-    mesh.enable_attribute(ATTRIBUTE_TEX_COORDS);
-
     for(const vec3& vertex : vertices) {
         vec3 project_on_sphere = normalize(vertex);
         vec2 tex_coords(std::atan2(project_on_sphere.x, project_on_sphere.z) / (2.0f * PI_F) + 0.5f,
                         0.5f + 0.5f * project_on_sphere.y);
         mesh.add_vertex(project_on_sphere, project_on_sphere, tex_coords);
-    }
-
-    for(unsigned int i = 0 ; i + 2 < indices.size() ; i += 3) {
-        mesh.add_triangle(indices[i], indices[i + 1], indices[i + 2]);
     }
 
     mesh.bind_buffers();
