@@ -48,8 +48,8 @@ Application::~Application() {
 void Application::run() {
     // scene_graph.add_gltf_scene_node("Duck", 0, "data/models/duck.glb");
     // scene_graph.add_gltf_scene_node("Buggy", 0, "data/models/buggy.glb");
-    unsigned int sponza = scene_graph.add_gltf_scene_node("Sponza", 0, "data/models/sponza/Sponza.gltf");
-    scene_graph.transforms[sponza].set_local_scale(10.0f);
+    // unsigned int sponza = scene_graph.add_gltf_scene_node("Sponza", 0, "data/models/sponza/Sponza.gltf");
+    // scene_graph.transforms[sponza].set_local_scale(10.0f);
 
     for(unsigned int i = 0 ; i < MAX_ICO_LEVEL ; ++i) {
         std::string mesh_name = "icosphere " + std::to_string(i);
