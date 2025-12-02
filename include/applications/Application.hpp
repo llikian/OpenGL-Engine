@@ -59,4 +59,9 @@ private:
     Frustum frustum; ///< The frustum used for culling.
 
     bool are_axes_drawn; ///< Whether the axes are drawn.
+
+    static constexpr unsigned int MAX_ICO_LEVEL = 8;
+    unsigned int icospheres[MAX_ICO_LEVEL];
+    int ico_level;
+    unsigned int ico_node;
 };
