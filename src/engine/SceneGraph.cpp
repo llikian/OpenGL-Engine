@@ -63,6 +63,14 @@ void SceneGraph::draw(const Frustum& frustum) {
     update_AABBs();
 
     draw(frustum, 0);
+
+    // TODO Optimize or find a better way
+    if(selected_node != INVALID_INDEX && nodes[selected_node].type == Node::Type::MESH) {
+        static const Shader& normals_shader = AssetManager::get_shader(SHADER_NORMALS);
+        normals_shader.use();
+        normals_shader.set_uniform("u_mvp", frustum.view_projection * AABBs[selected_node].get_global_model_matrix());
+        meshes[nodes[selected_node].drawable_index]->draw_normals();
+    }
 }
 
 unsigned int SceneGraph::add_simple_node(const std::string& name, unsigned int parent) {

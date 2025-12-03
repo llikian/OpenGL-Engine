@@ -32,6 +32,8 @@ public:
 
     void draw() const;
 
+    void draw_normals() const;
+
     void set_primitive(MeshPrimitive primitive);
 
     /**
@@ -156,11 +158,14 @@ private:
     unsigned int active_attributes_count; ///< Amount of active attributes.
 
     std::vector<float> data;
+    std::vector<float> normals_data;
     std::vector<unsigned int> indices;
 
     unsigned int VAO;
     unsigned int VBO;
     unsigned int EBO;
+    unsigned int normals_VAO;
+    unsigned int normals_VBO;
 
     AABB aabb;
 };
