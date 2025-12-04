@@ -80,7 +80,7 @@ void Application::run() {
         draw();
 
         draw_imgui_debug_window();
-        draw_imgui_object_ediot_window();
+        draw_imgui_object_editor_window();
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -155,7 +155,7 @@ void Application::draw_imgui_debug_window() {
     ImGui::End();
 }
 
-void Application::draw_imgui_object_ediot_window() {
+void Application::draw_imgui_object_editor_window() {
     static ImVec2 win_pos(0.0f, 0.0f);
     static ImVec2 win_size(0.0f, 0.0f);
 

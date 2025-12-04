@@ -45,7 +45,7 @@ private:
     /**
      * @brief Draw the imgui object editor window.
      */
-    void draw_imgui_object_ediot_window();
+    void draw_imgui_object_editor_window();
 
     SceneGraph scene_graph;  ///< Scene graph.
     Camera camera;           ///< The camera.
