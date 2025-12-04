@@ -64,11 +64,11 @@ void SceneGraph::draw(const Frustum& frustum) {
 
     draw(frustum, 0);
 
-    // TODO Optimize or find a better way
     if(selected_node != INVALID_INDEX && nodes[selected_node].type == Node::Type::MESH) {
-        static const Shader& normals_shader = AssetManager::get_shader(SHADER_LINE_MESH);
+        static const Shader& normals_shader = AssetManager::get_shader(SHADER_NORMALS);
         normals_shader.use();
         normals_shader.set_uniform("u_mvp", frustum.view_projection * AABBs[selected_node].get_global_model_matrix());
+        normals_shader.set_uniform("u_normal_length", 0.5f);
         meshes[nodes[selected_node].drawable_index]->draw_normals();
     }
 }

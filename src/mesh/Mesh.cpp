@@ -15,9 +15,7 @@ Mesh::Mesh(MeshPrimitive primitive)
       active_attributes_count(0),
       VAO(0),
       VBO(0),
-      EBO(0),
-      normals_VAO(0),
-      normals_VBO(0) {
+      EBO(0) {
     for(AttributeType& attribute : attributes) { attribute = AttributeType::NONE; }
     enable_attribute(ATTRIBUTE_POSITION);
 }
@@ -45,7 +43,7 @@ void Mesh::draw() const {
     glBindVertexArray(VAO);
 
     if(indices.empty()) {
-        glDrawArrays(get_opengl_enum_for_primitive(primitive), 0, data.size() / stride);
+        glDrawArrays(get_opengl_enum_for_primitive(primitive), 0, get_vertices_amount());
     } else {
         glDrawElements(get_opengl_enum_for_primitive(primitive), indices.size(), GL_UNSIGNED_INT, nullptr);
     }
@@ -62,13 +60,13 @@ void Mesh::draw_normals() const {
         return;
     }
 
-    if(normals_VAO == 0 || normals_VBO == 0) {
-        std::cout << "[WARNING] Normals weren't drawn as the buffers aren't bound.\n";
+    if(VAO == 0 || VBO == 0) {
+        std::cout << "[WARNING] Normals weren't drawn as the mesh's buffers aren't bound.\n";
         return;
     }
 
-    glBindVertexArray(normals_VAO);
-    glDrawArrays(GL_LINES, 0, normals_data.size() / 3);
+    glBindVertexArray(VAO);
+    glDrawArrays(GL_POINTS, 0, get_vertices_amount());
 }
 
 void Mesh::set_primitive(MeshPrimitive primitive) {
@@ -132,9 +130,7 @@ void Mesh::delete_buffers() {
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
-    glDeleteVertexArrays(1, &normals_VAO);
-    glDeleteBuffers(1, &normals_VBO);
-    VAO = VBO = EBO = normals_VAO = normals_VBO = 0;
+    VAO = VBO = EBO = 0;
 }
 
 void Mesh::apply_model_matrix(const mat4& model) {
@@ -241,34 +237,6 @@ void Mesh::bind_buffers() {
         glGenBuffers(1, &EBO);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
-    }
-
-
-    // TODO Optimize of find better way.
-    /* Normals VAO & VBO */
-    if(has_attribute(ATTRIBUTE_NORMAL)) {
-        std::size_t vertices_amount = get_vertices_amount();
-        normals_data.reserve(vertices_amount * 2 * 3);
-        for(std::size_t i = 0 ; i < vertices_amount ; ++i) {
-            std::size_t index = stride * i;
-            normals_data.emplace_back(data[index]);
-            normals_data.emplace_back(data[index + 1]);
-            normals_data.emplace_back(data[index + 2]);
-            normals_data.emplace_back(data[index] + data[index + 3]);
-            normals_data.emplace_back(data[index + 1] + data[index + 4]);
-            normals_data.emplace_back(data[index + 2] + data[index + 5]);
-        }
-
-        glGenVertexArrays(1, &normals_VAO);
-        glBindVertexArray(normals_VAO);
-
-        glGenBuffers(1, &normals_VBO);
-        glBindBuffer(GL_ARRAY_BUFFER, normals_VBO);
-        glBufferData(GL_ARRAY_BUFFER, normals_data.size() * sizeof(float), normals_data.data(), GL_STATIC_DRAW);
-
-        /* Vertex Attributes */
-        glVertexAttribPointer(ATTRIBUTE_POSITION, 3, GL_FLOAT, false, 3 * sizeof(float), nullptr);
-        glEnableVertexAttribArray(ATTRIBUTE_POSITION);
     }
 }
 

@@ -151,6 +151,12 @@ AssetManager::AssetManager() {
                                                "shaders/vertex/position_only-no_mvp.vert",
                                                "shaders/fragment/post_processing.frag"
                                            }, "post processing");
+
+    shaders[SHADER_NORMALS].create({
+                                       "shaders/normals_mesh/normals_mesh.vert",
+                                       "shaders/normals_mesh/normals_mesh.geom",
+                                       "shaders/line_mesh/line_mesh.frag"
+                                   }, "post processing");
 }
 
 AssetManager::~AssetManager() {
