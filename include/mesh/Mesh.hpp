@@ -34,6 +34,8 @@ public:
 
     void draw_normals() const;
 
+    void draw_wireframe() const;
+
     void set_primitive(MeshPrimitive primitive);
 
     /**

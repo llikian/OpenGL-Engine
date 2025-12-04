@@ -65,11 +65,21 @@ void SceneGraph::draw(const Frustum& frustum) {
     draw(frustum, 0);
 
     if(selected_node != INVALID_INDEX && nodes[selected_node].type == Node::Type::MESH) {
+        mat4 mvp = frustum.view_projection * AABBs[selected_node].get_global_model_matrix();
+        const Mesh* mesh = meshes[nodes[selected_node].drawable_index];
+
         static const Shader& normals_shader = AssetManager::get_shader(SHADER_NORMALS);
         normals_shader.use();
-        normals_shader.set_uniform("u_mvp", frustum.view_projection * AABBs[selected_node].get_global_model_matrix());
+        normals_shader.set_uniform("u_mvp", mvp);
         normals_shader.set_uniform("u_normal_length", 0.5f);
-        meshes[nodes[selected_node].drawable_index]->draw_normals();
+        mesh->draw_normals();
+
+        if(!EventHandler::is_wireframe_enabled()) {
+            static const Shader& wireframe_shader = AssetManager::get_shader(SHADER_WIREFRAME);
+            wireframe_shader.use();
+            wireframe_shader.set_uniform("u_mvp", mvp);
+            mesh->draw_wireframe();
+        }
     }
 }
 

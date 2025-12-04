@@ -65,8 +65,48 @@ void Mesh::draw_normals() const {
         return;
     }
 
+    if(primitive != MeshPrimitive::TRIANGLES) {
+        std::cout << "[WARNING] Normals weren't drawn as the mesh wasn't a triangle mesh.\n";
+        return;
+    }
+
+    if(!has_attribute(ATTRIBUTE_NORMAL)) {
+        std::cout << "[WARNING] Normals weren't drawn as the mesh didn't have any normals.\n";
+        return;
+    }
+
     glBindVertexArray(VAO);
     glDrawArrays(GL_POINTS, 0, get_vertices_amount());
+}
+
+void Mesh::draw_wireframe() const {
+    if(primitive == MeshPrimitive::NONE) {
+        std::cout << "[WARNING] Wireframe wasn't drawn as the mesh didn't have a primitive.\n";
+        return;
+    }
+
+    if(stride == 0) {
+        std::cout << "[WARNING] Wireframe wasn't drawn as the mesh didn't have any active attributes.\n";
+        return;
+    }
+
+    if(VAO == 0 || VBO == 0) {
+        std::cout << "[WARNING] Wireframe wasn't drawn as the mesh's buffers aren't bound.\n";
+        return;
+    }
+
+    if(primitive != MeshPrimitive::TRIANGLES) {
+        std::cout << "[WARNING] Wireframe wasn't drawn as the mesh wasn't a triangle mesh.\n";
+        return;
+    }
+
+    glLineWidth(2);
+    if(indices.empty()) {
+        glDrawArrays(GL_TRIANGLES, 0, get_vertices_amount());
+    } else {
+        glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
+    }
+    glLineWidth(1);
 }
 
 void Mesh::set_primitive(MeshPrimitive primitive) {

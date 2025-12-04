@@ -156,7 +156,13 @@ AssetManager::AssetManager() {
                                        "shaders/normals_mesh/normals_mesh.vert",
                                        "shaders/normals_mesh/normals_mesh.geom",
                                        "shaders/line_mesh/line_mesh.frag"
-                                   }, "post processing");
+                                   }, "normals mesh");
+
+    shaders[SHADER_WIREFRAME].create({
+                                       "shaders/vertex/position_only-no_mvp.vert",
+                                       "shaders/wireframe/wireframe.geom",
+                                       "shaders/line_mesh/line_mesh.frag"
+                                   }, "wireframe");
 }
 
 AssetManager::~AssetManager() {
