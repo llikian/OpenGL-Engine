@@ -26,3 +26,7 @@ void key_callback(GLFWwindow* /* window */, int key, int /* scancode */, int act
 void cursor_position_callback(GLFWwindow* /* window */, double position_x, double position_y) {
     EventHandler::handle_cursor_position_event(position_x, position_y);
 }
+
+void mouse_button_callback(GLFWwindow* /* window */, int button, int action, int /* mods */) {
+    EventHandler::handle_mouse_button_event(button, action);
+}

@@ -5,8 +5,11 @@
 
 #pragma once
 
+#define GLFW_INCLUDE_NONE
+
 #include <functional>
 #include <unordered_map>
+#include <GLFW/glfw3.h>
 #include "assets/Camera.hpp"
 #include "maths/vec2.hpp"
 
@@ -101,6 +104,26 @@ public:
      */
     static void handle_cursor_position_event(int position_x, int position_y) {
         get().do_handle_cursor_position_event(position_x, position_y);
+    }
+
+    /**
+     * @brief Handles what happens when a mouse button is pressed or released.
+     * @param button The button that was pressed or released: 'GLFW_MOUSE_BUTTON_LEFT',
+     * 'GLFW_MOUSE_BUTTON_RIGHT' or 'GLFW_MOUSE_BUTTON_MIDDLE'.
+     * @param action The performed action: 'GLFW_PRESS' or 'GLFW_RELEASE'.
+     */
+    static void handle_mouse_button_event(int button, int action) {
+        get().do_handle_mouse_button_event(button, action);
+    }
+
+    /**
+     * @brief Sets the function used when left click is pressed.
+     * @tparam Func The type of the passed function / lambda.
+     * @param func The function we want to execute when left click is pressed.
+     */
+    template <typename Func>
+    static void set_left_click_func(Func&& func) {
+        get().do_set_left_click_func(std::forward<Func>(func));
     }
 
     /**
@@ -208,8 +231,28 @@ private:
      */
     void do_handle_cursor_position_event(int position_x, int position_y);
 
+    /**
+     * @brief Handles what happens when a mouse button is pressed or released.
+     * @param button The button that was pressed or released: 'GLFW_MOUSE_BUTTON_LEFT',
+     * 'GLFW_MOUSE_BUTTON_RIGHT' or 'GLFW_MOUSE_BUTTON_MIDDLE'.
+     * @param action The performed action: 'GLFW_PRESS' or 'GLFW_RELEASE'.
+     */
+    void do_handle_mouse_button_event(int button, int action);
+
+    /**
+     * @brief Sets the function used when left click is pressed.
+     * @tparam Func The type of the passed function / lambda.
+     * @param func The function we want to execute when left click is pressed.
+     */
+    template <typename Func>
+    void do_set_left_click_func(Func&& func) {
+        left_click_func = std::forward<Func>(func);
+    }
+
     std::unordered_map<int, KeyAction> key_actions; ///< Stores the action associated with each key.
     std::unordered_map<int, bool> repeatable_keys;  ///< Stores repeatable keys and whether they are active.
+
+    std::function<void()> left_click_func; ///< The function executed when left click is pressed.
 
     vec2 mouse_position; ///< The position of the cursor of the mouse on the window.
 

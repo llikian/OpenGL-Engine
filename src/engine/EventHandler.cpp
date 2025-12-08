@@ -11,7 +11,8 @@
 #include "engine/Window.hpp"
 
 EventHandler::EventHandler()
-    : time(glfwGetTime()), delta(0.0f),
+    : left_click_func(nullptr),
+      time(glfwGetTime()), delta(0.0f),
       active_camera(nullptr),
       b_is_cursor_visible(glfwGetInputMode(Window::get_glfw(), GLFW_CURSOR) == GLFW_CURSOR_NORMAL),
       b_is_face_culling_enabled(true), b_is_wireframe_enabled(false) {
@@ -20,6 +21,7 @@ EventHandler::EventHandler()
     glfwSetFramebufferSizeCallback(Window::get_glfw(), framebuffer_size_callback);
     glfwSetKeyCallback(Window::get_glfw(), key_callback);
     glfwSetCursorPosCallback(Window::get_glfw(), cursor_position_callback);
+    glfwSetMouseButtonCallback(Window::get_glfw(), mouse_button_callback);
 
     /* ---- Key Actions ---- */
     /* General */
@@ -135,4 +137,14 @@ void EventHandler::do_handle_cursor_position_event(int position_x, int position_
 
     mouse_position.x = position_x;
     mouse_position.y = position_y;
+}
+
+void EventHandler::do_handle_mouse_button_event(int button, int action) {
+    if(action == GLFW_PRESS) {
+        if(button == GLFW_MOUSE_BUTTON_LEFT) {
+            if(left_click_func != nullptr) {
+                left_click_func();
+            }
+        }
+    }
 }
