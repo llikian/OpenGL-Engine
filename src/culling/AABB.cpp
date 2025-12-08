@@ -5,7 +5,6 @@
 
 #include "culling/AABB.hpp"
 
-#include <limits>
 #include "maths/geometry.hpp"
 
 AABB::AABB()
@@ -61,6 +60,23 @@ mat4 AABB::get_global_model_matrix() const {
         0.0f, 0.0f, max_point.z - center.z, center.z,
         0.0f, 0.0f, 0.0f, 1.0f
     );
+}
+
+float AABB::intersect_ray(const vec3& ray_origin, const vec3& ray_direction) {
+    float min_value = -infinity;
+    float max_value = infinity;
+
+    for(uint8_t i = 0 ; i < 3 ; ++i) {
+        float component_min = (min_point[i] - ray_origin[i]) / ray_direction[i];
+        float component_max = (max_point[i] - ray_origin[i]) / ray_direction[i];
+
+        if(component_min > component_max) { std::swap(component_min, component_max); }
+        if(component_max < min_value || component_min > max_value) { return infinity; }
+        if(component_min > min_value) { min_value = component_min; }
+        if(component_max < max_value) { max_value = component_max; }
+    }
+
+    return min_value > max_value ? infinity : min_value;
 }
 
 void AABB::set(const vec3& min, const vec3& max) {

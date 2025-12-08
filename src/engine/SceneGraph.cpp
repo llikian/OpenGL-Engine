@@ -10,7 +10,15 @@
 #include "assets/AssetManager.hpp"
 #include "engine/EventHandler.hpp"
 #include "engine/Node.hpp"
+#include "engine/Window.hpp"
+#include "maths/geometry.hpp"
 #include "mesh/primitives.hpp"
+
+bool is_mouse_hovering_imgui() {
+    ImGuiContext* imgui_context = ImGui::GetCurrentContext();
+    return imgui_context->HoveredWindow != nullptr
+           && (imgui_context->HoveredWindow->Flags & ImGuiWindowFlags_NoMouseInputs) == 0;
+}
 
 SceneGraph::SceneGraph()
     : are_AABBs_drawn(false),
@@ -46,6 +54,44 @@ SceneGraph::SceneGraph()
                                      SHADER_FLAT);
     add_color_to_node(light_node_index, vec4(1.0f));
     transforms[light_node_index].set_local_position(0.0f, 10.0f, 0.0f);
+
+    /* Event Handler */
+    EventHandler::set_left_click_func([this] {
+        if(AABBs.size() > 1 && !is_mouse_hovering_imgui()) {
+            vec2 mouse_pos = EventHandler::get_mouse_position();
+            vec2 window_resolution = Window::get_resolution();
+
+            vec2 normalized_mouse_pos = (mouse_pos / window_resolution) * 2.0f - vec2(1.0f);
+            normalized_mouse_pos.y = -normalized_mouse_pos.y; // Flip Y because window origin is in top left corner.
+
+            mat4 vp_inverse = EventHandler::get_active_camera()->get_inverse_view_projection_matrix();
+
+            vec4 near_pos = vp_inverse * vec4(normalized_mouse_pos, -1.0f, 1.0f);
+            vec4 far_pos = vp_inverse * vec4(normalized_mouse_pos, 1.0f, 1.0f);
+
+            vec3 origin = vec3(near_pos) / near_pos.w;
+            vec3 direction = normalize(vec3(far_pos) / far_pos.w - origin);
+
+            float closest_distance = infinity;
+            std::size_t closest_index = INVALID_INDEX;
+
+            for(std::size_t i = 0 ; i < nodes.size() ; ++i) {
+                if(nodes[i].type == Node::Type::MESH) {
+                    float dist = AABBs[i].intersect_ray(origin, direction);
+                    if(dist > 0.0f && dist < closest_distance) {
+                        closest_distance = dist;
+                        closest_index = i;
+                    }
+                }
+            }
+
+            if(selected_node != closest_index) {
+                if(selected_node != INVALID_INDEX) { set_is_selected(selected_node, false); }
+                selected_node = closest_index;
+                if(selected_node != INVALID_INDEX) { set_is_selected(selected_node, true); }
+            }
+        }
+    });
 }
 
 Node& SceneGraph::operator[](unsigned int node_index) { return nodes[node_index]; }

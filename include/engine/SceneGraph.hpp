@@ -6,6 +6,7 @@
 #pragma once
 
 #include <vector>
+#include "imgui_internal.h"
 #include "Node.hpp"
 #include "assets/AssetManager.hpp"
 #include "assets/GLTF.hpp"
@@ -14,6 +15,8 @@
 #include "mesh/Mesh.hpp"
 
 #define ADD_NODE_PARAMETERS const std::string& name, unsigned int parent
+
+bool is_mouse_hovering_imgui();
 
 class SceneGraph {
 public:
