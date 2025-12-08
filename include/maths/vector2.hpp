@@ -54,14 +54,14 @@ struct vector2 {
      * @param index The index of the element. 0 <= index < 2.
      * @return A reference to the element.
      */
-    vector2& operator[](uint8_t index) { return (&x)[index]; }
+    float& operator[](uint8_t index) { return (&x)[index]; }
 
     /**
      * @brief Access an element of the vector2 by its index.
      * @param index The index of the element. 0 <= index < 2.
      * @return A const reference to the element.
      */
-    const vector2& operator[](uint8_t index) const { return (&x)[index]; }
+    const float& operator[](uint8_t index) const { return (&x)[index]; }
 
     /**
      * @brief Adds another vector2's components to the current instance's components.
