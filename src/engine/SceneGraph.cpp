@@ -117,7 +117,9 @@ void SceneGraph::draw(const Frustum& frustum) {
         static const Shader& normals_shader = AssetManager::get_shader(SHADER_NORMALS);
         normals_shader.use();
         normals_shader.set_uniform("u_mvp", mvp);
-        normals_shader.set_uniform("u_normal_length", 0.5f);
+        const Camera& camera = *EventHandler::get_active_camera();
+        float dist = length(AABBs[selected_node].get_center() - camera.get_position());
+        normals_shader.set_uniform("u_normal_length", 0.05f * dist * std::tan(camera.get_fov() * 0.5f));
         mesh->draw_normals();
 
         if(!EventHandler::is_wireframe_enabled()) {
