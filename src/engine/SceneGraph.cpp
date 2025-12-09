@@ -57,7 +57,7 @@ SceneGraph::SceneGraph()
 
     /* Event Handler */
     EventHandler::set_left_click_func([this] {
-        if(AABBs.size() > 1 && !is_mouse_hovering_imgui()) {
+        if(AABBs.size() > 1 && !is_mouse_hovering_imgui() && EventHandler::is_cursor_visible()) {
             vec2 mouse_pos = EventHandler::get_mouse_position();
             vec2 window_resolution = Window::get_resolution();
 
