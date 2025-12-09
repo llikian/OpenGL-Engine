@@ -22,7 +22,9 @@
 Application::Application()
     : camera(vec3(0.0f, 10.0f, 0.0f), PI_HALF_F, 0.1f, 1024.0f),
       framebuffer(Window::get_width(), Window::get_height()),
-      are_axes_drawn(false) {
+      are_axes_drawn(false),
+      sky_color_low(0.671f, 0.851f, 1.0f),
+      sky_color_high(0.239f, 0.29f, 0.761f) {
     /* ---- Event Handler ---- */
     EventHandler::set_active_camera(&camera);
     EventHandler::associate_action_to_key(GLFW_KEY_Q, false, [this] { are_axes_drawn = !are_axes_drawn; });
@@ -99,6 +101,8 @@ void Application::draw() {
     background_shader.set_uniform("u_camera_direction", camera.get_direction());
     background_shader.set_uniform("u_camera_right", camera.get_right_vector());
     background_shader.set_uniform("u_camera_up", camera.get_up_vector());
+    background_shader.set_uniform("u_sky_color_low", sky_color_low);
+    background_shader.set_uniform("u_sky_color_high", sky_color_high);
 
     if(EventHandler::is_wireframe_enabled()) { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); }
     AssetManager::get_mesh("screen").draw();
@@ -140,6 +144,10 @@ void Application::draw_imgui_debug_window() {
     ImGui::Checkbox("Draw AABBs", &scene_graph.are_AABBs_drawn);
     ImGui::Text("Total Nodes Count: %lu", scene_graph.nodes.size());
     ImGui::Text("Total Drawn Objects: %d", scene_graph.total_drawn_objects);
+
+    ImGui::NewLine();
+    ImGui::ColorEdit3("Low Sky Color", &sky_color_low.x);
+    ImGui::ColorEdit3("High Sky Color", &sky_color_high.x);
 
     ImGui::NewLine();
     ImGui::Text("Camera:");
