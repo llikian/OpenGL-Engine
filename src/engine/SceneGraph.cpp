@@ -111,7 +111,7 @@ void SceneGraph::draw(const Frustum& frustum) {
     draw(frustum, 0);
 
     if(selected_node != INVALID_INDEX && nodes[selected_node].type == Node::Type::MESH) {
-        mat4 mvp = frustum.view_projection * AABBs[selected_node].get_global_model_matrix();
+        mat4 mvp = frustum.view_projection * transforms[selected_node].get_global_model_const_reference();
         const Mesh* mesh = meshes[nodes[selected_node].drawable_index];
 
         static const Shader& normals_shader = AssetManager::get_shader(SHADER_NORMALS);
