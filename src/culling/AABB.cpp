@@ -16,9 +16,9 @@ AABB::AABB(const vec3& min_point, const vec3& max_point)
       max_point(max_point, 1.0f) { }
 
 bool AABB::is_in_frustum(const Frustum& frustum) const {
-    unsigned int planes[6] { 0, 0, 0, 0, 0, 0 };
+    unsigned int planes[6]{ 0, 0, 0, 0, 0, 0 };
 
-    vec4 points[8] {
+    vec4 points[8]{
         frustum.view_projection * vec4(min_point.x, min_point.y, min_point.z, 1.0f),
         frustum.view_projection * vec4(min_point.x, min_point.y, max_point.z, 1.0f),
         frustum.view_projection * vec4(min_point.x, max_point.y, min_point.z, 1.0f),
@@ -63,20 +63,24 @@ mat4 AABB::get_global_model_matrix() const {
 }
 
 float AABB::intersect_ray(const vec3& ray_origin, const vec3& ray_direction) {
-    float min_value = -infinity;
-    float max_value = infinity;
+    float tmin = -infinity;
+    float tmax = infinity;
 
     for(uint8_t i = 0 ; i < 3 ; ++i) {
-        float component_min = (min_point[i] - ray_origin[i]) / ray_direction[i];
-        float component_max = (max_point[i] - ray_origin[i]) / ray_direction[i];
+        if(ray_direction[i] != 0) {
+            float t1 = (min_point[i] - ray_origin[i]) / ray_direction[i];
+            float t2 = (max_point[i] - ray_origin[i]) / ray_direction[i];
+            if(t1 > t2) { std::swap(t1, t2); }
 
-        if(component_min > component_max) { std::swap(component_min, component_max); }
-        if(component_max < min_value || component_min > max_value) { return infinity; }
-        if(component_min > min_value) { min_value = component_min; }
-        if(component_max < max_value) { max_value = component_max; }
+            tmin = std::max(tmin, t1);
+            tmax = std::min(tmax, t2);
+            if(tmin > tmax) { return -infinity; }
+        } else if(ray_origin[i] < min_point[i] || ray_origin[i] > max_point[i]) {
+            return -infinity;
+        }
     }
 
-    return min_value > max_value ? infinity : min_value;
+    return tmin;
 }
 
 void AABB::set(const vec3& min, const vec3& max) {
@@ -87,7 +91,7 @@ void AABB::set(const vec3& min, const vec3& max) {
 void AABB::set(const AABB& aabb, const Transform& transform) {
     const mat4& model = transform.get_global_model_const_reference();
 
-    vec4 corners[8] {
+    vec4 corners[8]{
         model * vec4(aabb.min_point.x, aabb.min_point.y, aabb.min_point.z, 1.0f),
         model * vec4(aabb.min_point.x, aabb.min_point.y, aabb.max_point.z, 1.0f),
         model * vec4(aabb.min_point.x, aabb.max_point.y, aabb.min_point.z, 1.0f),
