@@ -31,6 +31,7 @@ set(SOURCES
         # Culling Module
         src/culling/AABB.cpp
         src/culling/Frustum.cpp
+        src/culling/Ray.cpp
 
         # Engine Module
         src/engine/callbacks.cpp

@@ -62,27 +62,6 @@ mat4 AABB::get_global_model_matrix() const {
     );
 }
 
-float AABB::intersect_ray(const vec3& ray_origin, const vec3& ray_direction) {
-    float tmin = -infinity;
-    float tmax = infinity;
-
-    for(uint8_t i = 0 ; i < 3 ; ++i) {
-        if(ray_direction[i] != 0) {
-            float t1 = (min_point[i] - ray_origin[i]) / ray_direction[i];
-            float t2 = (max_point[i] - ray_origin[i]) / ray_direction[i];
-            if(t1 > t2) { std::swap(t1, t2); }
-
-            tmin = std::max(tmin, t1);
-            tmax = std::min(tmax, t2);
-            if(tmin > tmax) { return -infinity; }
-        } else if(ray_origin[i] < min_point[i] || ray_origin[i] > max_point[i]) {
-            return -infinity;
-        }
-    }
-
-    return tmin;
-}
-
 void AABB::set(const vec3& min, const vec3& max) {
     min_point = vec4(min, 1.0f);
     max_point = vec4(max, 1.0f);

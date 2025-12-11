@@ -33,8 +33,6 @@ struct AABB {
         A.z = std::max(A.z, B.z);
     }
 
-    float intersect_ray(const vec3& ray_origin, const vec3& ray_direction);
-
     void set(const vec3& min, const vec3& max);
     void set(const AABB& aabb, const Transform& transform);
 
