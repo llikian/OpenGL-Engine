@@ -8,6 +8,7 @@
 #include "imgui.h"
 #include "imgui_stdlib.h"
 #include "assets/AssetManager.hpp"
+#include "culling/Ray.hpp"
 #include "engine/EventHandler.hpp"
 #include "engine/Node.hpp"
 #include "engine/Window.hpp"
@@ -66,30 +67,33 @@ SceneGraph::SceneGraph()
 
             mat4 vp_inverse = EventHandler::get_active_camera()->get_inverse_view_projection_matrix();
 
-            vec4 near_pos = vp_inverse * vec4(normalized_mouse_pos, -1.0f, 1.0f);
-            vec4 far_pos = vp_inverse * vec4(normalized_mouse_pos, 1.0f, 1.0f);
+            Ray ray(vp_inverse * vec4(normalized_mouse_pos, -1.0f, 1.0f),
+                    vp_inverse * vec4(normalized_mouse_pos, 1.0f, 1.0f));
 
-            vec3 origin = vec3(near_pos) / near_pos.w;
-            vec3 direction = normalize(vec3(far_pos) / far_pos.w - origin);
-
-            float closest_distance = infinity;
-            std::size_t closest_index = INVALID_INDEX;
+            std::vector<std::size_t> intersected_indices;
+            intersected_indices.reserve(8);
 
             for(std::size_t i = 0 ; i < nodes.size() ; ++i) {
                 if(nodes[i].type == Node::Type::MESH) {
-                    float dist = AABBs[i].intersect_ray(origin, direction);
-                    if(dist > 0.0f && dist < closest_distance) {
-                        closest_distance = dist;
-                        closest_index = i;
+                    if(ray.intersect_aabb(AABBs[i]) >= 0.0f) {
+                        intersected_indices.push_back(i);
                     }
                 }
             }
 
-            if(selected_node != closest_index) {
-                if(selected_node != INVALID_INDEX) { set_is_selected(selected_node, false); }
-                selected_node = closest_index;
-                if(selected_node != INVALID_INDEX) { set_is_selected(selected_node, true); }
+            if(selected_node != INVALID_INDEX) { set_is_selected(selected_node, false); }
+
+            float distance = infinity;
+            selected_node = INVALID_INDEX;
+            for(std::size_t index : intersected_indices) {
+                float dist = meshes[nodes[index].drawable_index]->intersect(ray);
+                if(dist >= 0.0f && dist < distance) {
+                    distance = dist;
+                    selected_node = index;
+                }
             }
+
+            if(selected_node != INVALID_INDEX) { set_is_selected(selected_node, true); }
         }
     });
 }

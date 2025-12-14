@@ -6,6 +6,8 @@
 #include "mesh/Mesh.hpp"
 
 #include <cmath>
+
+#include "culling/Ray.hpp"
 #include "maths/geometry.hpp"
 #include "maths/mat3.hpp"
 
@@ -154,6 +156,40 @@ void Mesh::get_min_max_axis_aligned_coordinates(vec3& minimum, vec3& maximum) co
             maximum.z = std::max(maximum.z, data[i + 2]);
         }
     }
+}
+
+float Mesh::intersect(const Ray& ray) const {
+    // TODO Implement for other primitives.
+    if(primitive != MeshPrimitive::TRIANGLES) { return -infinity; }
+
+    float distance = infinity;
+    auto intersect_triangle = [&](size_t index0, size_t index1, size_t index2) {
+        std::size_t baseA = index0 * stride;
+        std::size_t baseB = index1 * stride;
+        std::size_t baseC = index2 * stride;
+
+        float dist = ray.intersect_triangle(
+            vec3(data[baseA], data[baseA + 1], data[baseA + 2]),
+            vec3(data[baseB], data[baseB + 1], data[baseB + 2]),
+            vec3(data[baseC], data[baseC + 1], data[baseC + 2])
+        );
+
+        if(dist >= 0.0f) { distance = std::min(distance, dist); }
+    };
+
+    if(indices.empty()) {
+        const std::size_t vertices_count = get_vertices_amount();
+        for(std::size_t i = 0 ; i + 2 < vertices_count ; i += 3) {
+            intersect_triangle(i, i + 1, i + 2);
+        }
+    } else {
+        const std::size_t indices_count = get_indices_amount();
+        for(std::size_t i = 0 ; i + 2 < indices_count ; i += 3) {
+            intersect_triangle(indices[i], indices[i + 1], indices[i + 2]);
+        }
+    }
+
+    return distance == infinity ? -infinity : distance;
 }
 
 void Mesh::clear() {

@@ -22,7 +22,12 @@ struct Ray {
         : origin(start / start.w),
           direction(normalize(vec3(end / end.w) - origin)) { }
 
-    float intersect_aabb(const AABB& aabb);
+    vec3 get_point(float distance) const;
+
+    float intersect_aabb(const AABB& aabb) const;
+
+    float intersect_triangle(const vec3& A, const vec3& B, const vec3& C) const;
+
 
     vec3 origin;
     vec3 direction;

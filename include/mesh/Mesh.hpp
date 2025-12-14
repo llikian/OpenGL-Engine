@@ -14,6 +14,8 @@
 #include "maths/vec3.hpp"
 #include "maths/vec4.hpp"
 
+struct Ray;
+
 enum class MeshPrimitive : unsigned char {
     NONE,
     POINTS,
@@ -68,6 +70,8 @@ public:
      * @param maximum The highest x, y and z values of the position in the mesh.
      */
     void get_min_max_axis_aligned_coordinates(vec3& minimum, vec3& maximum) const;
+
+    float intersect(const Ray& ray) const;
 
     /**
      * @brief Delete OpenGL buffers and clears the vertices array and the indices array.
