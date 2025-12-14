@@ -6,7 +6,6 @@
 #pragma once
 
 #include <vector>
-#include "imgui_internal.h"
 #include "Node.hpp"
 #include "assets/AssetManager.hpp"
 #include "assets/GLTF.hpp"

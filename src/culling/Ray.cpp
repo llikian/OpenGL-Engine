@@ -30,39 +30,31 @@ float Ray::intersect_aabb(const AABB& aabb) const {
     return tmin;
 }
 
-// float Ray::intersect_triangle(const vec3& A, const vec3& B, const vec3& C) const {
-//     vec3 normal = normalize(cross(B - A, C - A));
-//     float distance = dot(normal, A - origin) / dot(normal, direction);
-//
-//     if(distance < 0.0f) { return -infinity; }
-//     vec3 point = get_point(distance);
-//
-//     if(dot(normal, cross(B - A, point - A)) < 0.0f) { return -infinity; }
-//     if(dot(normal, cross(C - B, point - B)) < 0.0f) { return -infinity; }
-//     if(dot(normal, cross(A - C, point - C)) < 0.0f) { return -infinity; }
-//
-//     return distance;
-// }
-
 float Ray::intersect_triangle(const vec3& A, const vec3& B, const vec3& C) const {
-    constexpr float epsilon = std::numeric_limits<float>::epsilon();
-
     vec3 edge1 = B - A;
     vec3 edge2 = C - A;
+    vec3 origin_cross_edge2 = cross(direction, edge2);
 
-    vec3 ray_cross_e2 = cross(direction, edge2);
-    float det = dot(edge1, ray_cross_e2);
-    if(det > -epsilon && det < epsilon) { return -infinity; }
-    float inv_det = 1.0f / det;
+    float determinent = dot(edge1, origin_cross_edge2);
+    if(std::abs(determinent) < epsilon) { return -infinity; }
+    float determinent_inv = 1.0f / determinent;
 
-    vec3 s = origin - A;
-    float u = inv_det * dot(s, ray_cross_e2);
+    vec3 A_to_origin = origin - A;
+    float u = determinent_inv * dot(A_to_origin, origin_cross_edge2);
     if(u < 0.0f || u > 1.0f) { return -infinity; }
 
-    vec3 s_cross_e1 = cross(s, edge1);
-    float v = inv_det * dot(direction, s_cross_e1);
-    if (v < 0.0f || u + v > 1.0f) { return -infinity; }
+    vec3 s_cross_edge1 = cross(A_to_origin, edge1);
+    float v = determinent_inv * dot(direction, s_cross_edge1);
+    if(v < 0.0f || u + v > 1.0f) { return -infinity; }
 
-    float t = inv_det * dot(edge2, s_cross_e1);
+    float t = determinent_inv * dot(edge2, s_cross_edge1);
     return t > 0.0f ? t : -infinity;
+}
+
+float Ray::intersect_triangle(const vec4& A, const vec4& B, const vec4& C) const {
+    return intersect_triangle(
+        vec3(A.x / A.w, A.y / A.w, A.z / A.w),
+        vec3(B.x / B.w, B.y / B.w, B.z / B.w),
+        vec3(C.x / C.w, C.y / C.w, C.z / C.w)
+    );
 }

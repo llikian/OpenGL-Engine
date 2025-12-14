@@ -6,6 +6,7 @@
 #include "engine/SceneGraph.hpp"
 
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "imgui_stdlib.h"
 #include "assets/AssetManager.hpp"
 #include "culling/Ray.hpp"
@@ -59,6 +60,10 @@ SceneGraph::SceneGraph()
     /* Event Handler */
     EventHandler::set_left_click_func([this] {
         if(AABBs.size() > 1 && !is_mouse_hovering_imgui() && EventHandler::is_cursor_visible()) {
+            if(selected_node != INVALID_INDEX) { set_is_selected(selected_node, false); }
+            selected_node = INVALID_INDEX;
+
+            /* Create Ray */
             vec2 mouse_pos = EventHandler::get_mouse_position();
             vec2 window_resolution = Window::get_resolution();
 
@@ -70,24 +75,21 @@ SceneGraph::SceneGraph()
             Ray ray(vp_inverse * vec4(normalized_mouse_pos, -1.0f, 1.0f),
                     vp_inverse * vec4(normalized_mouse_pos, 1.0f, 1.0f));
 
+            /* Intersect AABBs */
             std::vector<std::size_t> intersected_indices;
             intersected_indices.reserve(8);
 
             for(std::size_t i = 0 ; i < nodes.size() ; ++i) {
-                if(nodes[i].type == Node::Type::MESH) {
-                    if(ray.intersect_aabb(AABBs[i]) >= 0.0f) {
-                        intersected_indices.push_back(i);
-                    }
+                if(nodes[i].type == Node::Type::MESH && ray.intersect_aabb(AABBs[i]) > 0.0f) {
+                    intersected_indices.push_back(i);
                 }
             }
 
-            if(selected_node != INVALID_INDEX) { set_is_selected(selected_node, false); }
-
+            /* Intersect Meshes */
             float distance = infinity;
-            selected_node = INVALID_INDEX;
             for(std::size_t index : intersected_indices) {
-                float dist = meshes[nodes[index].drawable_index]->intersect(ray);
-                if(dist >= 0.0f && dist < distance) {
+                float dist = meshes[nodes[index].drawable_index]->intersect(ray, transforms[index].get_global_model());
+                if(dist > 0.0f && dist < distance) {
                     distance = dist;
                     selected_node = index;
                 }

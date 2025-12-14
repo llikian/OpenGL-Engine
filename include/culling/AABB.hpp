@@ -5,11 +5,8 @@
 
 #pragma once
 
-#include <limits>
 #include "Frustum.hpp"
 #include "maths/Transform.hpp"
-
-static constexpr float infinity = std::numeric_limits<float>::infinity();
 
 struct AABB {
     AABB();

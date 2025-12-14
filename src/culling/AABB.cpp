@@ -5,6 +5,7 @@
 
 #include "culling/AABB.hpp"
 
+#include <limits>
 #include "maths/geometry.hpp"
 
 AABB::AABB()
