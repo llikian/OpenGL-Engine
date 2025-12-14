@@ -17,7 +17,7 @@
 #define PIf (std::numbers::pi_v<float>)
 
 Camera::Camera(const vec3& position, float fov, float near_distance, float far_distance)
-    : sensitivity(0.1f), movement_speed(100.0f),
+    : sensitivity(0.1f), movement_speed(50.0f),
       position(position),
       pitch(0.0f), yaw(-PIf / 2.0f),
       fov(fov), near_distance(near_distance), far_distance(far_distance),
