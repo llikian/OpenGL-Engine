@@ -9,9 +9,9 @@ vec3 Ray::get_point(float distance) const {
     return origin + distance * direction;
 }
 
-float Ray::intersect_aabb(const AABB& aabb) const {
-    float tmin = -infinity;
-    float tmax = infinity;
+bool Ray::intersect_aabb(const AABB& aabb, float& tmin, float& tmax) const {
+    tmin = -infinity;
+    tmax = infinity;
 
     for(uint8_t i = 0 ; i < 3 ; ++i) {
         if(direction[i] != 0) {
@@ -21,13 +21,13 @@ float Ray::intersect_aabb(const AABB& aabb) const {
 
             tmin = std::max(tmin, t1);
             tmax = std::min(tmax, t2);
-            if(tmin > tmax) { return -infinity; }
+            if(tmin > tmax) { return false; }
         } else if(origin[i] < aabb.min_point[i] || origin[i] > aabb.max_point[i]) {
-            return -infinity;
+            return false;
         }
     }
 
-    return tmin;
+    return true;
 }
 
 float Ray::intersect_triangle(const vec3& A, const vec3& B, const vec3& C) const {

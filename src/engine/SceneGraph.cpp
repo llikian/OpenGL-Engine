@@ -80,8 +80,12 @@ SceneGraph::SceneGraph()
             intersected_indices.reserve(8);
 
             for(std::size_t i = 0 ; i < nodes.size() ; ++i) {
-                if(nodes[i].type == Node::Type::MESH && ray.intersect_aabb(AABBs[i]) > 0.0f) {
-                    intersected_indices.push_back(i);
+                float tmin, tmax;
+                if(nodes[i].type == Node::Type::MESH && ray.intersect_aabb(AABBs[i], tmin, tmax)) {
+                    // Ray hits AABB from outside OR ray origin is inside the AABB
+                    if(tmin > 0.0f || (tmin <= 0.0f && tmax >= 0.0f)) {
+                        intersected_indices.push_back(i);
+                    }
                 }
             }
 
