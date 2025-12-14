@@ -88,7 +88,8 @@ SceneGraph::SceneGraph()
             /* Intersect Meshes */
             float distance = infinity;
             for(std::size_t index : intersected_indices) {
-                float dist = meshes[nodes[index].drawable_index]->intersect(ray, transforms[index].get_global_model());
+                float dist = meshes[nodes[index].drawable_index]
+                  ->intersect(ray, transforms[index].get_global_model_const_reference());
                 if(dist > 0.0f && dist < distance) {
                     distance = dist;
                     selected_node = index;
@@ -356,7 +357,7 @@ void SceneGraph::update_transform_and_children(unsigned int node_index) {
 void SceneGraph::force_update_transform_and_children(unsigned int node_index) {
     Node& node = nodes[node_index];
     if(nodes[node_index].parent != INVALID_INDEX) {
-        transforms[node_index].update_global_model(transforms[node.parent].get_global_model());
+        transforms[node_index].update_global_model(transforms[node.parent].get_global_model_const_reference());
     } else {
         transforms[node_index].update_global_model();
     }
