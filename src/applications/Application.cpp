@@ -23,8 +23,8 @@ Application::Application()
     : camera(vec3(0.0f, 10.0f, 0.0f), PI_HALF_F, 0.1f, 1024.0f),
       framebuffer(Window::get_width(), Window::get_height()),
       are_axes_drawn(false),
-      sky_color_low(0.671f, 0.851f, 1.0f),
-      sky_color_high(0.239f, 0.29f, 0.761f) {
+      sky_color_low(0.0f, 0.105f, 0.191f),
+      sky_color_high(0.123f, 0.285f, 0.583f) {
     /* ---- Event Handler ---- */
     EventHandler::set_active_camera(&camera);
     EventHandler::associate_action_to_key(GLFW_KEY_Q, false, [this] { are_axes_drawn = !are_axes_drawn; });
