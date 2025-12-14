@@ -13,6 +13,7 @@ struct AABB {
     AABB(const vec3& min_point, const vec3& max_point);
 
     bool is_in_frustum(const Frustum& frustum) const;
+    float get_size() const;
     vec3 get_center() const;
     mat4 get_global_model_matrix() const;
 
