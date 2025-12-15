@@ -101,6 +101,8 @@ void Mesh::draw_wireframe() const {
         return;
     }
 
+    glBindVertexArray(VAO);
+
     glLineWidth(2);
     if(indices.empty()) {
         glDrawArrays(GL_TRIANGLES, 0, get_vertices_amount());
