@@ -140,6 +140,9 @@ public:
      */
     int get_uniform_location(const std::string& uniform) const;
 
+    /**
+     * @brief List the shader's uniforms: Their type, name, id and size if they're an array.
+     */
     void list_uniforms() const;
 
     /**
