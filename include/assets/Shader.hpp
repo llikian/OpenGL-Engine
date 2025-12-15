@@ -140,6 +140,8 @@ public:
      */
     int get_uniform_location(const std::string& uniform) const;
 
+    void list_uniforms() const;
+
     /**
      * @brief Sets the value of a uniform of type int.
      * @param location The uniform's location.

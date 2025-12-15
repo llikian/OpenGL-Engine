@@ -9,6 +9,7 @@
 #include <sstream>
 #include "glad/glad.h"
 #include "maths/mat4.hpp"
+#include "utility/gl_enums.hpp"
 
 Shader::Shader() : id(0) { }
 
@@ -160,6 +161,29 @@ int Shader::get_uniform_location(const std::string& uniform) const {
     return uniform_iterator == uniform_locations.end() ? -1 : uniform_iterator->second;
 }
 
+void Shader::list_uniforms() const {
+    int max_name_length;
+    glGetProgramiv(id, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_length);
+
+    int length;
+    int size;
+    unsigned int type;
+    char* uniform_name = new char[max_name_length];
+
+    int count;
+    glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &count);
+
+    std::cout << '\'' << name << "' shader uniforms:\n";
+    for(int i = 0 ; i < count ; ++i) {
+        glGetActiveUniform(id, i, max_name_length, &length, &size, &type, uniform_name);
+        std::cout << "  " << gl_uniform_type_to_string(type) << ' ' << uniform_name;
+        if(size > 1) { std::cout << '[' << size << ']'; }
+        std::cout << '\n';
+    }
+
+    delete[] uniform_name;
+}
+
 unsigned int Shader::get_id() const {
     return id;
 }
@@ -229,8 +253,6 @@ void Shader::set_uniform(int location, const mat4& matrix) {
 }
 
 void Shader::get_uniforms() {
-    use();
-
     int max_name_length;
     glGetProgramiv(id, GL_ACTIVE_UNIFORM_MAX_LENGTH, &max_name_length);
 
