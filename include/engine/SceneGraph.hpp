@@ -51,6 +51,8 @@ public:
     std::vector<GLTF::Scene> gltf_scenes;
 
     bool are_AABBs_drawn;
+    bool are_normals_drawn;
+    bool is_wireframe_drawn;
     unsigned int total_drawn_objects;
 
 private:

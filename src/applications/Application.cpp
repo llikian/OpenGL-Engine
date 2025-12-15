@@ -134,6 +134,10 @@ void Application::draw_imgui_debug_window() {
     ImGui::ColorEdit3("High Sky Color", &sky_color_high.x);
 
     ImGui::NewLine();
+    ImGui::Checkbox("Draw Selected Mesh Normals", &scene_graph.are_normals_drawn);
+    ImGui::Checkbox("Draw Selected Mesh Wireframe", &scene_graph.is_wireframe_drawn);
+
+    ImGui::NewLine();
     ImGui::Text("Camera:");
     ImGui::SliderFloat("Sensitivity", &camera.sensitivity, 0.05f, 1.0f);
     ImGui::SliderFloat("Movement Speed", &camera.movement_speed, 1.0f, 100.0f);

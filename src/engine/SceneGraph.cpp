@@ -24,6 +24,8 @@ bool is_mouse_hovering_imgui() {
 
 SceneGraph::SceneGraph()
     : are_AABBs_drawn(false),
+      are_normals_drawn(false),
+      is_wireframe_drawn(true),
       light_node_index(INVALID_INDEX),
       selected_node(INVALID_INDEX) {
     /* ---- Asset Manager ---- */
@@ -125,16 +127,18 @@ void SceneGraph::draw(const Frustum& frustum) {
         mat4 mvp = frustum.view_projection * transforms[selected_node].get_global_model_const_reference();
         const Mesh* mesh = meshes[nodes[selected_node].drawable_index];
 
-        static const Shader& normals_shader = AssetManager::get_shader(SHADER_NORMALS);
-        normals_shader.use();
-        normals_shader.set_uniform("u_mvp", mvp);
-        const Camera& camera = *EventHandler::get_active_camera();
-        const AABB& aabb = AABBs[selected_node];
-        float dist = 0.05f * std::log(10.0f * aabb.get_size()) * length(aabb.get_center() - camera.get_position());
-        normals_shader.set_uniform("u_normal_length", dist * std::tan(camera.get_fov() * 0.5f));
-        mesh->draw_normals();
+        if(are_normals_drawn) {
+            static const Shader& normals_shader = AssetManager::get_shader(SHADER_NORMALS);
+            normals_shader.use();
+            normals_shader.set_uniform("u_mvp", mvp);
+            const Camera& camera = *EventHandler::get_active_camera();
+            const AABB& aabb = AABBs[selected_node];
+            float dist = 0.05f * std::log(10.0f * aabb.get_size()) * length(aabb.get_center() - camera.get_position());
+            normals_shader.set_uniform("u_normal_length", dist * std::tan(camera.get_fov() * 0.5f));
+            mesh->draw_normals();
+        }
 
-        if(!EventHandler::is_wireframe_enabled()) {
+        if(is_wireframe_drawn && !EventHandler::is_wireframe_enabled()) {
             static const Shader& wireframe_shader = AssetManager::get_shader(SHADER_WIREFRAME);
             wireframe_shader.use();
             wireframe_shader.set_uniform("u_mvp", mvp);
