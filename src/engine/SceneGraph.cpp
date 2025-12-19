@@ -6,6 +6,7 @@
 #include "engine/SceneGraph.hpp"
 
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "imgui_stdlib.h"
 #include "assets/AssetManager.hpp"
 #include "culling/Ray.hpp"
@@ -23,6 +24,8 @@ bool is_mouse_hovering_imgui() {
 
 SceneGraph::SceneGraph()
     : are_AABBs_drawn(false),
+      are_normals_drawn(false),
+      is_wireframe_drawn(true),
       light_node_index(INVALID_INDEX),
       selected_node(INVALID_INDEX) {
     /* ---- Asset Manager ---- */
@@ -59,6 +62,10 @@ SceneGraph::SceneGraph()
     /* Event Handler */
     EventHandler::set_left_click_func([this] {
         if(AABBs.size() > 1 && !is_mouse_hovering_imgui() && EventHandler::is_cursor_visible()) {
+            if(selected_node != INVALID_INDEX) { set_is_selected(selected_node, false); }
+            selected_node = INVALID_INDEX;
+
+            /* Create Ray */
             vec2 mouse_pos = EventHandler::get_mouse_position();
             vec2 window_resolution = Window::get_resolution();
 
@@ -70,24 +77,26 @@ SceneGraph::SceneGraph()
             Ray ray(vp_inverse * vec4(normalized_mouse_pos, -1.0f, 1.0f),
                     vp_inverse * vec4(normalized_mouse_pos, 1.0f, 1.0f));
 
+            /* Intersect AABBs */
             std::vector<std::size_t> intersected_indices;
             intersected_indices.reserve(8);
 
             for(std::size_t i = 0 ; i < nodes.size() ; ++i) {
-                if(nodes[i].type == Node::Type::MESH) {
-                    if(ray.intersect_aabb(AABBs[i]) >= 0.0f) {
+                float tmin, tmax;
+                if(nodes[i].type == Node::Type::MESH && ray.intersect_aabb(AABBs[i], tmin, tmax)) {
+                    // Ray hits AABB from outside OR ray origin is inside the AABB
+                    if(tmin > 0.0f || (tmin <= 0.0f && tmax >= 0.0f)) {
                         intersected_indices.push_back(i);
                     }
                 }
             }
 
-            if(selected_node != INVALID_INDEX) { set_is_selected(selected_node, false); }
-
+            /* Intersect Meshes */
             float distance = infinity;
-            selected_node = INVALID_INDEX;
             for(std::size_t index : intersected_indices) {
-                float dist = meshes[nodes[index].drawable_index]->intersect(ray);
-                if(dist >= 0.0f && dist < distance) {
+                float dist = meshes[nodes[index].drawable_index]
+                  ->intersect(ray, transforms[index].get_global_model_const_reference());
+                if(dist > 0.0f && dist < distance) {
                     distance = dist;
                     selected_node = index;
                 }
@@ -118,15 +127,18 @@ void SceneGraph::draw(const Frustum& frustum) {
         mat4 mvp = frustum.view_projection * transforms[selected_node].get_global_model_const_reference();
         const Mesh* mesh = meshes[nodes[selected_node].drawable_index];
 
-        static const Shader& normals_shader = AssetManager::get_shader(SHADER_NORMALS);
-        normals_shader.use();
-        normals_shader.set_uniform("u_mvp", mvp);
-        const Camera& camera = *EventHandler::get_active_camera();
-        float dist = length(AABBs[selected_node].get_center() - camera.get_position());
-        normals_shader.set_uniform("u_normal_length", 0.05f * dist * std::tan(camera.get_fov() * 0.5f));
-        mesh->draw_normals();
+        if(are_normals_drawn) {
+            static const Shader& normals_shader = AssetManager::get_shader(SHADER_NORMALS);
+            normals_shader.use();
+            normals_shader.set_uniform("u_mvp", mvp);
+            const Camera& camera = *EventHandler::get_active_camera();
+            const AABB& aabb = AABBs[selected_node];
+            float dist = 0.05f * std::log(10.0f * aabb.get_size()) * length(aabb.get_center() - camera.get_position());
+            normals_shader.set_uniform("u_normal_length", dist * std::tan(camera.get_fov() * 0.5f));
+            mesh->draw_normals();
+        }
 
-        if(!EventHandler::is_wireframe_enabled()) {
+        if(is_wireframe_drawn && !EventHandler::is_wireframe_enabled()) {
             static const Shader& wireframe_shader = AssetManager::get_shader(SHADER_WIREFRAME);
             wireframe_shader.use();
             wireframe_shader.set_uniform("u_mvp", mvp);
@@ -354,7 +366,7 @@ void SceneGraph::update_transform_and_children(unsigned int node_index) {
 void SceneGraph::force_update_transform_and_children(unsigned int node_index) {
     Node& node = nodes[node_index];
     if(nodes[node_index].parent != INVALID_INDEX) {
-        transforms[node_index].update_global_model(transforms[node.parent].get_global_model());
+        transforms[node_index].update_global_model(transforms[node.parent].get_global_model_const_reference());
     } else {
         transforms[node_index].update_global_model();
     }

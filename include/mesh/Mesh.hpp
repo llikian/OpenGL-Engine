@@ -71,7 +71,7 @@ public:
      */
     void get_min_max_axis_aligned_coordinates(vec3& minimum, vec3& maximum) const;
 
-    float intersect(const Ray& ray) const;
+    float intersect(const Ray& ray, const mat4& model_matrix) const;
 
     /**
      * @brief Delete OpenGL buffers and clears the vertices array and the indices array.

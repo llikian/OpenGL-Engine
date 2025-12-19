@@ -23,8 +23,8 @@ Application::Application()
     : camera(vec3(0.0f, 10.0f, 0.0f), PI_HALF_F, 0.1f, 1024.0f),
       framebuffer(Window::get_width(), Window::get_height()),
       are_axes_drawn(false),
-      sky_color_low(0.671f, 0.851f, 1.0f),
-      sky_color_high(0.239f, 0.29f, 0.761f) {
+      sky_color_low(0.0f, 0.105f, 0.191f),
+      sky_color_high(0.123f, 0.285f, 0.583f) {
     /* ---- Event Handler ---- */
     EventHandler::set_active_camera(&camera);
     EventHandler::associate_action_to_key(GLFW_KEY_Q, false, [this] { are_axes_drawn = !are_axes_drawn; });
@@ -50,24 +50,8 @@ Application::~Application() {
 void Application::run() {
     // scene_graph.add_gltf_scene_node("Duck", 0, "data/models/duck.glb");
     // scene_graph.add_gltf_scene_node("Buggy", 0, "data/models/buggy.glb");
-    // unsigned int sponza = scene_graph.add_gltf_scene_node("Sponza", 0, "data/models/sponza/Sponza.gltf");
-    // scene_graph.transforms[sponza].set_local_scale(10.0f);
-
-    for(unsigned int i = 0 ; i < MAX_ICO_LEVEL ; ++i) {
-        std::string mesh_name = "icosphere " + std::to_string(i);
-
-        icospheres[i] = scene_graph.add_mesh(
-            AssetManager::has_mesh(mesh_name)
-                ? AssetManager::get_mesh_ptr(mesh_name)
-                : &AssetManager::add_mesh(mesh_name, create_icosphere_mesh, i)
-        );
-    }
-    ico_level = 0;
-
-    ico_node = scene_graph.add_mesh_node("icosphere", 0, icospheres[0], SHADER_LAMBERT);
-    scene_graph.transforms[ico_node].set_local_scale(5.0f);
-    scene_graph.transforms[ico_node].set_local_position(0.0f, 10.0f, -10.0f);
-    scene_graph.add_color_to_node(ico_node, vec4(1.0f, 0.0f, 0.0f, 1.0f));
+    unsigned int sponza = scene_graph.add_gltf_scene_node("Sponza", 0, "data/models/sponza/Sponza.gltf");
+    scene_graph.transforms[sponza].set_local_scale(10.0f);
 
     /* Main Loop */
     while(!Window::should_close()) {
@@ -150,12 +134,13 @@ void Application::draw_imgui_debug_window() {
     ImGui::ColorEdit3("High Sky Color", &sky_color_high.x);
 
     ImGui::NewLine();
+    ImGui::Checkbox("Draw Selected Mesh Normals", &scene_graph.are_normals_drawn);
+    ImGui::Checkbox("Draw Selected Mesh Wireframe", &scene_graph.is_wireframe_drawn);
+
+    ImGui::NewLine();
     ImGui::Text("Camera:");
     ImGui::SliderFloat("Sensitivity", &camera.sensitivity, 0.05f, 1.0f);
     ImGui::SliderFloat("Movement Speed", &camera.movement_speed, 1.0f, 100.0f);
-
-    ImGui::SliderInt("Icosphere Level", &ico_level, 0, MAX_ICO_LEVEL - 1);
-    scene_graph.nodes[ico_node].drawable_index = icospheres[ico_level];
 
     ImGui::NewLine();
     scene_graph.add_imgui_node_tree();

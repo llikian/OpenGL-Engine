@@ -5,9 +5,13 @@
 
 #pragma once
 
+#include <limits>
 #include "AABB.hpp"
 #include "maths/geometry.hpp"
 #include "maths/vec3.hpp"
+
+static constexpr float infinity = std::numeric_limits<float>::infinity();
+static constexpr float epsilon = std::numeric_limits<float>::epsilon();
 
 /**
  * @struct Ray
@@ -24,10 +28,10 @@ struct Ray {
 
     vec3 get_point(float distance) const;
 
-    float intersect_aabb(const AABB& aabb) const;
+    bool intersect_aabb(const AABB& aabb, float& tmin, float& tmax) const;
 
     float intersect_triangle(const vec3& A, const vec3& B, const vec3& C) const;
-
+    float intersect_triangle(const vec4& A, const vec4& B, const vec4& C) const;
 
     vec3 origin;
     vec3 direction;

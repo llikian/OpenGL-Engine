@@ -57,9 +57,4 @@ private:
 
     vec3 sky_color_low;
     vec3 sky_color_high;
-
-    static constexpr unsigned int MAX_ICO_LEVEL = 8 + 1;
-    unsigned int icospheres[MAX_ICO_LEVEL];
-    int ico_level;
-    unsigned int ico_node;
 };

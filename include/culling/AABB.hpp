@@ -5,17 +5,15 @@
 
 #pragma once
 
-#include <limits>
 #include "Frustum.hpp"
 #include "maths/Transform.hpp"
-
-static constexpr float infinity = std::numeric_limits<float>::infinity();
 
 struct AABB {
     AABB();
     AABB(const vec3& min_point, const vec3& max_point);
 
     bool is_in_frustum(const Frustum& frustum) const;
+    float get_size() const;
     vec3 get_center() const;
     mat4 get_global_model_matrix() const;
 

@@ -6,7 +6,6 @@
 #pragma once
 
 #include <vector>
-#include "imgui_internal.h"
 #include "Node.hpp"
 #include "assets/AssetManager.hpp"
 #include "assets/GLTF.hpp"
@@ -52,6 +51,8 @@ public:
     std::vector<GLTF::Scene> gltf_scenes;
 
     bool are_AABBs_drawn;
+    bool are_normals_drawn;
+    bool is_wireframe_drawn;
     unsigned int total_drawn_objects;
 
 private:
