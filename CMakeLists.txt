@@ -2,25 +2,27 @@
 cmake_minimum_required(VERSION 3.26)
 project(OpenGL-Engine)
 
-# Find packages
+# Find Packages
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 
-# Compiler options
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# Sources, Includes & Libraries
+set(LIBRARY_SOURCES
+        lib/glad/src/glad.c
 
-set(CMAKE_CXX_STANDARD 23)
+        lib/imgui/imgui.cpp
+        lib/imgui/imgui_draw.cpp
+        lib/imgui/imgui_tables.cpp
+        lib/imgui/imgui_widgets.cpp
+        lib/imgui/backends/imgui_impl_glfw.cpp
+        lib/imgui/backends/imgui_impl_opengl3.cpp
+        lib/imgui/misc/cpp/imgui_stdlib.cpp
 
-set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -O0")
-set(CMAKE_CXX_FLAGS_RELEASE "-O2 -ffast-math")
+        lib/stb/stb_image.cpp
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
+        lib/tinygltf/tiny_gltf.cc
+)
 
-# Set output directories
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin")
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_SOURCE_DIR}/bin")
-
-# Set sources and includes
 set(SOURCES
         # Assets Module
         src/assets/AssetManager.cpp
@@ -71,19 +73,7 @@ set(SOURCES
         src/utility/Random.cpp
 
         # Libraries
-        lib/glad/src/glad.c
-
-        lib/imgui/imgui.cpp
-        lib/imgui/imgui_draw.cpp
-        lib/imgui/imgui_tables.cpp
-        lib/imgui/imgui_widgets.cpp
-        lib/imgui/backends/imgui_impl_glfw.cpp
-        lib/imgui/backends/imgui_impl_opengl3.cpp
-        lib/imgui/misc/cpp/imgui_stdlib.cpp
-
-        lib/stb/stb_image.cpp
-
-        lib/tinygltf/tiny_gltf.cc
+        ${LIBRARY_SOURCES}
 )
 
 set(INCLUDES
@@ -108,10 +98,26 @@ set(LIBRARIES
         Xi
 )
 
-# Add executables
-add_executable(${PROJECT_NAME} src/main.cpp
-        ${SOURCES}
-        src/applications/Application.cpp
-)
+# Compiler Options
+set(CMAKE_CXX_STANDARD 23)
+
+set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -O0")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
+
+set_source_files_properties(${LIBRARY_SOURCES} PROPERTIES COMPILE_FLAGS "-w") # Don't Show Warnings for Library Sources
+
+# CMake Options
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON) # Output compile_commands.json
+
+# Set Directory for Binary Files
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/bin)
+
+# Executable
+add_executable(${PROJECT_NAME} src/main.cpp ${SOURCES} src/applications/Application.cpp)
+
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDES})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${LIBRARIES})
+
