@@ -1,6 +1,12 @@
 #!/bin/bash
 
-BUILD_DIR="build-debug"
+cmake -B ./build -DCMAKE_BUILD_TYPE=Debug\
+  && OUTPUT=$(cmake --build build -j)
 
-rm -rf "$BUILD_DIR" bin
-cmake -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE=Debug && cmake --build "$BUILD_DIR" -j
+if [ "$?" -eq 0 ] ; then
+    BINARY_FILENAME=$(echo "$OUTPUT" | grep "Built target" | sed -r "s/.*Built target (.*$)/\1/")
+
+    echo -e "\nExecuting program '${BINARY_FILENAME}':\n"
+    "bin/$BINARY_FILENAME"
+    echo -e "\nProgram exited with code $?\n"
+fi
