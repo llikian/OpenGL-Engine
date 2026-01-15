@@ -7,6 +7,8 @@ find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 
 # Compiler options
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 set(CMAKE_CXX_STANDARD 23)
 
 set(CMAKE_CXX_FLAGS_DEBUG "-ggdb -O0")
