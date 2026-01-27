@@ -5,9 +5,6 @@
 
 #include "applications/Application.hpp"
 
-#include "imgui.h"
-#include "imgui_impl_glfw.h"
-#include "imgui_impl_opengl3.h"
 #include "assets/AssetManager.hpp"
 #include "engine/EventHandler.hpp"
 #include "engine/Window.hpp"
@@ -18,6 +15,9 @@
 #include "mesh/primitives.hpp"
 #include "utility/LifetimeLogger.hpp"
 #include "utility/Random.hpp"
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 Application::Application()
     : camera(vec3(0.0f, 10.0f, 0.0f), PI_HALF_F, 0.1f, 1024.0f),
@@ -127,7 +127,7 @@ void Application::draw_imgui_debug_window() {
     ImGui::NewLine();
     ImGui::Checkbox("Draw AABBs", &scene_graph.are_AABBs_drawn);
     ImGui::Text("Total Nodes Count: %lu", scene_graph.nodes.size());
-    ImGui::Text("Total Drawn Objects: %d", scene_graph.total_drawn_objects);
+    ImGui::Text("Total Drawn Objects: %lu", scene_graph.total_drawn_objects);
 
     ImGui::NewLine();
     ImGui::ColorEdit3("Low Sky Color", &sky_color_low.x);
