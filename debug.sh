@@ -1,12 +1,28 @@
 #!/bin/bash
 
-cmake -B ./build -DCMAKE_BUILD_TYPE=Debug\
-  && OUTPUT=$(cmake --build build -j)
+RED="\e[0;31m"
+NO_COLOR="\e[0m"
 
-if [ "$?" -eq 0 ] ; then
-    BINARY_FILENAME=$(echo "$OUTPUT" | grep "Built target" | sed -r "s/.*Built target (.*$)/\1/")
+cmake -B ./build -DCMAKE_BUILD_TYPE=Debug && cmake --build build -j
 
-    echo -e "\nExecuting program '${BINARY_FILENAME}':\n"
-    "bin/$BINARY_FILENAME"
-    echo -e "\nProgram exited with code $?\n"
+BINARIES_COUNT="$(ls bin -1 | wc -l)"
+
+if [[ $? -eq 0 || $BINARIES_COUNT -gt 0 ]] ; then
+  if [[ $BINARIES_COUNT -gt 1 ]] ; then
+    if [[ $# -eq 0 ]] ; then
+      echo -e "${RED}Multiple binary files found. Please provide filename.${NO_COLOR}" 1>&2
+      exit 1
+    else
+      BINARY_FILENAME="$1"
+    fi
+  else
+    BINARY_FILENAME="$(ls bin)"
+  fi
+
+  echo -e "\nExecuting program '${BINARY_FILENAME}':\n"
+  "bin/$BINARY_FILENAME"
+  echo -e "\nProgram exited with code $?\n"
+else
+  echo "${RED}Couldn't execute binary.${NO_COLOR}" 1>&2
+  exit 1
 fi
