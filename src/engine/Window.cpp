@@ -28,99 +28,55 @@ static void opengl_error_callback(unsigned int source,
     if(ignore_list.contains(id)) { return; }
 
     std::cerr << "OpenGL Message:"
-        << "\n\tID: " << id
-        << "\n\tSeverity: ";
+              << "\n\tID: " << id << "\n\tSeverity: ";
     switch(severity) {
-        case GL_DEBUG_SEVERITY_LOW:
-            std::cerr << "Low";
-            break;
-        case GL_DEBUG_SEVERITY_MEDIUM:
-            std::cerr << "Medium";
-            break;
-        case GL_DEBUG_SEVERITY_HIGH:
-            std::cerr << "High";
-            break;
+        case GL_DEBUG_SEVERITY_LOW:          std::cerr << "Low"; break;
+        case GL_DEBUG_SEVERITY_MEDIUM:       std::cerr << "Medium"; break;
+        case GL_DEBUG_SEVERITY_HIGH:         std::cerr << "High"; break;
         case GL_DEBUG_SEVERITY_NOTIFICATION:
-        default:
-            std::cerr << "Notification";
-            break;
+        default:                             std::cerr << "Notification"; break;
     }
 
     std::cerr << "\n\tType: ";
     switch(type) {
-        case GL_DEBUG_TYPE_ERROR:
-            std::cerr << "Error";
-            break;
-        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-            std::cerr << "Deprecated Behavior";
-            break;
-        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-            std::cerr << "Undefined Behavior";
-            break;
-        case GL_DEBUG_TYPE_PORTABILITY:
-            std::cerr << "Portability";
-            break;
-        case GL_DEBUG_TYPE_PERFORMANCE:
-            std::cerr << "Performance";
-            break;
-        case GL_DEBUG_TYPE_MARKER:
-            std::cerr << "Marker";
-            break;
-        case GL_DEBUG_TYPE_PUSH_GROUP:
-            std::cerr << "Push Group";
-            break;
-        case GL_DEBUG_TYPE_POP_GROUP:
-            std::cerr << "Pop Group";
-            break;
+        case GL_DEBUG_TYPE_ERROR:               std::cerr << "Error"; break;
+        case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR: std::cerr << "Deprecated Behavior"; break;
+        case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:  std::cerr << "Undefined Behavior"; break;
+        case GL_DEBUG_TYPE_PORTABILITY:         std::cerr << "Portability"; break;
+        case GL_DEBUG_TYPE_PERFORMANCE:         std::cerr << "Performance"; break;
+        case GL_DEBUG_TYPE_MARKER:              std::cerr << "Marker"; break;
+        case GL_DEBUG_TYPE_PUSH_GROUP:          std::cerr << "Push Group"; break;
+        case GL_DEBUG_TYPE_POP_GROUP:           std::cerr << "Pop Group"; break;
         case GL_DEBUG_TYPE_OTHER:
-        default:
-            std::cerr << "Other";
-            break;
+        default:                                std::cerr << "Other"; break;
     }
 
     std::cerr << "\n\tSource: ";
     switch(source) {
-        case GL_DEBUG_SOURCE_API:
-            std::cerr << "API";
-            break;
-        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-            std::cerr << "Window System";
-            break;
-        case GL_DEBUG_SOURCE_SHADER_COMPILER:
-            std::cerr << "Shader Compiler";
-            break;
-        case GL_DEBUG_SOURCE_THIRD_PARTY:
-            std::cerr << "Third Party";
-            break;
-        case GL_DEBUG_SOURCE_APPLICATION:
-            std::cerr << "Applitcation";
-            break;
+        case GL_DEBUG_SOURCE_API:             std::cerr << "API"; break;
+        case GL_DEBUG_SOURCE_WINDOW_SYSTEM:   std::cerr << "Window System"; break;
+        case GL_DEBUG_SOURCE_SHADER_COMPILER: std::cerr << "Shader Compiler"; break;
+        case GL_DEBUG_SOURCE_THIRD_PARTY:     std::cerr << "Third Party"; break;
+        case GL_DEBUG_SOURCE_APPLICATION:     std::cerr << "Applitcation"; break;
         case GL_DEBUG_SOURCE_OTHER:
-        default:
-            std::cerr << "Other";
-            break;
+        default:                              std::cerr << "Other"; break;
     }
 
     std::cerr << "\n\tMessage: " << message << '\n';
 }
 
-Window::Window()
-    : window(nullptr) {
+Window::Window() : window(nullptr) {
     /* ---- GLFW ---- */
     glfwSetErrorCallback(glfw_error_callback);
 
-    if(!glfwInit()) {
-        throw std::runtime_error("Failed to initialize GLFW.");
-    }
+    if(!glfwInit()) { throw std::runtime_error("Failed to initialize GLFW."); }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    window = glfwCreateWindow(1920, 1080, "Projet Stage L3", nullptr, nullptr);
-    if(window == nullptr) {
-        throw std::runtime_error("Failed to create window.");
-    }
+    window = glfwCreateWindow(1920, 1080, "OpenGL-Engine", nullptr, nullptr);
+    if(window == nullptr) { throw std::runtime_error("Failed to create window."); }
 
     glfwMakeContextCurrent(window);
     // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
