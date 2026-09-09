@@ -38,12 +38,13 @@ set(SOURCES
         src/culling/Ray.cpp
 
         # Engine Module
-        src/engine/callbacks.cpp
+        src/engine/Context.cpp
         src/engine/EventHandler.cpp
         src/engine/Framebuffer.cpp
         src/engine/Node.cpp
         src/engine/SceneGraph.cpp
         src/engine/Window.cpp
+        src/engine/callbacks.cpp
 
         # Materials Module
         src/materials/Material.cpp
