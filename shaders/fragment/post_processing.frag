@@ -11,7 +11,7 @@ uniform bool u_test1;
 uniform bool u_test2;
 uniform bool u_test3;
 
-layout (binding = 0) uniform sampler2D u_texture;
+layout(binding = 0) uniform sampler2D u_texture;
 uniform vec2 u_texture_resolution;
 uniform vec2 u_resolution;
 
@@ -31,8 +31,8 @@ vec3 desaturate(vec3 color) {
 
 vec3 sepia(vec3 color) {
     return vec3((color.r * 0.393f) + (color.g * 0.769f) + (color.b * 0.189f),
-                (color.r * 0.349f) + (color.g * 0.686f) + (color.b * 0.168f),
-                (color.r * 0.272f) + (color.g * 0.534f) + (color.b * 0.131f));
+        (color.r * 0.349f) + (color.g * 0.686f) + (color.b * 0.168f),
+        (color.r * 0.272f) + (color.g * 0.534f) + (color.b * 0.131f));
 }
 
 vec3 ACES_tone_mapping(vec3 color) {
@@ -41,7 +41,7 @@ vec3 ACES_tone_mapping(vec3 color) {
 
 void main() {
     vec2 uv = get_uv();
-//    vec2 uv = get_uv_pixelated(8);
+    //    vec2 uv = get_uv_pixelated(8);
 
     vec4 tex = texture(u_texture, uv);
     vec3 color = tex.rgb;
