@@ -5,18 +5,11 @@
 
 #include <iostream>
 #include "applications/Application.hpp"
-#include "assets/AssetManager.hpp"
-#include "engine/EventHandler.hpp"
-#include "engine/Window.hpp"
+#include "engine/Context.hpp"
 
 int main() {
     try {
-        /* Making Sure Singletons are Initialized First */
-        Window::get();
-        EventHandler::get();
-        AssetManager::get();
-
-        /* Running Application */
+        Context::init();
         Application app;
         app.run();
     } catch(const std::exception& exception) {

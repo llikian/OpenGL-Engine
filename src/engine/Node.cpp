@@ -5,7 +5,7 @@
 
 #include "engine/Node.hpp"
 
-Node::Node(const std::string& name, int parent, Type type)
+Node::Node(const std::string& name, std::size_t parent, Type type)
     : type(type),
       name(name),
       parent(parent),
@@ -15,4 +15,4 @@ Node::Node(const std::string& name, int parent, Type type)
       scene_index(INVALID_INDEX),
       material_index(INVALID_INDEX),
       is_visible(true),
-      is_selected(false) { }
+      is_selected(false) {}

@@ -40,15 +40,11 @@ private:
     /**
      * @brief Draws the imgui debug window.
      */
-    void draw_imgui_debug_window();
+    void draw_imgui_windows();
 
-    /**
-     * @brief Draw the imgui object editor window.
-     */
-    void draw_imgui_object_editor_window();
+    Camera camera; ///< The camera.
 
     SceneGraph scene_graph;  ///< Scene graph.
-    Camera camera;           ///< The camera.
     Framebuffer framebuffer; ///< The framebuffer used to render.
 
     Frustum frustum; ///< The frustum used for culling.

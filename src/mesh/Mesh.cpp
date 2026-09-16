@@ -147,7 +147,7 @@ AABB Mesh::get_AABB() const {
 void Mesh::get_min_max_axis_aligned_coordinates(vec3& minimum, vec3& maximum) const {
     if(has_attribute(ATTRIBUTE_POSITION)) {
         const unsigned int offset = get_attribute_offset(ATTRIBUTE_POSITION);
-        for(unsigned int i = offset ; i < data.size() ; i += stride) {
+        for(unsigned int i = offset; i < data.size(); i += stride) {
             minimum.x = std::min(minimum.x, data[i]);
             minimum.y = std::min(minimum.y, data[i + 1]);
             minimum.z = std::min(minimum.z, data[i + 2]);
@@ -168,23 +168,21 @@ float Mesh::intersect(const Ray& ray, const mat4& model_matrix) const {
         std::size_t baseB = index1 * stride;
         std::size_t baseC = index2 * stride;
 
-        return ray.intersect_triangle(
-            model_matrix * vec4(data[baseA], data[baseA + 1], data[baseA + 2], 1.0f),
-            model_matrix * vec4(data[baseB], data[baseB + 1], data[baseB + 2], 1.0f),
-            model_matrix * vec4(data[baseC], data[baseC + 1], data[baseC + 2], 1.0f)
-        );
+        return ray.intersect_triangle(model_matrix * vec4(data[baseA], data[baseA + 1], data[baseA + 2], 1.0f),
+                                      model_matrix * vec4(data[baseB], data[baseB + 1], data[baseB + 2], 1.0f),
+                                      model_matrix * vec4(data[baseC], data[baseC + 1], data[baseC + 2], 1.0f));
     };
 
     float distance = infinity;
     if(indices.empty()) {
         const std::size_t vertices_count = get_vertices_amount();
-        for(std::size_t i = 0 ; i + 2 < vertices_count ; i += 3) {
+        for(std::size_t i = 0; i + 2 < vertices_count; i += 3) {
             float dist = intersect_triangle(i, i + 1, i + 2);
             if(dist > 0.0f) { distance = std::min(distance, dist); }
         }
     } else {
         const std::size_t indices_count = get_indices_amount();
-        for(std::size_t i = 0 ; i + 2 < indices_count ; i += 3) {
+        for(std::size_t i = 0; i + 2 < indices_count; i += 3) {
             float dist = intersect_triangle(indices[i], indices[i + 1], indices[i + 2]);
             if(dist > 0.0f) { distance = std::min(distance, dist); }
         }
@@ -216,7 +214,7 @@ void Mesh::apply_model_matrix(const mat4& model) {
     const unsigned int pos_offset = get_attribute_offset(ATTRIBUTE_POSITION);
     const unsigned int normal_offset = get_attribute_offset(ATTRIBUTE_NORMAL);
 
-    for(unsigned int i = 0 ; i < data.size() ; i += stride) {
+    for(unsigned int i = 0; i < data.size(); i += stride) {
         if(has_attribute(ATTRIBUTE_POSITION)) {
             vec3* pos = reinterpret_cast<vec3*>(&data[pos_offset + i]);
             *pos = vec3(model * vec4(pos->x, pos->y, pos->z, 1.0f));
@@ -299,7 +297,7 @@ void Mesh::bind_buffers() {
     float stride_in_bytes = stride * sizeof(float);
     unsigned int offset = 0;
 
-    for(unsigned int attr = 0 ; attr < ATTRIBUTE_AMOUNT ; ++attr) {
+    for(unsigned int attr = 0; attr < ATTRIBUTE_AMOUNT; ++attr) {
         AttributeType type = attributes[attr];
         if(type != AttributeType::NONE) {
             unsigned int size = get_attribute_type_count(type);
@@ -340,7 +338,7 @@ void Mesh::push_value(const vec4& value) {
 }
 
 void Mesh::push_values(const float* values, unsigned int n) {
-    for(unsigned int i = 0 ; i < n ; ++i) { data.push_back(values[i]); }
+    for(unsigned int i = 0; i < n; ++i) { data.push_back(values[i]); }
 }
 
 void Mesh::push_indices_buffer(const std::vector<unsigned int>& indices) {
@@ -350,9 +348,7 @@ void Mesh::push_indices_buffer(const std::vector<unsigned int>& indices) {
 unsigned int Mesh::get_attribute_offset(Attribute attribute) const {
     unsigned int offset = 0;
 
-    for(unsigned char attr = 0 ; attr < attribute ; ++attr) {
-        offset += get_attribute_type_count(attributes[attr]);
-    }
+    for(unsigned char attr = 0; attr < attribute; ++attr) { offset += get_attribute_type_count(attributes[attr]); }
 
     return offset;
 }

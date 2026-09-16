@@ -6,30 +6,36 @@
 #include "assets/Camera.hpp"
 
 #include <cmath>
-#include <numbers>
 
-#include "engine/EventHandler.hpp"
-#include "engine/Window.hpp"
+#include "engine/Context.hpp"
+#include "maths/constants.hpp"
 #include "maths/geometry.hpp"
 #include "maths/transforms.hpp"
 #include "maths/trigonometry.hpp"
 
-#define PIf (std::numbers::pi_v<float>)
-
 Camera::Camera(const vec3& position, float fov, float near_distance, float far_distance)
-    : sensitivity(0.1f), movement_speed(50.0f),
+    : sensitivity(0.1f),
+      movement_speed(50.0f),
       position(position),
-      pitch(0.0f), yaw(-PIf / 2.0f),
-      fov(fov), near_distance(near_distance), far_distance(far_distance),
-      view_matrix(1.0f), projection_matrix(perspective(fov, Window::get_aspect_ratio(), near_distance, far_distance)) {
+      pitch(0.0f),
+      yaw(PI_F / 2.0f),
+      fov(fov),
+      near_distance(near_distance),
+      far_distance(far_distance),
+      view_matrix(1.0f),
+      projection_matrix(perspective(fov, Context::window().get_aspect_ratio(), near_distance, far_distance)) {
     update_vectors_and_view_matrix();
 }
 
 Camera::Camera(const vec3& position, const vec3& target, float fov, float near_distance, float far_distance)
-    : sensitivity(0.1f), movement_speed(100.0f),
+    : sensitivity(0.1f),
+      movement_speed(100.0f),
       position(position),
-      fov(fov), near_distance(near_distance), far_distance(far_distance),
-      view_matrix(1.0f), projection_matrix(perspective(fov, Window::get_aspect_ratio(), near_distance, far_distance)) {
+      fov(fov),
+      near_distance(near_distance),
+      far_distance(far_distance),
+      view_matrix(1.0f),
+      projection_matrix(perspective(fov, Context::window().get_aspect_ratio(), near_distance, far_distance)) {
     look_at_point(target);
 }
 
@@ -70,53 +76,67 @@ const mat4& Camera::get_projection_matrix() const {
 }
 
 mat4 Camera::get_view_projection_matrix() const {
-    return mat4(
-        projection_matrix(0, 0) * view_matrix(0, 0),
-        projection_matrix(0, 0) * view_matrix(0, 1),
-        projection_matrix(0, 0) * view_matrix(0, 2),
-        projection_matrix(0, 0) * view_matrix(0, 3),
+    return mat4(projection_matrix(0, 0) * view_matrix(0, 0),
+                projection_matrix(0, 0) * view_matrix(0, 1),
+                projection_matrix(0, 0) * view_matrix(0, 2),
+                projection_matrix(0, 0) * view_matrix(0, 3),
 
-        projection_matrix(1, 1) * view_matrix(1, 0),
-        projection_matrix(1, 1) * view_matrix(1, 1),
-        projection_matrix(1, 1) * view_matrix(1, 2),
-        projection_matrix(1, 1) * view_matrix(1, 3),
+                projection_matrix(1, 1) * view_matrix(1, 0),
+                projection_matrix(1, 1) * view_matrix(1, 1),
+                projection_matrix(1, 1) * view_matrix(1, 2),
+                projection_matrix(1, 1) * view_matrix(1, 3),
 
-        projection_matrix(2, 2) * view_matrix(2, 0),
-        projection_matrix(2, 2) * view_matrix(2, 1),
-        projection_matrix(2, 2) * view_matrix(2, 2),
-        projection_matrix(2, 2) * view_matrix(2, 3) + projection_matrix(2, 3),
+                projection_matrix(2, 2) * view_matrix(2, 0),
+                projection_matrix(2, 2) * view_matrix(2, 1),
+                projection_matrix(2, 2) * view_matrix(2, 2),
+                projection_matrix(2, 2) * view_matrix(2, 3) + projection_matrix(2, 3),
 
-        -view_matrix(2, 0),
-        -view_matrix(2, 1),
-        -view_matrix(2, 2),
-        -view_matrix(2, 3)
-    );
+                -view_matrix(2, 0),
+                -view_matrix(2, 1),
+                -view_matrix(2, 2),
+                -view_matrix(2, 3));
 }
 
 mat4 Camera::get_rotation_matrix() const {
-    return mat4(
-        right.x, up.x, -direction.x,
-        right.y, up.y, -direction.y,
-        right.z, up.z, -direction.z
-    );
+    return mat4(right.x, up.x, -direction.x, right.y, up.y, -direction.y, right.z, up.z, -direction.z);
 }
 
 mat4 Camera::get_model_matrix() const {
-    return mat4(
-        right.x, up.x, -direction.x, position.x,
-        right.y, up.y, -direction.y, position.y,
-        right.z, up.z, -direction.z, position.z,
-        0.0f, 0.0f, 0.0f, 1.0f
-    );
+    return mat4(right.x,
+                up.x,
+                -direction.x,
+                position.x,
+                right.y,
+                up.y,
+                -direction.y,
+                position.y,
+                right.z,
+                up.z,
+                -direction.z,
+                position.z,
+                0.0f,
+                0.0f,
+                0.0f,
+                1.0f);
 }
 
 mat4 Camera::get_inverse_projection_matrix() const {
-    return mat4(
-        1.0f / projection_matrix(0, 0), 0.0f, 0.0f, 0.0f,
-        0.0f, 1.0f / projection_matrix(1, 1), 0.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, -1.0f,
-        0.0f, 0.0f, 1.0f / projection_matrix(2, 3), projection_matrix(2, 2) / projection_matrix(2, 3)
-    );
+    return mat4(1.0f / projection_matrix(0, 0),
+                0.0f,
+                0.0f,
+                0.0f,
+                0.0f,
+                1.0f / projection_matrix(1, 1),
+                0.0f,
+                0.0f,
+                0.0f,
+                0.0f,
+                0.0f,
+                -1.0f,
+                0.0f,
+                0.0f,
+                1.0f / projection_matrix(2, 3),
+                projection_matrix(2, 2) / projection_matrix(2, 3));
 }
 
 mat4 Camera::get_inverse_view_projection_matrix() const {
@@ -141,29 +161,16 @@ void Camera::look_around(float pitch_offset, float yaw_offset) {
 }
 
 void Camera::move_around(MovementDirection movement_direction) {
-    float delta = EventHandler::get_delta();
+    float delta = Context::event_handler().get_delta();
 
     switch(movement_direction) {
-        case MovementDirection::FORWARD:
-            position += movement_speed * delta * direction;
-            break;
-        case MovementDirection::BACKWARD:
-            position -= movement_speed * delta * direction;
-            break;
-        case MovementDirection::LEFT:
-            position -= movement_speed * delta * right;
-            break;
-        case MovementDirection::RIGHT:
-            position += movement_speed * delta * right;
-            break;
-        case MovementDirection::UPWARD:
-            position += movement_speed * delta * WORLD_UP;
-            break;
-        case MovementDirection::DOWNWARD:
-            position -= movement_speed * delta * WORLD_UP;
-            break;
-        default:
-            break;
+        case MovementDirection::FORWARD:  position += movement_speed * delta * direction; break;
+        case MovementDirection::BACKWARD: position -= movement_speed * delta * direction; break;
+        case MovementDirection::LEFT:     position -= movement_speed * delta * right; break;
+        case MovementDirection::RIGHT:    position += movement_speed * delta * right; break;
+        case MovementDirection::UPWARD:   position += movement_speed * delta * WORLD_UP; break;
+        case MovementDirection::DOWNWARD: position -= movement_speed * delta * WORLD_UP; break;
+        default:                          break;
     }
 
     view_matrix(0, 3) = -dot(position, right);
@@ -171,8 +178,10 @@ void Camera::move_around(MovementDirection movement_direction) {
     view_matrix(2, 3) = dot(position, direction);
 }
 
-void Camera::update_projection_matrix() {
-    projection_matrix(0, 0) = 1.0f / (Window::get_aspect_ratio() * std::tan(0.5f * fov));
+void Camera::update_projection_matrix(unsigned int width, unsigned int height) {
+    float aspect_ratio;
+    aspect_ratio = static_cast<float>(width) / static_cast<float>(height);
+    projection_matrix(0, 0) = 1.0f / (aspect_ratio * std::tan(0.5f * fov));
 }
 
 void Camera::look_at_point(const vec3& target) {

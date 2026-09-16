@@ -26,6 +26,8 @@ public:
 
     vec2 get_resolution() const;
 
+    void resize(unsigned int w, unsigned int h);
+
 private:
     unsigned int FBO; ///< Frame Buffer Object.
     unsigned int RBO; ///< Rendering Buffer Object.
