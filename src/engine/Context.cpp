@@ -6,6 +6,7 @@
 #include "engine/Context.hpp"
 
 #include <unordered_set>
+#include "utility/ansi.hpp"
 
 void Context::init() {
     if(_context == nullptr) { _context = new Context; }
@@ -58,6 +59,16 @@ void opengl_error_callback(unsigned int source,
 
     if(ignore_list.contains(id)) { return; }
 
+#ifdef __unix__
+    switch(severity) {
+        case GL_DEBUG_SEVERITY_LOW:          std::cerr << ANSI_GREEN; break;
+        case GL_DEBUG_SEVERITY_MEDIUM:       std::cerr << ANSI_YELLOW; break;
+        case GL_DEBUG_SEVERITY_HIGH:         std::cerr << ANSI_RED; break;
+        case GL_DEBUG_SEVERITY_NOTIFICATION:
+        default:                             std::cerr << ANSI_CYAN; break;
+    }
+#endif
+
     std::cerr << "OpenGL Message:"
               << "\n\tID: " << id << "\n\tSeverity: ";
     switch(severity) {
@@ -94,4 +105,8 @@ void opengl_error_callback(unsigned int source,
     }
 
     std::cerr << "\n\tMessage: " << message << '\n';
+
+#ifdef __unix__
+    std::cerr << ANSI_DEFAULT;
+#endif
 }
