@@ -12,6 +12,7 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "imgui_internal.h"
 
 Application::Application()
     : camera(vec3(0.0f, 10.0f, -5.0f), PI_HALF_F, 0.1f, 1024.0f),
@@ -71,7 +72,7 @@ void Application::run() {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        ImGui::DockSpaceOverViewport(0, nullptr, ImGuiDockNodeFlags_PassthruCentralNode);
+        handle_dockspace();
 
         frustum.update(camera);
 
@@ -195,4 +196,31 @@ void Application::draw_imgui_windows() {
     ImGui::Begin("Object Editor");
     scene_graph.add_object_editor_to_imgui_window();
     ImGui::End();
+}
+
+void Application::handle_dockspace() const {
+    ImGuiID dockspace_id = ImGui::DockSpaceOverViewport(0, nullptr);
+
+    static bool init_dock = !std::filesystem::exists("data/imgui.ini");
+    if(init_dock) {
+        ImGuiID id_left = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Left, 0.2f, nullptr, &dockspace_id);
+        ImGuiID id_left_top = ImGui::DockBuilderSplitNode(id_left, ImGuiDir_Up, 0.1f, nullptr, &id_left);
+        ImGuiID id_right = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.2f, nullptr, &dockspace_id);
+
+        ImGui::DockBuilderSetNodeSize(dockspace_id, ImGui::GetMainViewport()->Size);
+
+        ImGui::DockBuilderDockWindow("Main", dockspace_id);
+
+        ImGui::DockBuilderDockWindow("Scene", id_left);
+        ImGui::DockBuilderDockWindow("Environment", id_left);
+        ImGui::DockBuilderDockWindow("Camera", id_left);
+
+        ImGui::DockBuilderDockWindow("Debug", id_left_top);
+
+        ImGui::DockBuilderDockWindow("Object Editor", id_right);
+
+        ImGui::DockBuilderFinish(dockspace_id);
+
+        init_dock = false;
+    }
 }

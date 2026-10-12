@@ -42,6 +42,8 @@ private:
      */
     void draw_imgui_windows();
 
+    void handle_dockspace() const;
+
     Camera camera; ///< The camera.
 
     SceneGraph scene_graph;  ///< Scene graph.
