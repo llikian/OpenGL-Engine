@@ -76,37 +76,7 @@ void Application::run() {
 
         frustum.update(camera);
 
-        // draw();
-
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-        ImGui::Begin("Main", nullptr, ImGuiWindowFlags_NoTitleBar);
-        ImGui::PopStyleVar(1);
-
-        ImVec2 avail = ImGui::GetContentRegionAvail();
-        avail.x = avail.x < 1.0f ? 1.0f : avail.x;
-        avail.y = avail.y < 1.0f ? 1.0f : avail.y;
-
-        ImVec2 mouse_pos = ImGui::GetMousePos();
-        ImVec2 window_pos = ImGui::GetWindowPos();
-        ImVec2 window_content_region = ImGui::GetWindowContentRegionMin();
-        Context::context()->is_main_window_hovered = ImGui::IsWindowHovered();
-        Context::context()->mouse_pos_in_main_window = vec2(mouse_pos.x - window_pos.x - window_content_region.x,
-                                                            mouse_pos.y - window_pos.y - window_content_region.y);
-
-        vec2 res = framebuffer.get_resolution();
-        if(static_cast<int>(avail.x) != res.x || static_cast<int>(avail.y) != res.y) {
-            framebuffer.resize(avail.x, avail.y);
-            glViewport(0, 0, avail.x, avail.y);
-            camera.update_projection_matrix(avail.x, avail.y);
-            Context::context()->framebuffer_resolution = vec2(avail.x, avail.y);
-        }
-
-        draw();
-
-        ImGui::Image(framebuffer.get_texture_id(), avail, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
-
-        ImGui::End();
-
+        draw_imgui_main_window();
         draw_imgui_windows();
 
         ImGui::Render();
@@ -150,6 +120,37 @@ void Application::draw() {
     // if(Context::event_handler().is_wireframe_enabled()) { glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); }
     // AssetManager::get_mesh("screen").draw();
     // if(Context::event_handler().is_wireframe_enabled()) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); }
+}
+
+void Application::draw_imgui_main_window() {
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+    ImGui::Begin("Main", nullptr, ImGuiWindowFlags_NoTitleBar);
+    ImGui::PopStyleVar(1);
+
+    ImVec2 avail = ImGui::GetContentRegionAvail();
+    avail.x = avail.x < 1.0f ? 1.0f : avail.x;
+    avail.y = avail.y < 1.0f ? 1.0f : avail.y;
+
+    ImVec2 mouse_pos = ImGui::GetMousePos();
+    ImVec2 window_pos = ImGui::GetWindowPos();
+    ImVec2 window_content_region = ImGui::GetWindowContentRegionMin();
+    Context::context()->is_main_window_hovered = ImGui::IsWindowHovered();
+    Context::context()->mouse_pos_in_main_window = vec2(mouse_pos.x - window_pos.x - window_content_region.x,
+                                                        mouse_pos.y - window_pos.y - window_content_region.y);
+
+    vec2 res = framebuffer.get_resolution();
+    if(static_cast<int>(avail.x) != res.x || static_cast<int>(avail.y) != res.y) {
+        framebuffer.resize(avail.x, avail.y);
+        glViewport(0, 0, avail.x, avail.y);
+        camera.update_projection_matrix(avail.x, avail.y);
+        Context::context()->framebuffer_resolution = vec2(avail.x, avail.y);
+    }
+
+    draw();
+
+    ImGui::Image(framebuffer.get_texture_id(), avail, ImVec2(0.0f, 1.0f), ImVec2(1.0f, 0.0f));
+
+    ImGui::End();
 }
 
 ImVec2 operator-(const ImVec2& left, const ImVec2& right) {

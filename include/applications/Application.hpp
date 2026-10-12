@@ -37,6 +37,8 @@ private:
      */
     void draw();
 
+    void draw_imgui_main_window();
+
     /**
      * @brief Draws the imgui debug window.
      */
