@@ -5,8 +5,10 @@
 
 #pragma once
 
-#define PI_F 3.141592653589793f
-#define PI_HALF_F 1.570796326794897f
-#define TAU_F 6.283185307179586f
-#define GOLDEN_RATIO_F 1.618033988749895f
-#define INV_GOLDEN_RATIO_F 0.618033988749895f
+#include <numbers>
+
+constexpr float PI_F = std::numbers::pi_v<float>;
+constexpr float PI_HALF_F = std::numbers::pi_v<float> * 0.5f;
+constexpr float TAU_F = std::numbers::pi_v<float> * 2.0f;
+constexpr float GOLDEN_RATIO_F = std::numbers::phi_v<float>;
+constexpr float INV_GOLDEN_RATIO_F = 1.0f / std::numbers::phi_v<float>;
