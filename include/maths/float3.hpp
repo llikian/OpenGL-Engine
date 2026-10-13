@@ -5,16 +5,27 @@
 
 #pragma once
 
+#include <cstdint>
+#include <iostream>
+
 /**
  * @class float3
  * @brief
  */
 struct float3 {
-    float3() : x(0.0f), y(0.0f), z(0.0f) {}
+    float3();
+    float3(float x, float y, float z);
+    explicit float3(float value);
 
-    float3(float x, float y, float z) : x(x), y(y), z(z) {}
+    bool operator==(const float3& other) const;
+    bool operator!=(const float3& other) const;
 
-    explicit float3(float value) : x(value), y(value), z(value) {}
+    inline float& operator[](uint8_t index) { return (&x)[index]; };
+
+    inline const float& operator[](uint8_t index) const { return (&x)[index]; };
 
     float x, y, z;
 };
+
+std::ostream& operator<<(std::ostream& stream, const float3& value);
+std::istream& operator>>(std::istream& stream, float3& value);

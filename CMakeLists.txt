@@ -56,6 +56,7 @@ set(SOURCES
     src/maths/Point.cpp
     src/maths/Transform.cpp
     src/maths/Vector.cpp
+    src/maths/float3.cpp
     src/maths/mat3.cpp
     src/maths/mat4.cpp
     src/maths/maths.cpp

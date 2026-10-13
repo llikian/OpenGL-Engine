@@ -203,7 +203,7 @@ void create_pyramid_mesh(Mesh& mesh, const Point& A, const Point& B, const Point
     const Vector BA = A - B;
     const Vector BC = C - B;
 
-    mesh.add_vertex(A + 0.5f * (C - A) + height * normalize(cross(BA, BC)));
+    mesh.add_vertex(midpoint(A, C) + height * normalize(cross(BA, BC)));
     mesh.add_vertex(A);
     mesh.add_vertex(B);
     mesh.add_vertex(C);
@@ -309,39 +309,39 @@ void create_icosphere_mesh(Mesh& mesh, unsigned int subdivisions) {
     };
 
     std::vector<Point> vertices {
-        normalize(Point(1.0f, 1.0f, 1.0f).as_vector()).as_point(),    // 0
-        normalize(Point(1.0f, 1.0f, -1.0f).as_vector()).as_point(),   // 1
-        normalize(Point(1.0f, -1.0f, 1.0f).as_vector()).as_point(),   // 2
-        normalize(Point(1.0f, -1.0f, -1.0f).as_vector()).as_point(),  // 3
-        normalize(Point(-1.0f, 1.0f, 1.0f).as_vector()).as_point(),   // 4
-        normalize(Point(-1.0f, 1.0f, -1.0f).as_vector()).as_point(),  // 5
-        normalize(Point(-1.0f, -1.0f, 1.0f).as_vector()).as_point(),  // 6
-        normalize(Point(-1.0f, -1.0f, -1.0f).as_vector()).as_point(), // 7
+        Point(normalize(Vector(1.0f, 1.0f, 1.0f))),    // 0
+        Point(normalize(Vector(1.0f, 1.0f, -1.0f))),   // 1
+        Point(normalize(Vector(1.0f, -1.0f, 1.0f))),   // 2
+        Point(normalize(Vector(1.0f, -1.0f, -1.0f))),  // 3
+        Point(normalize(Vector(-1.0f, 1.0f, 1.0f))),   // 4
+        Point(normalize(Vector(-1.0f, 1.0f, -1.0f))),  // 5
+        Point(normalize(Vector(-1.0f, -1.0f, 1.0f))),  // 6
+        Point(normalize(Vector(-1.0f, -1.0f, -1.0f))), // 7
 
-        normalize(Point(INV_GOLDEN_RATIO_F, 0.0f, GOLDEN_RATIO_F).as_vector()).as_point(),   // 8
-        normalize(Point(INV_GOLDEN_RATIO_F, 0.0f, -GOLDEN_RATIO_F).as_vector()).as_point(),  // 9
-        normalize(Point(-INV_GOLDEN_RATIO_F, 0.0f, GOLDEN_RATIO_F).as_vector()).as_point(),  // 10
-        normalize(Point(-INV_GOLDEN_RATIO_F, 0.0f, -GOLDEN_RATIO_F).as_vector()).as_point(), // 11
+        Point(normalize(Vector(INV_GOLDEN_RATIO_F, 0.0f, GOLDEN_RATIO_F))),   // 8
+        Point(normalize(Vector(INV_GOLDEN_RATIO_F, 0.0f, -GOLDEN_RATIO_F))),  // 9
+        Point(normalize(Vector(-INV_GOLDEN_RATIO_F, 0.0f, GOLDEN_RATIO_F))),  // 10
+        Point(normalize(Vector(-INV_GOLDEN_RATIO_F, 0.0f, -GOLDEN_RATIO_F))), // 11
 
-        normalize(Point(0.0f, GOLDEN_RATIO_F, INV_GOLDEN_RATIO_F).as_vector()).as_point(),   // 12
-        normalize(Point(0.0f, GOLDEN_RATIO_F, -INV_GOLDEN_RATIO_F).as_vector()).as_point(),  // 13
-        normalize(Point(0.0f, -GOLDEN_RATIO_F, INV_GOLDEN_RATIO_F).as_vector()).as_point(),  // 14
-        normalize(Point(0.0f, -GOLDEN_RATIO_F, -INV_GOLDEN_RATIO_F).as_vector()).as_point(), // 15
+        Point(normalize(Vector(0.0f, GOLDEN_RATIO_F, INV_GOLDEN_RATIO_F))),   // 12
+        Point(normalize(Vector(0.0f, GOLDEN_RATIO_F, -INV_GOLDEN_RATIO_F))),  // 13
+        Point(normalize(Vector(0.0f, -GOLDEN_RATIO_F, INV_GOLDEN_RATIO_F))),  // 14
+        Point(normalize(Vector(0.0f, -GOLDEN_RATIO_F, -INV_GOLDEN_RATIO_F))), // 15
 
-        normalize(Point(GOLDEN_RATIO_F, INV_GOLDEN_RATIO_F, 0.0f).as_vector()).as_point(),  // 16
-        normalize(Point(GOLDEN_RATIO_F, -INV_GOLDEN_RATIO_F, 0.0f).as_vector()).as_point(), // 17
-        normalize(Point(-GOLDEN_RATIO_F, INV_GOLDEN_RATIO_F, 0.0f).as_vector()).as_point(), // 18
-        normalize(Point(-GOLDEN_RATIO_F, -INV_GOLDEN_RATIO_F, 0.0f).as_vector()).as_point() // 19
+        Point(normalize(Vector(GOLDEN_RATIO_F, INV_GOLDEN_RATIO_F, 0.0f))),  // 16
+        Point(normalize(Vector(GOLDEN_RATIO_F, -INV_GOLDEN_RATIO_F, 0.0f))), // 17
+        Point(normalize(Vector(-GOLDEN_RATIO_F, INV_GOLDEN_RATIO_F, 0.0f))), // 18
+        Point(normalize(Vector(-GOLDEN_RATIO_F, -INV_GOLDEN_RATIO_F, 0.0f))) // 19
     };
 
     std::function<void(unsigned int, unsigned int, unsigned int, unsigned int)> add_triangle =
         [&](unsigned int A, unsigned int B, unsigned int C, unsigned int depth) {
             if(depth > 0) {
-                vertices.push_back(vertices[A] + 0.5f * (vertices[B] - vertices[A]));
+                vertices.push_back(midpoint(vertices[A], vertices[B]));
                 unsigned int AB = vertices.size() - 1;
-                vertices.push_back(vertices[B] + 0.5f * (vertices[C] - vertices[B]));
+                vertices.push_back(midpoint(vertices[B], vertices[C]));
                 unsigned int BC = vertices.size() - 1;
-                vertices.push_back(vertices[C] + 0.5f * (vertices[A] - vertices[C]));
+                vertices.push_back(midpoint(vertices[C], vertices[A]));
                 unsigned int CA = vertices.size() - 1;
 
                 add_triangle(A, AB, CA, depth - 1);
@@ -353,14 +353,12 @@ void create_icosphere_mesh(Mesh& mesh, unsigned int subdivisions) {
             }
         };
 
-    for(unsigned int i = 0; i < 12; ++i) {
-        const unsigned int* face = faces[i];
-        Vector sum = vertices[face[0]].as_vector()   //
-                     + vertices[face[1]].as_vector() //
-                     + vertices[face[2]].as_vector() //
-                     + vertices[face[3]].as_vector() //
-                     + vertices[face[4]].as_vector();
-        vertices.push_back((0.2f * sum).as_point());
+    for(const unsigned int* face : faces) {
+        vertices.push_back(midpoint(vertices[face[0]], //
+                                    vertices[face[1]],
+                                    vertices[face[2]],
+                                    vertices[face[3]],
+                                    vertices[face[3]]));
 
         unsigned int index = vertices.size() - 1;
 

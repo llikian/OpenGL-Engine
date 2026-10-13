@@ -7,21 +7,9 @@
 
 #include <cmath>
 
-Vector::Vector() : x(), y(), z() {}
+Vector::Vector(const Point& point) : float3(point.x, point.y, point.z) {}
 
-Vector::Vector(float x, float y, float z) : x(x), y(y), z(z) {}
-
-Vector::Vector(const Point& A, const Point& B) : x(B.x - A.x), y(B.y - A.y), z(B.z - A.z) {}
-
-Vector::Vector(float value) : x(value), y(value), z(value) {}
-
-float& Vector::operator[](uint8_t index) {
-    return (&x)[index];
-}
-
-const float& Vector::operator[](uint8_t index) const {
-    return (&x)[index];
-}
+Vector::Vector(const Point& A, const Point& B) : float3(B.x - A.x, B.y - A.y, B.z - A.z) {}
 
 Vector& Vector::operator+=(const Vector& vec) {
     x += vec.x;
@@ -55,24 +43,6 @@ Vector& Vector::operator/=(float value) {
     z *= inv;
 
     return *this;
-}
-
-bool Vector::operator==(const Vector& other) const {
-    return x == other.x && y == other.y && z == other.z;
-}
-
-bool Vector::operator!=(const Vector& other) const {
-    return x != other.x || y != other.y || z != other.z;
-}
-
-std::ostream& operator<<(std::ostream& stream, const Vector& vec) {
-    stream << "( " << vec.x << " ; " << vec.y << " ; " << vec.z << " )";
-    return stream;
-}
-
-std::istream& operator>>(std::istream& stream, Vector& vec) {
-    stream >> vec.x >> vec.y >> vec.z;
-    return stream;
 }
 
 Vector operator+(const Vector& left, const Vector& right) {

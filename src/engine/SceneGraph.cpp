@@ -503,8 +503,8 @@ void SceneGraph::update_AABBs(std::size_t node_index) {
         case Node::Type::SIMPLE:
         case Node::Type::GLTF_SCENE:
             for(std::size_t index : nodes[node_index].children) {
-                AABB::axis_aligned_min(min, AABBs[index].min_point);
-                AABB::axis_aligned_max(max, AABBs[index].max_point);
+                cw_min(min, AABBs[index].min_point);
+                cw_max(max, AABBs[index].max_point);
             }
             AABBs[node_index].set(min, max);
             break;

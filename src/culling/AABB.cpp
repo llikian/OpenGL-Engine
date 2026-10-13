@@ -44,7 +44,7 @@ float AABB::get_size() const {
 }
 
 Point AABB::get_center() const {
-    return min_point + 0.5f * (max_point - min_point);
+    return midpoint(min_point, max_point);
 }
 
 mat4 AABB::get_global_model_matrix() const {
@@ -61,11 +61,7 @@ mat4 AABB::get_global_model_matrix() const {
                 0.0f,
                 0.0f,
                 max_point.z - center.z,
-                center.z,
-                0.0f,
-                0.0f,
-                0.0f,
-                1.0f);
+                center.z);
 }
 
 void AABB::set(const Point& min, const Point& max) {
@@ -89,7 +85,8 @@ void AABB::set(const AABB& aabb, const Transform& transform) {
     max_point.x = max_point.y = max_point.z = MIN_F;
 
     for(const vec4& point : corners) {
-        axis_aligned_min(min_point, point);
-        axis_aligned_max(max_point, point);
+        Point p(point.x / point.w, point.y / point.w, point.z / point.w);
+        cw_min(min_point, p);
+        cw_max(max_point, p);
     }
 }
