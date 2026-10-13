@@ -6,7 +6,6 @@
 #include <iostream>
 #include "applications/Application.hpp"
 #include "engine/Context.hpp"
-#include "maths/transforms.hpp"
 
 int main() {
     try {
