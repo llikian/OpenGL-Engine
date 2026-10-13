@@ -493,8 +493,8 @@ void SceneGraph::force_update_transform_and_children(std::size_t node_index) {
 void SceneGraph::update_AABBs(std::size_t node_index) {
     for(std::size_t index : nodes[node_index].children) { update_AABBs(index); }
 
-    Point min(FLOAT_MAX);
-    Point max(FLOAT_MIN);
+    Point min(MAX_F);
+    Point max(MIN_F);
 
     switch(nodes[node_index].type) {
         case Node::Type::MESH:

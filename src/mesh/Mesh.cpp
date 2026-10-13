@@ -281,8 +281,8 @@ void Mesh::add_face(unsigned int topL, unsigned int bottomL, unsigned int bottom
 
 void Mesh::bind_buffers() {
     /* AABB */
-    Point min(FLOAT_MAX);
-    Point max(FLOAT_MIN);
+    Point min(MAX_F);
+    Point max(MIN_F);
     get_min_max_axis_aligned_coordinates(min, max);
     aabb.set(min, max);
 

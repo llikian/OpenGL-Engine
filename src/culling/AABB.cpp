@@ -5,11 +5,9 @@
 
 #include "culling/AABB.hpp"
 
-#include <cmath>
-#include <limits>
 #include "maths/constants.hpp"
 
-AABB::AABB() : min_point(FLOAT_MAX), max_point(FLOAT_MIN) {}
+AABB::AABB() : min_point(MAX_F), max_point(MIN_F) {}
 
 AABB::AABB(const Point& min_point, const Point& max_point) : min_point(min_point), max_point(max_point) {}
 
@@ -87,8 +85,8 @@ void AABB::set(const AABB& aabb, const Transform& transform) {
                       model * Point(aabb.max_point.x, aabb.max_point.y, aabb.min_point.z),
                       model * Point(aabb.max_point.x, aabb.max_point.y, aabb.max_point.z) };
 
-    min_point.x = min_point.y = min_point.z = FLOAT_MAX;
-    max_point.x = max_point.y = max_point.z = FLOAT_MIN;
+    min_point.x = min_point.y = min_point.z = MAX_F;
+    max_point.x = max_point.y = max_point.z = MIN_F;
 
     for(const vec4& point : corners) {
         axis_aligned_min(min_point, point);
