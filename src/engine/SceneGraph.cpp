@@ -454,7 +454,7 @@ void SceneGraph::draw(const mat4& view_projection, const Shader& shader, std::si
 
     int u_normals_model_matrix_location = shader.get_uniform_location("u_normals_model_matrix");
     if(u_normals_model_matrix_location != -1) {
-        Shader::set_uniform(u_normals_model_matrix_location, transpose(inverse_transform(global_model)));
+        Shader::set_uniform(u_normals_model_matrix_location, transpose_inverse_3x3(global_model));
     }
 
     shader.set_uniform_if_exists("u_light.intensity", 3.0f);

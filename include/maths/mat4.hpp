@@ -86,6 +86,8 @@ mat4 inverse_transform(const mat4& mat);
 
 mat4 transpose(const mat4& mat);
 
+mat3 transpose_inverse_3x3(const mat4& mat);
+
 void operator+=(mat4& left, const mat4& right);
 void operator-=(mat4& left, const mat4& right);
 

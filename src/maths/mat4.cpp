@@ -147,7 +147,7 @@ std::ostream& operator<<(std::ostream& stream, const mat4& mat) {
     return stream;
 }
 
-float determinant(const mat4& mat) {
+float determinant(const mat4&) {
     throw std::runtime_error("Unimplemented error\n");
 }
 
@@ -157,7 +157,7 @@ float determinant_transform(const mat4& mat) {
     return dot(mat[0], cross(mat[1], mat[2]));
 }
 
-mat4 inverse(const mat4& mat) {
+mat4 inverse(const mat4&) {
     throw std::runtime_error("Unimplemented error\n");
 }
 
@@ -199,6 +199,24 @@ mat4 transpose(const mat4& mat) {
                 mat(1, 3),
                 mat(2, 3),
                 mat(3, 3));
+}
+
+mat3 transpose_inverse_3x3(const mat4& mat) {
+    // Assumes the matrix is an affine transform, meaning its last row is ( 0 ; 0 ; 0 ; 1 )
+    // Assumes the matrix has an inverse, if not it will result in a division by zero error
+
+    const Vector& a = mat[0];
+    const Vector& b = mat[1];
+    const Vector& c = mat[2];
+
+    Vector s = cross(a, b);
+    float det_inv = 1.0f / dot(s, c);
+    s *= det_inv;
+    Vector v = c * det_inv;
+    Vector row0 = cross(b, v);
+    Vector row1 = cross(v, a);
+
+    return mat3(row0.x, row0.y, row0.z, row1.x, row1.y, row1.z, s.x, s.y, s.z);
 }
 
 void operator+=(mat4& left, const mat4& right) {
