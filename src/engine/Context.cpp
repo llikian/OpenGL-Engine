@@ -51,13 +51,12 @@ void opengl_error_callback(unsigned int source,
                            int /* length */,
                            const GLchar* message,
                            const void* /* userParam */) {
-    static const std::unordered_set<unsigned int> ignore_list {
+    switch(id) {
         // Buffer detailed info: Buffer object ... (bound to GL_ELEMENT_ARRAY_BUFFER_ARB, usage hint
         // is GL_STATIC_DRAW) will use VIDEO memory as the source for buffer object operations.
-        131185,
-    };
-
-    if(ignore_list.contains(id)) { return; }
+        case 131185: return;
+        default:     break;
+    }
 
 #ifdef __unix__
     switch(severity) {
