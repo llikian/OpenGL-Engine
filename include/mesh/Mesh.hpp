@@ -6,13 +6,15 @@
 #pragma once
 
 #include <vector>
-#include "Attribute.hpp"
 #include "culling/AABB.hpp"
 #include "glad/glad.h"
+#include "maths/float3.hpp"
 #include "maths/mat4.hpp"
+#include "maths/Point.hpp"
 #include "maths/vec2.hpp"
-#include "maths/vec3.hpp"
 #include "maths/vec4.hpp"
+#include "maths/Vector.hpp"
+#include "Attribute.hpp"
 
 struct Ray;
 
@@ -69,7 +71,7 @@ public:
      * @param minimum The lowest x, y and z values of the position in the mesh.
      * @param maximum The highest x, y and z values of the position in the mesh.
      */
-    void get_min_max_axis_aligned_coordinates(vec3& minimum, vec3& maximum) const;
+    void get_min_max_axis_aligned_coordinates(Point& minimum, Point& maximum) const;
 
     float intersect(const Ray& ray, const mat4& model_matrix) const;
 
@@ -104,11 +106,9 @@ public:
     template <typename... Args>
     void add_vertex(Args&&... attribute_values) {
         if(sizeof...(attribute_values) != active_attributes_count) {
-            throw std::runtime_error("Trying to pass "
-                                     + std::to_string(sizeof...(attribute_values))
-                                     + " arguments to add_vertex but the mesh has "
-                                     + std::to_string(active_attributes_count)
-                                     + " active attributes.");
+            throw std::runtime_error("Trying to pass " + std::to_string(sizeof...(attribute_values)) +
+                                     " arguments to add_vertex but the mesh has " +
+                                     std::to_string(active_attributes_count) + " active attributes.");
         }
 
         add_vertex_helper(0, std::forward<Args>(attribute_values)...);
@@ -126,7 +126,10 @@ public:
 
     void push_value(float value);
     void push_value(const vec2& value);
-    void push_value(const vec3& value);
+    void push_value(const Point& value);
+    void push_value(const Vector& value);
+    void push_value(const Color& value);
+    void push_value(const float3& value);
     void push_value(const vec4& value);
     void push_values(const float* values, unsigned int n);
 
@@ -143,11 +146,9 @@ private:
         AttributeType value_type = get_attribute_type_from_value(value);
 
         if(type != value_type) {
-            throw std::runtime_error("Trying to add an attribute value of type '"
-                                     + attribute_type_to_string(value_type)
-                                     + "' for an attribute that has type '"
-                                     + attribute_type_to_string(type)
-                                     + "'.");
+            throw std::runtime_error("Trying to add an attribute value of type '" +
+                                     attribute_type_to_string(value_type) + "' for an attribute that has type '" +
+                                     attribute_type_to_string(type) + "'.");
         }
 
         push_value(std::forward<Type>(value));
@@ -155,7 +156,7 @@ private:
         add_vertex_helper(++attribute_id, std::forward<Args>(attribute_values)...);
     }
 
-    static void add_vertex_helper(unsigned int) { }
+    static void add_vertex_helper(unsigned int) {}
 
     MeshPrimitive primitive;
 
@@ -175,9 +176,9 @@ private:
 
 inline unsigned int get_opengl_enum_for_primitive(MeshPrimitive primitive) {
     switch(primitive) {
-        case MeshPrimitive::POINTS: return GL_POINTS;
-        case MeshPrimitive::LINES: return GL_LINES;
+        case MeshPrimitive::POINTS:    return GL_POINTS;
+        case MeshPrimitive::LINES:     return GL_LINES;
         case MeshPrimitive::TRIANGLES: return GL_TRIANGLES;
-        default: return GL_NONE;
+        default:                       return GL_NONE;
     }
 }

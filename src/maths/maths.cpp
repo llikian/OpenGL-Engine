@@ -1,9 +1,9 @@
 /***************************************************************************************************
- * @file  trigonometry.cpp
- * @brief Implementation of functions regarding trigonometry
+ * @file  maths.cpp
+ * @brief Implementation of maths functions
  **************************************************************************************************/
 
-#include "maths/trigonometry.hpp"
+#include "maths/maths.hpp"
 
 #include "maths/constants.hpp"
 

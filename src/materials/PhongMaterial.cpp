@@ -13,7 +13,7 @@ PhongMaterial::PhongMaterial(const std::string& name)
       ambient(1.0f),
       diffuse(1.0f),
       specular(1.0f),
-      specular_exponent(10.0f) { }
+      specular_exponent(10.0f) {}
 
 void PhongMaterial::update_shader_uniforms(const Shader* shader) const {
     shader->set_uniform("u_ambient", ambient);
@@ -30,8 +30,8 @@ bool PhongMaterial::has_transparency() const {
 
 void PhongMaterial::add_to_object_editor() {
     ImGui::Text("Material: %s", name.c_str());
-    ImGui::ColorEdit3("Ambient Color", &ambient.x);
-    ImGui::ColorEdit3("Diffuse Color", &diffuse.x);
-    ImGui::ColorEdit3("Specular Color", &specular.x);
+    ImGui::ColorEdit3("Ambient Color", &ambient.r);
+    ImGui::ColorEdit3("Diffuse Color", &diffuse.r);
+    ImGui::ColorEdit3("Specular Color", &specular.r);
     ImGui::DragFloat("Specular Exponent", &specular_exponent);
 }

@@ -15,7 +15,7 @@
 #include "imgui_internal.h"
 
 Application::Application()
-    : camera(vec3(0.0f, 10.0f, -5.0f), PI_HALF_F, 0.1f, 1024.0f),
+    : camera(Point(0.0f, 10.0f, -5.0f), PI_HALF_F, 0.1f, 1024.0f),
       scene_graph(camera),
       framebuffer(Context::window().get_width(), Context::window().get_height()),
       are_axes_drawn(false),
@@ -160,7 +160,7 @@ ImVec2 operator-(const ImVec2& left, const ImVec2& right) {
 void Application::draw_imgui_windows() {
     ImGui::Begin("Debug");
 
-    vec3 camera_pos = camera.get_position();
+    Point camera_pos = camera.get_position();
 
     ImGui::Text("fps: %f f/s", 1.0f / Context::event_handler().get_delta());
     ImGui::Text("delta: %fs", Context::event_handler().get_delta());
@@ -184,8 +184,8 @@ void Application::draw_imgui_windows() {
     ImGui::End();
 
     ImGui::Begin("Environment");
-    ImGui::ColorEdit3("Low Sky Color", &sky_color_low.x);
-    ImGui::ColorEdit3("High Sky Color", &sky_color_high.x);
+    ImGui::ColorEdit3("Low Sky Color", &sky_color_low.r);
+    ImGui::ColorEdit3("High Sky Color", &sky_color_high.r);
     ImGui::End();
 
     ImGui::Begin("Camera");

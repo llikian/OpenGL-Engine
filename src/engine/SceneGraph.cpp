@@ -9,7 +9,7 @@
 #include "culling/Ray.hpp"
 #include "engine/Context.hpp"
 #include "engine/Node.hpp"
-#include "maths/geometry.hpp"
+#include "maths/constants.hpp"
 #include "mesh/primitives.hpp"
 #include "imgui.h"
 #include "imgui_internal.h"
@@ -45,23 +45,23 @@ SceneGraph::SceneGraph(Camera& camera)
     AssetManager::add_mesh("axes", create_axes_mesh, 0.5f);
     AssetManager::add_mesh("camera pyramid",
                            create_pyramid_mesh,
-                           vec3(1.0f, 1.0f, -1.0f),
-                           vec3(1.0f, -1.0f, -1.0f),
-                           vec3(-1.0f, -1.0f, -1.0f),
+                           Point(1.0f, 1.0f, -1.0f),
+                           Point(1.0f, -1.0f, -1.0f),
+                           Point(-1.0f, -1.0f, -1.0f),
                            1.0f);
 
     /* Textures */
-    AssetManager::add_texture("default", vec3(1.0f));
-    AssetManager::add_texture("red", vec3(1.0f, 0.0f, 0.0f));
-    AssetManager::add_texture("green", vec3(0.0f, 1.0f, 0.0f));
-    AssetManager::add_texture("blue", vec3(0.0f, 0.0f, 1.0f));
+    AssetManager::add_texture("default", Color(1.0f));
+    AssetManager::add_texture("red", Color(1.0f, 0.0f, 0.0f));
+    AssetManager::add_texture("green", Color(0.0f, 1.0f, 0.0f));
+    AssetManager::add_texture("blue", Color(0.0f, 0.0f, 1.0f));
 
     /* ---- Root ---- */
     add_simple_node("Scene Graph", INVALID_INDEX);
 
     /* ---- Light ---- */
     light_node_index = add_mesh_node("Light", 0, AssetManager::get_mesh_ptr("icosphere 1"), SHADER_FLAT);
-    add_color_to_node(light_node_index, vec4(1.0f));
+    add_color_to_node(light_node_index, vec4(1.0f, 1.0f, 1.0f, 1.0f));
     transforms[light_node_index].set_local_position(0.0f, 10.0f, 0.0f);
 
     /* Event Handler */
@@ -75,13 +75,14 @@ SceneGraph::SceneGraph(Camera& camera)
             vec2 mouse_pos = context->mouse_pos_in_main_window;
             vec2 window_resolution = context->framebuffer_resolution;
 
-            vec2 normalized_mouse_pos = (mouse_pos / window_resolution) * 2.0f - vec2(1.0f);
+            vec2 normalized_mouse_pos((mouse_pos.x / window_resolution.x) * 2.0f - 1.0f, //
+                                      (mouse_pos.y / window_resolution.y) * 2.0f - 1.0f);
             normalized_mouse_pos.y = -normalized_mouse_pos.y; // Flip Y because window origin is in top left corner.
 
             mat4 vp_inverse = active_camera->get_inverse_view_projection_matrix();
 
-            Ray ray(vp_inverse * vec4(normalized_mouse_pos, -1.0f, 1.0f),
-                    vp_inverse * vec4(normalized_mouse_pos, 1.0f, 1.0f));
+            Ray ray(vp_inverse * Point(normalized_mouse_pos.x, normalized_mouse_pos.y, -1.0f),
+                    vp_inverse * Point(normalized_mouse_pos.x, normalized_mouse_pos.y, 1.0f));
 
             /* Intersect AABBs */
             std::vector<std::size_t> intersected_indices;
@@ -96,7 +97,7 @@ SceneGraph::SceneGraph(Camera& camera)
             }
 
             /* Intersect Meshes */
-            float distance = infinity;
+            float distance = INFINITY_F;
             for(std::size_t index : intersected_indices) {
                 float dist = meshes[nodes[index].drawable_index]->intersect(
                     ray,
@@ -120,9 +121,9 @@ void SceneGraph::draw(const Frustum& frustum) {
     total_drawn_objects = 0;
 
     const vec4& color = colors[nodes[light_node_index].color_index];
-    light_color.x = color.x;
-    light_color.y = color.y;
-    light_color.z = color.z;
+    light_color.r = color.x;
+    light_color.g = color.y;
+    light_color.b = color.z;
     light_position = transforms[light_node_index].get_global_position();
 
     update_transform_and_children();
@@ -453,7 +454,7 @@ void SceneGraph::draw(const mat4& view_projection, const Shader& shader, std::si
 
     int u_normals_model_matrix_location = shader.get_uniform_location("u_normals_model_matrix");
     if(u_normals_model_matrix_location != -1) {
-        Shader::set_uniform(u_normals_model_matrix_location, transpose_inverse(global_model));
+        Shader::set_uniform(u_normals_model_matrix_location, transpose(inverse_transform(global_model)));
     }
 
     shader.set_uniform_if_exists("u_light.intensity", 3.0f);
@@ -492,8 +493,8 @@ void SceneGraph::force_update_transform_and_children(std::size_t node_index) {
 void SceneGraph::update_AABBs(std::size_t node_index) {
     for(std::size_t index : nodes[node_index].children) { update_AABBs(index); }
 
-    vec3 min(std::numeric_limits<float>::max());
-    vec3 max(std::numeric_limits<float>::lowest());
+    Point min(FLOAT_MAX);
+    Point max(FLOAT_MIN);
 
     switch(nodes[node_index].type) {
         case Node::Type::MESH:

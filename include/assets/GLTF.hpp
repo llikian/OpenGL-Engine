@@ -7,11 +7,11 @@
 
 #include <filesystem>
 
-#include "Shader.hpp"
-#include "tiny_gltf.h"
 #include "materials/MRMaterial.hpp"
 #include "mesh/Mesh.hpp"
-#include "utility/HeapArray.hpp"
+#include "utility/Array.hpp"
+#include "Shader.hpp"
+#include "tiny_gltf.h"
 
 class SceneGraph;
 
@@ -24,7 +24,7 @@ namespace GLTF {
 
     struct Mesh {
         std::string name;
-        HeapArray<Primitive> primitives;
+        Array<Primitive> primitives;
     };
 
     struct AttributeInfo {
@@ -36,9 +36,9 @@ namespace GLTF {
     };
 
     /**
-    * @class Scene
-    * @brief
-    */
+     * @class Scene
+     * @brief
+     */
     class Scene {
     public:
         Scene(const std::filesystem::path& path, SceneGraph* scene_graph, unsigned int scene_node_index);
@@ -52,6 +52,6 @@ namespace GLTF {
                       int sg_parent_index);
 
     private:
-        HeapArray<Mesh> meshes;
+        Array<Mesh> meshes;
     };
 }

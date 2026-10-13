@@ -40,9 +40,9 @@ static void get_formats_from_channels_amount(unsigned int channels_amount,
     }
 }
 
-Texture::Texture() : id(0), b_has_transparency(false) { }
+Texture::Texture() : id(0), b_has_transparency(false) {}
 
-Texture::Texture(const Texture& texture) : id(texture.id), b_has_transparency(texture.has_transparency()) { }
+Texture::Texture(const Texture& texture) : id(texture.id), b_has_transparency(texture.has_transparency()) {}
 
 Texture& Texture::operator=(const Texture& texture) {
     id = texture.id;
@@ -72,10 +72,8 @@ void Texture::create(unsigned int internal_format,
     glTexImage2D(GL_TEXTURE_2D, 0, internal_format, width, height, 0, format, type, data);
     glGenerateMipmap(GL_TEXTURE_2D);
 
-    b_has_transparency = format == GL_RGBA
-                         || format == GL_BGRA
-                         || format == GL_RGBA_INTEGER
-                         || format == GL_BGRA_INTEGER;
+    b_has_transparency =
+        format == GL_RGBA || format == GL_BGRA || format == GL_RGBA_INTEGER || format == GL_BGRA_INTEGER;
 }
 
 void Texture::create(const Image& image, bool srgb) {
@@ -90,8 +88,8 @@ void Texture::create(const std::filesystem::path& path, bool flip_vertically, bo
     create(Image(path, flip_vertically), srgb);
 }
 
-void Texture::create(const vec3& color) {
-    create(GL_RGB32F, GL_RGB, GL_FLOAT, 1, 1, &color.x);
+void Texture::create(const Color& color) {
+    create(GL_RGB32F, GL_RGB, GL_FLOAT, 1, 1, &color.r);
 }
 
 void Texture::create(unsigned char r, unsigned char g, unsigned char b) {

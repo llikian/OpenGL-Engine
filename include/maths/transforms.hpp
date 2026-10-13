@@ -5,9 +5,11 @@
 
 #pragma once
 
+#include "float3.hpp"
 #include "mat4.hpp"
+#include "Point.hpp"
 #include "quaternion.hpp"
-#include "vec3.hpp"
+#include "Vector.hpp"
 
 /**
  * @brief Calculates the scaling matrix that scales by the same factor in all 3 directions.
@@ -30,7 +32,7 @@ mat4 scale(float x, float y, float z);
  * @param factors The scaling factors.
  * @return The scaling matrix.
  */
-mat4 scale(const vec3& factors);
+mat4 scale(const float3& factors);
 
 /**
  * @brief Calculates the scaling matrix that only scales in the x direction.
@@ -58,7 +60,7 @@ mat4 scale_z(float factor);
  * @param vector The translation vector.
  * @return The translation matrix.
  */
-mat4 translate(const vec3& vector);
+mat4 translate(const Vector& vector);
 
 /**
  * @brief Calculates the translation matrix that displaces by a specific amount in each direction.
@@ -96,7 +98,7 @@ mat4 translate_z(float scalar);
  * @param axis The rotation axis.
  * @return The rotation matrix.
  */
-mat4 rotate(float angle, vec3 axis);
+mat4 rotate(float angle, Vector axis);
 
 /**
  * @brief Calculates the rotation matrix that rotates around the x axis by a certain angle.
@@ -128,7 +130,7 @@ mat4 rotate_z(float angle);
  * @return The matrix that scales then rotates then translates a point according to the given
  * parameters.
  */
-mat4 TRS_matrix(const vec3& translation, const vec3& rotation, const vec3& scale);
+mat4 TRS_matrix(const Vector& translation, const float3& rotation, const float3& scale);
 
 /**
  * @brief Calculates the TRS matrix such that TRS=T*Rq*S, with T being a translation matrix, Rq
@@ -139,7 +141,7 @@ mat4 TRS_matrix(const vec3& translation, const vec3& rotation, const vec3& scale
  * @return The matrix that scales then rotates then translates a point according to the given
  * parameters.
  */
-mat4 TRS_matrix(const vec3& translation, const quaternion& rotation, const vec3& scale);
+mat4 TRS_matrix(const Vector& translation, const quaternion& rotation, const float3& scale);
 
 /**
  * @brief Calculates the 'look at' matrix. That allows to simulate a camera.
@@ -148,7 +150,7 @@ mat4 TRS_matrix(const vec3& translation, const quaternion& rotation, const vec3&
  * @param up The up vector of the camera.
  * @return The 'look at' matrix.
  */
-mat4 look_at(const vec3& eye, const vec3& target, const vec3& up);
+mat4 look_at(const Point& eye, const Point& target, const Vector& up);
 
 /**
  * @brief Calculates the perspective matrix.

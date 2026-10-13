@@ -36,9 +36,9 @@ struct PhongMaterial : Material {
      */
     void add_to_object_editor() override;
 
-    vec3 ambient;            ///< Ambient color.
-    vec3 diffuse;            ///< Diffuse color.
-    vec3 specular;           ///< Specular color
+    Color ambient;           ///< Ambient color.
+    Color diffuse;           ///< Diffuse color.
+    Color specular;          ///< Specular color
     float specular_exponent; ///< Specular Exponent.
 
     Texture diffuse_map; ///< Diffuse map.

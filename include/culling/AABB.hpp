@@ -5,16 +5,16 @@
 
 #pragma once
 
-#include "Frustum.hpp"
 #include "maths/Transform.hpp"
+#include "Frustum.hpp"
 
 struct AABB {
     AABB();
-    AABB(const vec3& min_point, const vec3& max_point);
+    AABB(const Point& min_point, const Point& max_point);
 
     bool is_in_frustum(const Frustum& frustum) const;
     float get_size() const;
-    vec3 get_center() const;
+    Point get_center() const;
     mat4 get_global_model_matrix() const;
 
     template <typename T1, typename T2>
@@ -31,9 +31,9 @@ struct AABB {
         A.z = std::max(A.z, B.z);
     }
 
-    void set(const vec3& min, const vec3& max);
+    void set(const Point& min, const Point& max);
     void set(const AABB& aabb, const Transform& transform);
 
-    vec4 min_point;
-    vec4 max_point;
+    Point min_point;
+    Point max_point;
 };

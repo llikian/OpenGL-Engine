@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "maths/float3.hpp"
 #include "mat4.hpp"
 
 /**
@@ -32,41 +33,41 @@ struct quaternion {
      * @param q The quaternion to add.
      * @return A reference to this quaternion.
      */
-    quaternion& operator +=(const quaternion& q);
+    quaternion& operator+=(const quaternion& q);
 
     /**
      * @brief Subtracts another quaternion from this one.
      * @param q The quaternion to subtract.
      * @return A reference to this quaternion.
      */
-    quaternion& operator -=(const quaternion& q);
+    quaternion& operator-=(const quaternion& q);
 
     /**
      * @brief Multiplies another quaternion with this one.
      * @param q The quaternion to multiply with.
      * @return A reference to this quaternion.
      */
-    quaternion& operator *=(const quaternion& q);
+    quaternion& operator*=(const quaternion& q);
 
     /**
      * @brief Divides another quaternion from this one.
      * @param q The quaternion to divide with.
      * @return A reference to this quaternion.
      */
-    quaternion& operator /=(const quaternion& q);
+    quaternion& operator/=(const quaternion& q);
 
     /**
      * @brief Multiplies this quaternion by a scalar.
      * @param scalar The scalar to multiply with.
      * @return A reference to this quaternion.
      */
-    quaternion& operator *=(float scalar);
+    quaternion& operator*=(float scalar);
     /**
      * @brief Divides this quaternion by a scalar.
      * @param scalar The scalar to divide with.
      * @return A reference to this quaternion.
      */
-    quaternion& operator /=(float scalar);
+    quaternion& operator/=(float scalar);
 
     /**
      * @brief Calculates the length (norm) of the quaternion.
@@ -108,14 +109,14 @@ struct quaternion {
  * @param angles Rotation angles in degrees around each axis.
  * @return The quaternion corresponding to the euler rotation.
  */
-quaternion euler_to_quaternion(const vec3& angles);
+quaternion euler_to_quaternion(const float3& angles);
 
 /**
  * @brief Converts a rotation with a quaternion to its equivalent with euler angles.
  * @param q A unit quaternion representing a rotation.
  * @return The rotation angles in degrees around each axix.
  */
-vec3 quaternion_to_euler(const quaternion& q);
+float3 quaternion_to_euler(const quaternion& q);
 
 /**
  * @brief Outputs a quaternion to an output stream with the following format: "xi + yj + zk + w".
@@ -123,7 +124,7 @@ vec3 quaternion_to_euler(const quaternion& q);
  * @param q The quaternion to output.
  * @return A reference to the output stream.
  */
-std::ostream& operator <<(std::ostream& stream, const quaternion& q);
+std::ostream& operator<<(std::ostream& stream, const quaternion& q);
 
 /**
  * @brief Reads four values from an output stream into a quaternion's coefficients.
@@ -131,7 +132,7 @@ std::ostream& operator <<(std::ostream& stream, const quaternion& q);
  * @param q The quaternion to read into.
  * @return A reference to the input stream.
  */
-std::istream& operator >>(std::istream& stream, quaternion& q);
+std::istream& operator>>(std::istream& stream, quaternion& q);
 
 /**
  * @brief Add two quaternions together.
@@ -139,7 +140,7 @@ std::istream& operator >>(std::istream& stream, quaternion& q);
  * @param r The second quaternion.
  * @return The sum of the two quaternions.
  */
-quaternion operator +(const quaternion& q, const quaternion& r);
+quaternion operator+(const quaternion& q, const quaternion& r);
 
 /**
  * @brief Subtract a quaternion from another.
@@ -147,7 +148,7 @@ quaternion operator +(const quaternion& q, const quaternion& r);
  * @param r The quaternion to subtract with.
  * @return The subtraction of the first quaternion by the second.
  */
-quaternion operator -(const quaternion& q, const quaternion& r);
+quaternion operator-(const quaternion& q, const quaternion& r);
 
 /**
  * @brief Multiplies two quaternions together. Multiplication is not commutative for quaternions.
@@ -155,7 +156,7 @@ quaternion operator -(const quaternion& q, const quaternion& r);
  * @param r The right quaternion.
  * @return The product of the first quaternion with the second.
  */
-quaternion operator *(const quaternion& q, const quaternion& r);
+quaternion operator*(const quaternion& q, const quaternion& r);
 
 /**
  * @brief Divides a quaternion by another.
@@ -163,7 +164,7 @@ quaternion operator *(const quaternion& q, const quaternion& r);
  * @param r The quaternion to divide with.
  * @return The division of the first quaternion by the second.
  */
-quaternion operator /(const quaternion& q, const quaternion& r);
+quaternion operator/(const quaternion& q, const quaternion& r);
 
 /**
  * @brief Multiplies a quaternion by a scalar.
@@ -171,7 +172,7 @@ quaternion operator /(const quaternion& q, const quaternion& r);
  * @param scalar The scalar to multiply the quaternion with.
  * @return The product of the quaternion by the scalar.
  */
-quaternion operator *(const quaternion& q, float scalar);
+quaternion operator*(const quaternion& q, float scalar);
 
 /**
  * @brief Multiplies a quaternion by a scalar.
@@ -179,7 +180,7 @@ quaternion operator *(const quaternion& q, float scalar);
  * @param scalar The scalar to multiply the quaternion with.
  * @return The product of the quaternion by the scalar.
  */
-quaternion operator *(float scalar, const quaternion& q);
+quaternion operator*(float scalar, const quaternion& q);
 
 /**
  * @brief Divides a quaternion by a scalar.
@@ -187,7 +188,7 @@ quaternion operator *(float scalar, const quaternion& q);
  * @param scalar The scalar to divide the quaternion with.
  * @return The division of the quaternion by the scalar.
  */
-quaternion operator /(const quaternion& q, float scalar);
+quaternion operator/(const quaternion& q, float scalar);
 
 /**
  * @brief Divides a scalar by a quaternion.
@@ -195,4 +196,4 @@ quaternion operator /(const quaternion& q, float scalar);
  * @param scalar The scalar to divide by the quaternion.
  * @return The division of the scalar by the quaternion.
  */
-quaternion operator /(float scalar, const quaternion& q);
+quaternion operator/(float scalar, const quaternion& q);

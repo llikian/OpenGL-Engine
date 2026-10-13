@@ -1,12 +1,7 @@
 /***************************************************************************************************
- * @file  vec3.hpp
- * @brief Declaration of the vec3 struct
+ * @file  float3.cpp
+ * @brief Implementation of the float3 class
  **************************************************************************************************/
 
-#pragma once
+#include "maths/float3.hpp"
 
-#include "vector3.hpp"
-
-using vec3 = vector3<float>;
-using ivec3 = vector3<int>;
-using uvec3 = vector3<unsigned int>;

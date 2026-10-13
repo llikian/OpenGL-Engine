@@ -7,31 +7,23 @@
 
 #include <cmath>
 #include <limits>
+#include "maths/constants.hpp"
 
-#include "maths/functions.hpp"
-#include "maths/geometry.hpp"
+AABB::AABB() : min_point(FLOAT_MAX), max_point(FLOAT_MIN) {}
 
-AABB::AABB()
-    : min_point(vec3(std::numeric_limits<float>::max()), 1.0f),
-      max_point(vec3(std::numeric_limits<float>::lowest()), 1.0f) { }
-
-AABB::AABB(const vec3& min_point, const vec3& max_point)
-    : min_point(min_point, 1.0f),
-      max_point(max_point, 1.0f) { }
+AABB::AABB(const Point& min_point, const Point& max_point) : min_point(min_point), max_point(max_point) {}
 
 bool AABB::is_in_frustum(const Frustum& frustum) const {
     unsigned int planes[6] { 0, 0, 0, 0, 0, 0 };
 
-    vec4 points[8] {
-        frustum.view_projection * vec4(min_point.x, min_point.y, min_point.z, 1.0f),
-        frustum.view_projection * vec4(min_point.x, min_point.y, max_point.z, 1.0f),
-        frustum.view_projection * vec4(min_point.x, max_point.y, min_point.z, 1.0f),
-        frustum.view_projection * vec4(min_point.x, max_point.y, max_point.z, 1.0f),
-        frustum.view_projection * vec4(max_point.x, min_point.y, min_point.z, 1.0f),
-        frustum.view_projection * vec4(max_point.x, min_point.y, max_point.z, 1.0f),
-        frustum.view_projection * vec4(max_point.x, max_point.y, min_point.z, 1.0f),
-        frustum.view_projection * vec4(max_point.x, max_point.y, max_point.z, 1.0f)
-    };
+    vec4 points[8] { frustum.view_projection * Point(min_point.x, min_point.y, min_point.z),
+                     frustum.view_projection * Point(min_point.x, min_point.y, max_point.z),
+                     frustum.view_projection * Point(min_point.x, max_point.y, min_point.z),
+                     frustum.view_projection * Point(min_point.x, max_point.y, max_point.z),
+                     frustum.view_projection * Point(max_point.x, min_point.y, min_point.z),
+                     frustum.view_projection * Point(max_point.x, min_point.y, max_point.z),
+                     frustum.view_projection * Point(max_point.x, max_point.y, min_point.z),
+                     frustum.view_projection * Point(max_point.x, max_point.y, max_point.z) };
 
     for(const vec4& point : points) {
         if(point.x < -point.w) { ++planes[0]; }
@@ -50,49 +42,53 @@ bool AABB::is_in_frustum(const Frustum& frustum) const {
 }
 
 float AABB::get_size() const {
-    return std::sqrt(pow2(max_point.x - min_point.x)
-                     + pow2(max_point.y - min_point.y)
-                     + pow2(max_point.z - min_point.z));
+    return length(max_point - min_point);
 }
 
-vec3 AABB::get_center() const {
-    return vec3(0.5f * (min_point.x + max_point.x),
-                0.5f * (min_point.y + max_point.y),
-                0.5f * (min_point.z + max_point.z));
+Point AABB::get_center() const {
+    return min_point + 0.5f * (max_point - min_point);
 }
 
 mat4 AABB::get_global_model_matrix() const {
-    vec3 center = get_center();
+    Point center = get_center();
 
-    return mat4(
-        max_point.x - center.x, 0.0f, 0.0f, center.x,
-        0.0f, max_point.y - center.y, 0.0f, center.y,
-        0.0f, 0.0f, max_point.z - center.z, center.z,
-        0.0f, 0.0f, 0.0f, 1.0f
-    );
+    return mat4(max_point.x - center.x,
+                0.0f,
+                0.0f,
+                center.x,
+                0.0f,
+                max_point.y - center.y,
+                0.0f,
+                center.y,
+                0.0f,
+                0.0f,
+                max_point.z - center.z,
+                center.z,
+                0.0f,
+                0.0f,
+                0.0f,
+                1.0f);
 }
 
-void AABB::set(const vec3& min, const vec3& max) {
-    min_point = vec4(min, 1.0f);
-    max_point = vec4(max, 1.0f);
+void AABB::set(const Point& min, const Point& max) {
+    min_point = min;
+    max_point = max;
 }
 
 void AABB::set(const AABB& aabb, const Transform& transform) {
     const mat4& model = transform.get_global_model_const_reference();
 
-    vec4 corners[8] {
-        model * vec4(aabb.min_point.x, aabb.min_point.y, aabb.min_point.z, 1.0f),
-        model * vec4(aabb.min_point.x, aabb.min_point.y, aabb.max_point.z, 1.0f),
-        model * vec4(aabb.min_point.x, aabb.max_point.y, aabb.min_point.z, 1.0f),
-        model * vec4(aabb.min_point.x, aabb.max_point.y, aabb.max_point.z, 1.0f),
-        model * vec4(aabb.max_point.x, aabb.min_point.y, aabb.min_point.z, 1.0f),
-        model * vec4(aabb.max_point.x, aabb.min_point.y, aabb.max_point.z, 1.0f),
-        model * vec4(aabb.max_point.x, aabb.max_point.y, aabb.min_point.z, 1.0f),
-        model * vec4(aabb.max_point.x, aabb.max_point.y, aabb.max_point.z, 1.0f)
-    };
+    vec4 corners[8] { model * Point(aabb.min_point.x, aabb.min_point.y, aabb.min_point.z),
+                      model * Point(aabb.min_point.x, aabb.min_point.y, aabb.max_point.z),
+                      model * Point(aabb.min_point.x, aabb.max_point.y, aabb.min_point.z),
+                      model * Point(aabb.min_point.x, aabb.max_point.y, aabb.max_point.z),
+                      model * Point(aabb.max_point.x, aabb.min_point.y, aabb.min_point.z),
+                      model * Point(aabb.max_point.x, aabb.min_point.y, aabb.max_point.z),
+                      model * Point(aabb.max_point.x, aabb.max_point.y, aabb.min_point.z),
+                      model * Point(aabb.max_point.x, aabb.max_point.y, aabb.max_point.z) };
 
-    min_point.x = min_point.y = min_point.z = std::numeric_limits<float>::max();
-    max_point.x = max_point.y = max_point.z = std::numeric_limits<float>::lowest();
+    min_point.x = min_point.y = min_point.z = FLOAT_MAX;
+    max_point.x = max_point.y = max_point.z = FLOAT_MIN;
 
     for(const vec4& point : corners) {
         axis_aligned_min(min_point, point);

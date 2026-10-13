@@ -6,17 +6,16 @@
 #include "maths/Transform.hpp"
 
 #include <cmath>
-
-#include "maths/geometry.hpp"
+#include "maths/transforms.hpp"
 
 Transform::Transform()
     : local_position(0.0f),
       local_orientation(0.0f, 0.0f, 0.0f, 1.0f),
       local_scale(1.0f),
       is_dirty(true),
-      global_model(1.0f) { }
+      global_model(1.0f) {}
 
-void Transform::set_local_position(const vec3& position) {
+void Transform::set_local_position(const Point& position) {
     local_position = position;
     is_dirty = true;
 }
@@ -33,7 +32,7 @@ void Transform::set_local_orientation(const quaternion& orientation) {
     is_dirty = true;
 }
 
-void Transform::set_local_orientation_euler(const vec3& angles) {
+void Transform::set_local_orientation_euler(const float3& angles) {
     local_orientation = euler_to_quaternion(angles);
     is_dirty = true;
 }
@@ -46,7 +45,7 @@ void Transform::set_local_orientation(float x, float y, float z, float w) {
     is_dirty = true;
 }
 
-void Transform::set_local_scale(const vec3& scale) {
+void Transform::set_local_scale(const float3& scale) {
     local_scale = scale;
     is_dirty = true;
 }
@@ -68,9 +67,9 @@ void Transform::set_local_model(const double* model) {
     local_position.y = model[13];
     local_position.z = model[14];
 
-    vec3 right(model[0], model[1], model[2]);
-    vec3 up(model[4], model[5], model[6]);
-    vec3 front(model[8], model[9], model[10]);
+    Vector right(model[0], model[1], model[2]);
+    Vector up(model[4], model[5], model[6]);
+    Vector front(model[8], model[9], model[10]);
 
     local_scale.x = length(right);
     local_scale.y = length(up);
@@ -116,11 +115,11 @@ void Transform::set_local_model_to_dirty() {
     is_dirty = true;
 }
 
-vec3 Transform::get_local_position() const {
+Point Transform::get_local_position() const {
     return local_position;
 }
 
-vec3& Transform::get_local_position_reference() {
+Point& Transform::get_local_position_reference() {
     return local_position;
 }
 
@@ -132,16 +131,16 @@ quaternion& Transform::get_local_orientation_reference() {
     return local_orientation;
 }
 
-vec3 Transform::get_local_scale() const {
+float3 Transform::get_local_scale() const {
     return local_scale;
 }
 
-vec3& Transform::get_local_scale_reference() {
+float3& Transform::get_local_scale_reference() {
     return local_scale;
 }
 
 mat4 Transform::compute_local_model() const {
-    return TRS_matrix(local_position, local_orientation, local_scale);
+    return TRS_matrix(local_position.as_vector(), local_orientation, local_scale);
 }
 
 mat4 Transform::get_global_model() const {
@@ -152,24 +151,24 @@ const mat4& Transform::get_global_model_const_reference() const {
     return global_model;
 }
 
-vec3 Transform::get_global_position() const {
-    return vec3(global_model(0, 3), global_model(1, 3), global_model(2, 3));
+Point Transform::get_global_position() const {
+    return Point(global_model(0, 3), global_model(1, 3), global_model(2, 3));
 }
 
-vec3 Transform::get_global_scale() const {
-    return vec3(length(get_right_vector()), length(get_up_vector()), length(get_front_vector()));
+float3 Transform::get_global_scale() const {
+    return float3(length(get_right_vector()), length(get_up_vector()), length(get_front_vector()));
 }
 
-vec3 Transform::get_front_vector() const {
-    return vec3(-global_model(0, 2), -global_model(1, 2), -global_model(2, 2));
+Vector Transform::get_front_vector() const {
+    return Vector(-global_model(0, 2), -global_model(1, 2), -global_model(2, 2));
 }
 
-vec3 Transform::get_right_vector() const {
-    return vec3(global_model(0, 0), global_model(1, 0), global_model(2, 0));
+Vector Transform::get_right_vector() const {
+    return Vector(global_model(0, 0), global_model(1, 0), global_model(2, 0));
 }
 
-vec3 Transform::get_up_vector() const {
-    return vec3(global_model(0, 1), global_model(1, 1), global_model(2, 1));
+Vector Transform::get_up_vector() const {
+    return Vector(global_model(0, 1), global_model(1, 1), global_model(2, 1));
 }
 
 bool Transform::is_local_model_dirty() const {

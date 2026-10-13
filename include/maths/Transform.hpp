@@ -6,7 +6,7 @@
 #pragma once
 
 #include "maths/mat4.hpp"
-#include "maths/transforms.hpp"
+#include "maths/quaternion.hpp"
 
 /**
  * @class Transform
@@ -26,7 +26,7 @@ public:
      * @brief Changes the local position of the transform.
      * @param position The transform's new position.
      */
-    void set_local_position(const vec3& position);
+    void set_local_position(const Point& position);
 
     /**
      * @brief Changes the local position of the transform.
@@ -46,7 +46,7 @@ public:
      * @brief Changes the local orientation of the transform using euler angles.
      * @param angles Rotation angles in degrees around each axis.
      */
-    void set_local_orientation_euler(const vec3& angles);
+    void set_local_orientation_euler(const float3& angles);
 
     /**
      * @brief Changes the local orientation of the transform.
@@ -61,7 +61,7 @@ public:
      * @brief Changes the local scale of the transform.
      * @param scale The transform's new scale.
      */
-    void set_local_scale(const vec3& scale);
+    void set_local_scale(const float3& scale);
 
     /**
      * @brief Changes the local scale of the transform uniformly along each axes.
@@ -92,13 +92,13 @@ public:
     /**
      * @return The transform's local position.
      */
-    vec3 get_local_position() const;
+    Point get_local_position() const;
 
     /**
      * @return A reference to the transform's local position. If the value is modified,
      * set_local_model_to_dirty need to be called.
      */
-    vec3& get_local_position_reference();
+    Point& get_local_position_reference();
 
     /**
      * @return The transform's local orientation.
@@ -114,13 +114,13 @@ public:
     /**
      * @return The transform's local scale.
      */
-    vec3 get_local_scale() const;
+    float3 get_local_scale() const;
 
     /**
      * @return A reference to the transform's local scale. If the value is modified,
      * set_local_model_to_dirty need to be called.
      */
-    vec3& get_local_scale_reference();
+    float3& get_local_scale_reference();
 
     /**
      * @return The transform's global model, the product of the local model matrices of all its
@@ -137,28 +137,28 @@ public:
     /**
      * @return The transform's global position.
      */
-    vec3 get_global_position() const;
+    Point get_global_position() const;
 
     /**
      * @return The transform's global scale.
      */
-    vec3 get_global_scale() const;
+    float3 get_global_scale() const;
 
     /**
      * @return The transform's global matrix's front vector: the first 3 components of its third row
      * multiplied by -1.
      */
-    vec3 get_front_vector() const;
+    Vector get_front_vector() const;
 
     /**
      * @return The transform's global matrix's right vector: the first 3 components of its first row.
      */
-    vec3 get_right_vector() const;
+    Vector get_right_vector() const;
 
     /**
      * @return The transform's global matrix's up vector: the first 3 components of its second row.
      */
-    vec3 get_up_vector() const;
+    Vector get_up_vector() const;
 
     /**
      * @return Whether the local model was modified and needs to be recomputed.
@@ -185,9 +185,9 @@ public:
     void update_global_model(const mat4& parent_global_model);
 
 private:
-    vec3 local_position;          ///< The transform's local position.
+    Point local_position;         ///< The transform's local position.
     quaternion local_orientation; ///< The transform's local orientation.
-    vec3 local_scale;             ///< The transform's local scale.
+    float3 local_scale;           ///< The transform's local scale.
 
     bool is_dirty; ///< Whether the local model was modified.
 

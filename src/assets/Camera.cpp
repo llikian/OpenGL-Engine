@@ -9,11 +9,10 @@
 
 #include "engine/Context.hpp"
 #include "maths/constants.hpp"
-#include "maths/geometry.hpp"
+#include "maths/maths.hpp"
 #include "maths/transforms.hpp"
-#include "maths/trigonometry.hpp"
 
-Camera::Camera(const vec3& position, float fov, float near_distance, float far_distance)
+Camera::Camera(const Point& position, float fov, float near_distance, float far_distance)
     : sensitivity(0.1f),
       movement_speed(50.0f),
       position(position),
@@ -27,7 +26,7 @@ Camera::Camera(const vec3& position, float fov, float near_distance, float far_d
     update_vectors_and_view_matrix();
 }
 
-Camera::Camera(const vec3& position, const vec3& target, float fov, float near_distance, float far_distance)
+Camera::Camera(const Point& position, const Point& target, float fov, float near_distance, float far_distance)
     : sensitivity(0.1f),
       movement_speed(100.0f),
       position(position),
@@ -39,19 +38,19 @@ Camera::Camera(const vec3& position, const vec3& target, float fov, float near_d
     look_at_point(target);
 }
 
-vec3 Camera::get_position() const {
+Point Camera::get_position() const {
     return position;
 }
 
-vec3 Camera::get_direction() const {
+Vector Camera::get_direction() const {
     return direction;
 }
 
-vec3 Camera::get_right_vector() const {
+Vector Camera::get_right_vector() const {
     return right;
 }
 
-vec3 Camera::get_up_vector() const {
+Vector Camera::get_up_vector() const {
     return up;
 }
 
@@ -143,12 +142,12 @@ mat4 Camera::get_inverse_view_projection_matrix() const {
     return get_model_matrix() * get_inverse_projection_matrix();
 }
 
-void Camera::set_position(const vec3& position) {
+void Camera::set_position(const Point& position) {
     this->position = position;
 
-    view_matrix(0, 3) = -dot(position, right);
-    view_matrix(1, 3) = -dot(position, up);
-    view_matrix(2, 3) = dot(position, direction);
+    view_matrix(0, 3) = -dot(position.as_vector(), right);
+    view_matrix(1, 3) = -dot(position.as_vector(), up);
+    view_matrix(2, 3) = dot(position.as_vector(), direction);
 }
 
 void Camera::look_around(float pitch_offset, float yaw_offset) {
@@ -173,9 +172,9 @@ void Camera::move_around(MovementDirection movement_direction) {
         default:                          break;
     }
 
-    view_matrix(0, 3) = -dot(position, right);
-    view_matrix(1, 3) = -dot(position, up);
-    view_matrix(2, 3) = dot(position, direction);
+    view_matrix(0, 3) = -dot(position.as_vector(), right);
+    view_matrix(1, 3) = -dot(position.as_vector(), up);
+    view_matrix(2, 3) = dot(position.as_vector(), direction);
 }
 
 void Camera::update_projection_matrix(unsigned int width, unsigned int height) {
@@ -184,8 +183,8 @@ void Camera::update_projection_matrix(unsigned int width, unsigned int height) {
     projection_matrix(0, 0) = 1.0f / (aspect_ratio * std::tan(0.5f * fov));
 }
 
-void Camera::look_at_point(const vec3& target) {
-    vec3 dir = normalize(target - position);
+void Camera::look_at_point(const Point& target) {
+    Vector dir = normalize(target - position);
     pitch = std::asin(dir.y);
     yaw = std::atan2(dir.z, dir.x);
     update_vectors_and_view_matrix();
@@ -202,15 +201,15 @@ void Camera::update_vectors_and_view_matrix() {
     view_matrix(0, 0) = right.x;
     view_matrix(0, 1) = right.y;
     view_matrix(0, 2) = right.z;
-    view_matrix(0, 3) = -dot(position, right);
+    view_matrix(0, 3) = -dot(position.as_vector(), right);
 
     view_matrix(1, 0) = up.x;
     view_matrix(1, 1) = up.y;
     view_matrix(1, 2) = up.z;
-    view_matrix(1, 3) = -dot(position, up);
+    view_matrix(1, 3) = -dot(position.as_vector(), up);
 
     view_matrix(2, 0) = -direction.x;
     view_matrix(2, 1) = -direction.y;
     view_matrix(2, 2) = -direction.z;
-    view_matrix(2, 3) = dot(position, direction);
+    view_matrix(2, 3) = dot(position.as_vector(), direction);
 }

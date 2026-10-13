@@ -43,7 +43,7 @@ void create_wireframe_cube_mesh(Mesh& mesh);
  * @param B The lower left point of the quad.
  * @param C The lower right point of the quad.
  */
-void create_quad_mesh(Mesh& mesh, const vec3& A, const vec3& B, const vec3& C);
+void create_quad_mesh(Mesh& mesh, const Point& A, const Point& B, const Point& C);
 
 /**
  * @brief Creates a mesh representing a triangle as follow:
@@ -59,7 +59,7 @@ void create_quad_mesh(Mesh& mesh, const vec3& A, const vec3& B, const vec3& C);
  * @param B The lower left point of the triangle.
  * @param C The lower right point of the triangle.
  */
-void create_triangle_mesh(Mesh& mesh, const vec3& A, const vec3& B, const vec3& C);
+void create_triangle_mesh(Mesh& mesh, const Point& A, const Point& B, const Point& C);
 
 /**
  * @brief Creates a mesh representing a full screen.
@@ -87,7 +87,7 @@ void create_axes_mesh(Mesh& mesh, float length);
  * @param C The lower right point of the base.
  * @param height How far the pyramid's apex should be from the base.
  */
-void create_pyramid_mesh(Mesh& mesh, const vec3& A, const vec3& B, const vec3& C, float height);
+void create_pyramid_mesh(Mesh& mesh, const Point& A, const Point& B, const Point& C, float height);
 
 /**
  * @brief //TODO

@@ -6,9 +6,9 @@
 #pragma once
 
 #include <filesystem>
+#include "maths/Color.hpp"
 #include "Image.hpp"
 #include "tiny_gltf.h"
-#include "maths/vec3.hpp"
 
 /**
  * @class Texture
@@ -96,7 +96,7 @@ public:
      * texture, be sure to call the free method beforehand.
      * @param color The color of the texture.
      */
-    void create(const vec3& color);
+    void create(const Color& color);
 
     /**
      * @brief Creates a 1*1px texture with a specific color.

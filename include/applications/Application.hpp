@@ -55,6 +55,6 @@ private:
 
     bool are_axes_drawn; ///< Whether the axes are drawn.
 
-    vec3 sky_color_low;
-    vec3 sky_color_high;
+    Color sky_color_low;
+    Color sky_color_high;
 };

@@ -5,9 +5,8 @@
 
 #include "mesh/Mesh.hpp"
 
-#include <cmath>
 #include "culling/Ray.hpp"
-#include "maths/geometry.hpp"
+#include "maths/constants.hpp"
 #include "maths/mat3.hpp"
 
 Mesh::Mesh(MeshPrimitive primitive)
@@ -144,7 +143,7 @@ AABB Mesh::get_AABB() const {
     return aabb;
 }
 
-void Mesh::get_min_max_axis_aligned_coordinates(vec3& minimum, vec3& maximum) const {
+void Mesh::get_min_max_axis_aligned_coordinates(Point& minimum, Point& maximum) const {
     if(has_attribute(ATTRIBUTE_POSITION)) {
         const unsigned int offset = get_attribute_offset(ATTRIBUTE_POSITION);
         for(unsigned int i = offset; i < data.size(); i += stride) {
@@ -161,19 +160,19 @@ void Mesh::get_min_max_axis_aligned_coordinates(vec3& minimum, vec3& maximum) co
 
 float Mesh::intersect(const Ray& ray, const mat4& model_matrix) const {
     // TODO Implement for other primitives.
-    if(primitive != MeshPrimitive::TRIANGLES) { return -infinity; }
+    if(primitive != MeshPrimitive::TRIANGLES) { return -INFINITY_F; }
 
     auto intersect_triangle = [&](size_t index0, size_t index1, size_t index2) -> float {
         std::size_t baseA = index0 * stride;
         std::size_t baseB = index1 * stride;
         std::size_t baseC = index2 * stride;
 
-        return ray.intersect_triangle(model_matrix * vec4(data[baseA], data[baseA + 1], data[baseA + 2], 1.0f),
-                                      model_matrix * vec4(data[baseB], data[baseB + 1], data[baseB + 2], 1.0f),
-                                      model_matrix * vec4(data[baseC], data[baseC + 1], data[baseC + 2], 1.0f));
+        return ray.intersect_triangle(model_matrix * Point(data[baseA], data[baseA + 1], data[baseA + 2]),
+                                      model_matrix * Point(data[baseB], data[baseB + 1], data[baseB + 2]),
+                                      model_matrix * Point(data[baseC], data[baseC + 1], data[baseC + 2]));
     };
 
-    float distance = infinity;
+    float distance = INFINITY_F;
     if(indices.empty()) {
         const std::size_t vertices_count = get_vertices_amount();
         for(std::size_t i = 0; i + 2 < vertices_count; i += 3) {
@@ -188,7 +187,7 @@ float Mesh::intersect(const Ray& ray, const mat4& model_matrix) const {
         }
     }
 
-    return distance == infinity ? -infinity : distance;
+    return distance == INFINITY_F ? -INFINITY_F : distance;
 }
 
 void Mesh::clear() {
@@ -209,20 +208,23 @@ void Mesh::delete_buffers() {
 }
 
 void Mesh::apply_model_matrix(const mat4& model) {
-    mat3 normals_model = transpose_inverse(model);
-
     const unsigned int pos_offset = get_attribute_offset(ATTRIBUTE_POSITION);
     const unsigned int normal_offset = get_attribute_offset(ATTRIBUTE_NORMAL);
 
     for(unsigned int i = 0; i < data.size(); i += stride) {
         if(has_attribute(ATTRIBUTE_POSITION)) {
-            vec3* pos = reinterpret_cast<vec3*>(&data[pos_offset + i]);
-            *pos = vec3(model * vec4(pos->x, pos->y, pos->z, 1.0f));
+            vec4 pos = model * reinterpret_cast<Point&>(data[pos_offset + i]);
+            data[pos_offset + i] = pos.x / pos.w;
+            data[pos_offset + i + 1] = pos.y / pos.w;
+            data[pos_offset + i + 2] = pos.z / pos.w;
         }
 
         if(has_attribute(ATTRIBUTE_NORMAL)) {
-            vec3* normal = reinterpret_cast<vec3*>(&data[normal_offset + i]);
-            *normal = normalize(normals_model * (*normal));
+            mat4 normals_model = transpose(inverse_transform(model)); // assumes model is a transform, bc it should be
+            Vector normal = normals_model * reinterpret_cast<Vector&>(data[normal_offset + i]);
+            data[pos_offset + i] = normal.x;
+            data[pos_offset + i + 1] = normal.y;
+            data[pos_offset + i + 2] = normal.z;
         }
     }
 
@@ -279,8 +281,8 @@ void Mesh::add_face(unsigned int topL, unsigned int bottomL, unsigned int bottom
 
 void Mesh::bind_buffers() {
     /* AABB */
-    vec3 min(std::numeric_limits<float>::max());
-    vec3 max(std::numeric_limits<float>::lowest());
+    Point min(FLOAT_MAX);
+    Point max(FLOAT_MIN);
     get_min_max_axis_aligned_coordinates(min, max);
     aabb.set(min, max);
 
@@ -324,7 +326,25 @@ void Mesh::push_value(const vec2& value) {
     data.push_back(value.y);
 }
 
-void Mesh::push_value(const vec3& value) {
+void Mesh::push_value(const Point& value) {
+    data.push_back(value.x);
+    data.push_back(value.y);
+    data.push_back(value.z);
+}
+
+void Mesh::push_value(const Vector& value) {
+    data.push_back(value.x);
+    data.push_back(value.y);
+    data.push_back(value.z);
+}
+
+void Mesh::push_value(const Color& value) {
+    data.push_back(value.r);
+    data.push_back(value.g);
+    data.push_back(value.b);
+}
+
+void Mesh::push_value(const float3& value) {
     data.push_back(value.x);
     data.push_back(value.y);
     data.push_back(value.z);

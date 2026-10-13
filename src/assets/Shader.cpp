@@ -11,15 +11,14 @@
 #include "maths/mat4.hpp"
 #include "utility/gl_enums.hpp"
 
-Shader::Shader() : id(0) { }
+Shader::Shader() : id(0) {}
 
-Shader::Shader(const std::initializer_list<std::filesystem::path>& paths_list,
-               const std::string& shader_program_name)
+Shader::Shader(const std::initializer_list<std::filesystem::path>& paths_list, const std::string& shader_program_name)
     : id(0) {
     create(paths_list, shader_program_name);
 }
 
-Shader::Shader(const Shader& shader) : id(shader.id), name(shader.name), uniform_locations(shader.uniform_locations) { }
+Shader::Shader(const Shader& shader) : id(shader.id), name(shader.name), uniform_locations(shader.uniform_locations) {}
 
 Shader& Shader::operator=(const Shader& shader) {
     id = shader.id;
@@ -118,8 +117,7 @@ unsigned int Shader::compile_shader(const std::filesystem::path& path) {
             shader_type_name = "geometry";
             shader_type = GL_GEOMETRY_SHADER;
             break;
-        default:
-            throw std::runtime_error("Unknown shader extension: " + extension);
+        default: throw std::runtime_error("Unknown shader extension: " + extension);
     }
 
     std::ifstream file(path);
@@ -138,8 +136,8 @@ unsigned int Shader::compile_shader(const std::filesystem::path& path) {
     if(message_length > 0) {
         char* message = new char[message_length];
         glGetShaderInfoLog(shader_id, message_length, nullptr, message);
-        std::string error_message = "Failed to compile " + shader_type_name + " shader '"
-                                    + path.string() + "':\n" + message;
+        std::string error_message =
+            "Failed to compile " + shader_type_name + " shader '" + path.string() + "':\n" + message;
 
         delete[] message;
         throw std::runtime_error(error_message);
@@ -174,7 +172,7 @@ void Shader::list_uniforms() const {
     glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &count);
 
     std::cout << '\'' << name << "' shader uniforms:\n";
-    for(int i = 0 ; i < count ; ++i) {
+    for(int i = 0; i < count; ++i) {
         glGetActiveUniform(id, i, max_name_length, &length, &size, &type, uniform_name);
         std::cout << "  " << gl_uniform_type_to_string(type) << ' ' << uniform_name;
         if(size > 1) { std::cout << '[' << size << ']'; }
@@ -236,8 +234,20 @@ void Shader::set_uniform(int location, const vec2& vec) {
     glUniform2fv(location, 1, &vec.x);
 }
 
-void Shader::set_uniform(int location, const vec3& vec) {
-    glUniform3fv(location, 1, &vec.x);
+void Shader::set_uniform(int location, const Point& value) {
+    glUniform3fv(location, 1, &value.x);
+}
+
+void Shader::set_uniform(int location, const Vector& value) {
+    glUniform3fv(location, 1, &value.x);
+}
+
+void Shader::set_uniform(int location, const Color& value) {
+    glUniform3fv(location, 1, &value.r);
+}
+
+void Shader::set_uniform(int location, const float3& value) {
+    glUniform3fv(location, 1, &value.x);
 }
 
 void Shader::set_uniform(int location, const vec4& vec) {
@@ -264,14 +274,14 @@ void Shader::get_uniforms() {
     int count;
     glGetProgramiv(id, GL_ACTIVE_UNIFORMS, &count);
 
-    for(int i = 0 ; i < count ; ++i) {
+    for(int i = 0; i < count; ++i) {
         glGetActiveUniform(id, i, max_name_length, &length, &size, &type, uniform_name);
 
         if(size == 1) { // Single value
             uniform_locations.emplace(uniform_name, glGetUniformLocation(id, uniform_name));
         } else { // Array
             std::string index;
-            for(int j = 0 ; j < size ; ++j) {
+            for(int j = 0; j < size; ++j) {
                 uniform_name[length - 2] = '\0';
                 index = uniform_name;
                 index += std::to_string(j) + ']';

@@ -45,7 +45,7 @@ public:
 
     static Texture& add_texture(const std::filesystem::path& path, bool flip_vertically, bool srgb);
     static Texture& add_texture(const std::string& name, const Texture& texture);
-    static Texture& add_texture(const std::string& name, const vec3& color);
+    static Texture& add_texture(const std::string& name, const Color& color);
     static Mesh& add_mesh(const std::string& name);
 
     template <typename MeshFunc, typename... Args>
@@ -56,10 +56,8 @@ public:
     }
 
     template <typename MeshFunc, typename... Args>
-    static void add_two_meshes(const std::string& first,
-                               const std::string& second,
-                               MeshFunc&& create_mesh,
-                               Args&&... args) {
+    static void
+    add_two_meshes(const std::string& first, const std::string& second, MeshFunc&& create_mesh, Args&&... args) {
         AssetManager& asset_manager = get();
         std::invoke(std::forward<MeshFunc>(create_mesh),
                     asset_manager.meshes.emplace(first, Mesh()).first->second,

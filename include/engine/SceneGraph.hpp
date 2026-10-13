@@ -66,8 +66,8 @@ private:
     Camera* active_camera;
 
     std::size_t light_node_index;
-    vec3 light_position;
-    vec3 light_color;
+    Point light_position;
+    Color light_color;
 
     void draw(const Frustum& frustum, std::size_t node_index);
     void draw(const mat4& view_projection, const Shader& shader, std::size_t node_index) const;

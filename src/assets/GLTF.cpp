@@ -15,10 +15,8 @@ GLTF::Scene::Scene(const std::filesystem::path& path, SceneGraph* scene_graph, u
 }
 
 GLTF::Scene::~Scene() {
-    for(unsigned int i = 0 ; i < meshes.get_size() ; ++i) {
-        for(unsigned int j = 0 ; j < meshes[i].primitives.get_size() ; ++j) {
-            delete meshes[i].primitives[j].material;
-        }
+    for(unsigned int i = 0; i < meshes.get_size(); ++i) {
+        for(unsigned int j = 0; j < meshes[i].primitives.get_size(); ++j) { delete meshes[i].primitives[j].material; }
     }
 }
 
@@ -49,7 +47,7 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
     size_t meshes_count = model.meshes.size();
     meshes.resize(meshes_count);
 
-    for(unsigned int i = 0 ; i < meshes_count ; ++i) {
+    for(unsigned int i = 0; i < meshes_count; ++i) {
         tinygltf::Mesh& t_mesh = model.meshes[i];
         Mesh& mesh = meshes[i];
 
@@ -58,7 +56,7 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
         size_t primitives_count = t_mesh.primitives.size();
         mesh.primitives.resize(primitives_count);
 
-        for(unsigned int j = 0 ; j < primitives_count ; ++j) {
+        for(unsigned int j = 0; j < primitives_count; ++j) {
             const tinygltf::Primitive& t_primitive = t_mesh.primitives[j];
             Primitive& primitive = mesh.primitives[j];
 
@@ -68,12 +66,10 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
                 primitive.material = new MRMaterial(t_material.name);
                 MRMaterial* material = primitive.material;
 
-                material->base_color = vec4(
-                    t_material.pbrMetallicRoughness.baseColorFactor[0],
-                    t_material.pbrMetallicRoughness.baseColorFactor[1],
-                    t_material.pbrMetallicRoughness.baseColorFactor[2],
-                    t_material.pbrMetallicRoughness.baseColorFactor[3]
-                );
+                material->base_color = vec4(t_material.pbrMetallicRoughness.baseColorFactor[0],
+                                            t_material.pbrMetallicRoughness.baseColorFactor[1],
+                                            t_material.pbrMetallicRoughness.baseColorFactor[2],
+                                            t_material.pbrMetallicRoughness.baseColorFactor[3]);
 
                 material->metallic = t_material.pbrMetallicRoughness.metallicFactor;
                 material->roughness = t_material.pbrMetallicRoughness.roughnessFactor;
@@ -90,7 +86,7 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
 
                 int MR_texture_index = t_material.pbrMetallicRoughness.metallicRoughnessTexture.index;
                 if(MR_texture_index == -1) {
-                    material->metallic_roughness_map.create(vec3(0.0f, 0.5f, 0.0f));
+                    material->metallic_roughness_map.create(Color(0.0f, 0.5f, 0.0f));
                 } else {
                     const tinygltf::Texture& t_texture = model.textures[MR_texture_index];
                     material->metallic_roughness_map.create(model.images[t_texture.source],
@@ -100,7 +96,7 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
 
                 int normal_map_index = t_material.normalTexture.index;
                 if(normal_map_index == -1) {
-                    material->normal_map.create(vec3(1.0f, 0.5f, 0.5f));
+                    material->normal_map.create(Color(1.0f, 0.5f, 0.5f));
                 } else {
                     const tinygltf::Texture& t_texture = model.textures[normal_map_index];
                     material->normal_map.create(model.images[t_texture.source],
@@ -110,33 +106,26 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
             }
 
             switch(t_primitive.mode) {
-                case TINYGLTF_MODE_POINTS:
-                    primitive.primitive.set_primitive(MeshPrimitive::POINTS);
-                    break;
-                case TINYGLTF_MODE_LINE:
-                    primitive.primitive.set_primitive(MeshPrimitive::LINES);
-                    break;
+                case TINYGLTF_MODE_POINTS: primitive.primitive.set_primitive(MeshPrimitive::POINTS); break;
+                case TINYGLTF_MODE_LINE:   primitive.primitive.set_primitive(MeshPrimitive::LINES); break;
                 case TINYGLTF_MODE_LINE_LOOP:
                     throw std::runtime_error("Unhandled primitive mode: TINYGLTF_MODE_LINE_LOOP.");
                 case TINYGLTF_MODE_LINE_STRIP:
                     throw std::runtime_error("Unhandled primitive mode: TINYGLTF_MODE_LINE_STRIP.");
-                case TINYGLTF_MODE_TRIANGLES:
-                    primitive.primitive.set_primitive(MeshPrimitive::TRIANGLES);
-                    break;
+                case TINYGLTF_MODE_TRIANGLES: primitive.primitive.set_primitive(MeshPrimitive::TRIANGLES); break;
                 case TINYGLTF_MODE_TRIANGLE_STRIP:
                     throw std::runtime_error("Unhandled primitive mode: TINYGLTF_MODE_TRIANGLE_STRIP.");
                 case TINYGLTF_MODE_TRIANGLE_FAN:
                     throw std::runtime_error("Unhandled primitive mode: TINYGLTF_MODE_TRIANGLE_FAN.");
-                default:
-                    throw std::runtime_error("Unknown primitive mode: " + std::to_string(t_primitive.mode) + '.');
+                default: throw std::runtime_error("Unknown primitive mode: " + std::to_string(t_primitive.mode) + '.');
             }
 
             static const std::map<std::string, Attribute> GLTF_STRING_TO_ATTR {
-                { "POSITION", ATTRIBUTE_POSITION },
-                { "NORMAL", ATTRIBUTE_NORMAL },
+                { "POSITION",   ATTRIBUTE_POSITION   },
+                { "NORMAL",     ATTRIBUTE_NORMAL     },
                 { "TEXCOORD_0", ATTRIBUTE_TEX_COORDS },
-                { "COLOR_0", ATTRIBUTE_COLOR },
-                { "TANGENT", ATTRIBUTE_TANGENT },
+                { "COLOR_0",    ATTRIBUTE_COLOR      },
+                { "TANGENT",    ATTRIBUTE_TANGENT    },
             };
 
             std::vector<AttributeInfo> attribute_infos;
@@ -154,31 +143,23 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
                     Attribute attribute = iterator->second;
                     AttributeType attribute_type;
                     switch(t_accessor.type) {
-                        case TINYGLTF_TYPE_VEC2:
-                            attribute_type = AttributeType::VEC2;
-                            break;
-                        case TINYGLTF_TYPE_VEC3:
-                            attribute_type = AttributeType::VEC3;
-                            break;
-                        case TINYGLTF_TYPE_VEC4:
-                            attribute_type = AttributeType::VEC4;
-                            break;
+                        case TINYGLTF_TYPE_VEC2: attribute_type = AttributeType::VEC2; break;
+                        case TINYGLTF_TYPE_VEC3: attribute_type = AttributeType::VEC3; break;
+                        case TINYGLTF_TYPE_VEC4: attribute_type = AttributeType::VEC4; break;
                         case TINYGLTF_TYPE_MAT2:
                             throw std::runtime_error("Unhandled attribute type: TINYGLTF_TYPE_MAT2.");
                         case TINYGLTF_TYPE_MAT3:
                             throw std::runtime_error("Unhandled attribute type: TINYGLTF_TYPE_MAT3.");
                         case TINYGLTF_TYPE_MAT4:
                             throw std::runtime_error("Unhandled attribute type: TINYGLTF_TYPE_MAT4.");
-                        case TINYGLTF_TYPE_SCALAR:
-                            attribute_type = AttributeType::FLOAT;
-                            break;
+                        case TINYGLTF_TYPE_SCALAR: attribute_type = AttributeType::FLOAT; break;
                         case TINYGLTF_TYPE_VECTOR:
                             throw std::runtime_error("Unhandled attribute type: TINYGLTF_TYPE_VECTOR.");
                         case TINYGLTF_TYPE_MATRIX:
                             throw std::runtime_error("Unhandled attribute type: TINYGLTF_TYPE_MATRIX.");
                         default:
-                            throw std::runtime_error(
-                                "Unknown attribute type: " + std::to_string(t_accessor.type) + '.');
+                            throw std::runtime_error("Unknown attribute type: " + std::to_string(t_accessor.type) +
+                                                     '.');
                     }
 
                     if(t_accessor.componentType != TINYGLTF_COMPONENT_TYPE_FLOAT) {
@@ -186,15 +167,13 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
                     }
 
                     size_t byte_offset = t_accessor.byteOffset + t_buffer_view.byteOffset;
-                    size_t stride_in_floats = t_buffer_view.byteStride == 0
-                                                  ? get_attribute_type_count(attribute_type)
-                                                  : t_buffer_view.byteStride / sizeof(float);
+                    size_t stride_in_floats = t_buffer_view.byteStride == 0 ? get_attribute_type_count(attribute_type)
+                                                                            : t_buffer_view.byteStride / sizeof(float);
 
                     attribute_infos.emplace_back(attribute,
                                                  reinterpret_cast<const float*>(t_buffer.data.data() + byte_offset),
                                                  stride_in_floats,
-                                                 get_attribute_type_count(attribute_type)
-                    );
+                                                 get_attribute_type_count(attribute_type));
 
                     if(vertex_count == 0) {
                         vertex_count = t_accessor.count;
@@ -210,7 +189,7 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
                 return a1.attribute < a2.attribute;
             });
 
-            for(size_t k = 0 ; k < vertex_count ; ++k) {
+            for(size_t k = 0; k < vertex_count; ++k) {
                 for(const AttributeInfo& attribute_info : attribute_infos) {
                     primitive.primitive.push_values(attribute_info.data + k * attribute_info.stride_in_floats,
                                                     attribute_info.elements_count);
@@ -227,17 +206,17 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
                 switch(t_accessor.componentType) {
                     case TINYGLTF_COMPONENT_TYPE_UNSIGNED_BYTE: {
                         const unsigned char* data = t_buffer.data.data() + byte_offset;
-                        for(size_t k = 0 ; k < t_accessor.count ; ++k) { primitive.primitive.add_index(data[k]); }
+                        for(size_t k = 0; k < t_accessor.count; ++k) { primitive.primitive.add_index(data[k]); }
                         break;
                     }
                     case TINYGLTF_COMPONENT_TYPE_UNSIGNED_SHORT: {
                         auto data = reinterpret_cast<const unsigned short*>(t_buffer.data.data() + byte_offset);
-                        for(size_t k = 0 ; k < t_accessor.count ; ++k) { primitive.primitive.add_index(data[k]); }
+                        for(size_t k = 0; k < t_accessor.count; ++k) { primitive.primitive.add_index(data[k]); }
                         break;
                     }
                     case TINYGLTF_COMPONENT_TYPE_UNSIGNED_INT: {
                         auto data = reinterpret_cast<const unsigned int*>(t_buffer.data.data() + byte_offset);
-                        for(size_t k = 0 ; k < t_accessor.count ; ++k) { primitive.primitive.add_index(data[k]); }
+                        for(size_t k = 0; k < t_accessor.count; ++k) { primitive.primitive.add_index(data[k]); }
                         break;
                     }
                     default: throw std::runtime_error("Wrong or unknown component type in indices accessor.");
@@ -262,10 +241,9 @@ void GLTF::Scene::load(const std::filesystem::path& path, SceneGraph* scene_grap
         unsigned int i = 0;
 
         for(const tinygltf::Scene& t_scene : model.scenes) {
-            unsigned int sg_node_index = scene_graph->add_simple_node(t_scene.name.empty()
-                                                                          ? "Scene " + std::to_string(i)
-                                                                          : t_scene.name,
-                                                                      scene_node_index);
+            unsigned int sg_node_index =
+                scene_graph->add_simple_node(t_scene.name.empty() ? "Scene " + std::to_string(i) : t_scene.name,
+                                             scene_node_index);
 
             for(int node_index : t_scene.nodes) {
                 add_node(model.nodes, model.nodes[node_index], scene_graph, sg_node_index);
@@ -286,7 +264,7 @@ void GLTF::Scene::add_node(const std::vector<tinygltf::Node>& t_nodes,
         const auto& [mesh_name, primitives] = meshes[t_node.mesh];
         sg_parent_index = scene_graph->add_simple_node(mesh_name, sg_parent_index);
 
-        for(unsigned int j = 0 ; j < primitives.get_size() ; ++j) {
+        for(unsigned int j = 0; j < primitives.get_size(); ++j) {
             const Primitive& primitive = primitives[j];
             std::string primitive_name = "Primitive " + std::to_string(j);
 
@@ -295,24 +273,20 @@ void GLTF::Scene::add_node(const std::vector<tinygltf::Node>& t_nodes,
                                              ? SHADER_METALLIC_ROUGHNESS
                                              : SHADER_METALLIC_ROUGHNESS_NO_TANGENT;
 
-                unsigned int node_index = scene_graph->add_mesh_node(primitive_name,
-                                                                     sg_parent_index,
-                                                                     &primitive.primitive,
-                                                                     shader_name);
+                unsigned int node_index =
+                    scene_graph->add_mesh_node(primitive_name, sg_parent_index, &primitive.primitive, shader_name);
 
                 scene_graph->add_material_to_node(node_index, primitive.material);
             } else {
                 ShaderName shader_name = AssetManager::get_relevant_shader_name_from_mesh(primitive.primitive);
 
-                unsigned int node_index = scene_graph->add_mesh_node(primitive_name,
-                                                                     sg_parent_index,
-                                                                     &primitive.primitive,
-                                                                     shader_name);
+                unsigned int node_index =
+                    scene_graph->add_mesh_node(primitive_name, sg_parent_index, &primitive.primitive, shader_name);
 
                 switch(shader_name) {
                     case SHADER_FLAT:
                     case SHADER_LAMBERT:
-                        scene_graph->add_color_to_node(node_index, vec4(1.0f));
+                        scene_graph->add_color_to_node(node_index, vec4(1.0f, 1.0f, 1.0f, 1.0f));
                         break;
                     default: break;
                 }
@@ -337,16 +311,9 @@ void GLTF::Scene::add_node(const std::vector<tinygltf::Node>& t_nodes,
         }
 
         if(t_node.scale.size() == 3) {
-            scene_graph->transforms[sg_parent_index].set_local_scale(t_node.scale[0],
-                                                                     t_node.scale[1],
-                                                                     t_node.scale[2]);
+            scene_graph->transforms[sg_parent_index].set_local_scale(t_node.scale[0], t_node.scale[1], t_node.scale[2]);
         }
     }
 
-    for(int node_index : t_node.children) {
-        add_node(t_nodes,
-                 t_nodes[node_index],
-                 scene_graph,
-                 sg_parent_index);
-    }
+    for(int node_index : t_node.children) { add_node(t_nodes, t_nodes[node_index], scene_graph, sg_parent_index); }
 }

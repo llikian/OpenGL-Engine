@@ -6,7 +6,8 @@
 #pragma once
 
 #include "maths/mat4.hpp"
-#include "maths/vec3.hpp"
+#include "maths/Point.hpp"
+#include "maths/Vector.hpp"
 
 enum class MovementDirection : unsigned char { FORWARD, BACKWARD, LEFT, RIGHT, UPWARD, DOWNWARD };
 
@@ -25,7 +26,7 @@ public:
      * @param near_distance Distance of the near plane.
      * @param far_distance Distance of the far plane.
      */
-    Camera(const vec3& position, float fov, float near_distance, float far_distance);
+    Camera(const Point& position, float fov, float near_distance, float far_distance);
 
     /**
      * @brief Creates a camera at a specific position looking towards a specific point.
@@ -35,27 +36,27 @@ public:
      * @param near_distance Distance of the near plane.
      * @param far_distance Distance of the far plane.
      */
-    Camera(const vec3& position, const vec3& target, float fov, float near_distance, float far_distance);
+    Camera(const Point& position, const Point& target, float fov, float near_distance, float far_distance);
 
     /**
      * @return The camera's position.
      */
-    vec3 get_position() const;
+    Point get_position() const;
 
     /**
      * @return The direction is looking towards.
      */
-    vec3 get_direction() const;
+    Vector get_direction() const;
 
     /**
      * @return The direction pointing right of where the camera is looking.
      */
-    vec3 get_right_vector() const;
+    Vector get_right_vector() const;
 
     /**
      * @return The direction pointing up of where the camera is looking.
      */
-    vec3 get_up_vector() const;
+    Vector get_up_vector() const;
 
     /**
      * @return The camera's fov.
@@ -119,7 +120,7 @@ public:
      * @brief Sets the camera's position to a certain point.
      * @param position The camera's new position.
      */
-    void set_position(const vec3& position);
+    void set_position(const Point& position);
 
     /**
      * @brief Updates the camera's direction depending on how the mouse moved since the last frame.
@@ -143,7 +144,7 @@ public:
      * @brief Rotates the camera to make it look towards a certain point.
      * @param target The point the camera should look towards.
      */
-    void look_at_point(const vec3& target);
+    void look_at_point(const Point& target);
 
     float sensitivity;    ///< The sensivity when looking around.
     float movement_speed; ///< The sensitivity of the movement.
@@ -155,13 +156,13 @@ private:
      */
     void update_vectors_and_view_matrix();
 
-    vec3 position; ///< The camera's position.
-    float pitch;   ///< The camera's pitch angle (in radians), the camera's tilt, the "up/down" angle.
-    float yaw;     ///< The camera's yaw angle (in radians), the angle around the y axis, the "left/right angle."
+    Point position; ///< The camera's position.
+    float pitch;    ///< The camera's pitch angle (in radians), the camera's tilt, the "up/down" angle.
+    float yaw;      ///< The camera's yaw angle (in radians), the angle around the y axis, the "left/right angle."
 
-    vec3 direction; ///< The direction is looking towards.
-    vec3 right;     ///< The direction pointing right of where the camera is looking.
-    vec3 up;        ///< The direction pointing up of where the camera is looking.
+    Vector direction; ///< The direction is looking towards.
+    Vector right;     ///< The direction pointing right of where the camera is looking.
+    Vector up;        ///< The direction pointing up of where the camera is looking.
 
     // TODO: Remove const keyword and add ways to modify these.
     const float fov;           ///< The camera's fov.
@@ -171,5 +172,5 @@ private:
     mat4 view_matrix;       ///< The camera's view matrix. Used every frame in the mvp matrix calculation.
     mat4 projection_matrix; ///< The projection matrix. Used every frame in the mvp matrix calculation.
 
-    const vec3 WORLD_UP { 0.0f, 1.0f, 0.0f }; ///< Where "up" is.
+    const Vector WORLD_UP { 0.0f, 1.0f, 0.0f }; ///< Where "up" is.
 };

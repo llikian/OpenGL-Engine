@@ -9,10 +9,13 @@
 #include <initializer_list>
 #include <string>
 #include <unordered_map>
+#include "maths/Color.hpp"
+#include "maths/float3.hpp"
 #include "maths/mat3.hpp"
+#include "maths/Point.hpp"
 #include "maths/vec2.hpp"
-#include "maths/vec3.hpp"
 #include "maths/vec4.hpp"
+#include "maths/Vector.hpp"
 
 /**
  * @class Shader
@@ -32,8 +35,7 @@ public:
      * @param paths_list The paths to each of the different shaders.
      * @param shader_program_name The name of the shader program.
      */
-    Shader(const std::initializer_list<std::filesystem::path>& paths_list,
-           const std::string& shader_program_name = "");
+    Shader(const std::initializer_list<std::filesystem::path>& paths_list, const std::string& shader_program_name = "");
 
     /**
      * @brief Copy constructor.
@@ -108,8 +110,8 @@ public:
         if(uniform_iterator != uniform_locations.end()) {
             set_uniform(uniform_iterator->second, std::forward<Value>(value)...);
         } else {
-            std::cout << "[WARNING] Unknown uniform '" << uniform << "' in 'set_uniform' call for shader '" << name <<
-                "'.\n";
+            std::cout << "[WARNING] Unknown uniform '" << uniform << "' in 'set_uniform' call for shader '" << name
+                      << "'.\n";
         }
     }
 
@@ -122,9 +124,7 @@ public:
     template <typename... Value>
     void set_uniform_if_exists(const std::string& uniform, Value... value) const {
         std::unordered_map<std::string, int>::const_iterator uniform_iterator = uniform_locations.find(uniform);
-        if(uniform_iterator != uniform_locations.end()) {
-            set_uniform(uniform_iterator->second, value...);
-        }
+        if(uniform_iterator != uniform_locations.end()) { set_uniform(uniform_iterator->second, value...); }
     }
 
     /**
@@ -237,9 +237,30 @@ public:
     /**
      * @brief Sets the value of a uniform of type vec3.
      * @param location The uniform's location.
-     * @param vec The new value of the uniform.
+     * @param value The new value of the uniform.
      */
-    static void set_uniform(int location, const vec3& vec);
+    static void set_uniform(int location, const Point& value);
+
+    /**
+     * @brief Sets the value of a uniform of type vec3.
+     * @param location The uniform's location.
+     * @param value The new value of the uniform.
+     */
+    static void set_uniform(int location, const Vector& value);
+
+    /**
+     * @brief Sets the value of a uniform of type Color.
+     * @param location The uniform's location.
+     * @param value The new value of the uniform.
+     */
+    static void set_uniform(int location, const Color& value);
+
+    /**
+     * @brief Sets the value of a uniform of type float3.
+     * @param location The uniform's location.
+     * @param value The new value of the uniform.
+     */
+    static void set_uniform(int location, const float3& value);
 
     /**
      * @brief Sets the value of a uniform of type vec4.
